@@ -1,0 +1,19 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import Menu from '../views/Menu.vue'
+import Game from '../views/Game.vue'
+const history = createWebHistory()
+const routes = [
+    {
+        path:"/",
+        name:"menu",
+        component: Menu
+    },
+    {
+        path:"/game",
+        name:"game",
+        component: Game
+    }
+
+]
+const router = createRouter({ history, routes })
+export default router

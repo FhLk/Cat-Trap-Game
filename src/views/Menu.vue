@@ -3,7 +3,7 @@ import Tutorial from '../components/Tutorrial.vue'
 import { useRoute, useRouter } from 'vue-router'
 const Router = useRouter()
 const goToGame = () => {
-    Router.push({ name: 'game' })
+    Router.push({ name: 'Game' })
 };
 </script>
  

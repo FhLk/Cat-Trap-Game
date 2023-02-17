@@ -3,7 +3,7 @@ import Scence from '../components/Scence.vue';
 import { useRoute, useRouter } from 'vue-router'
 const Router = useRouter()
 const goToMenu = () => {
-    Router.push({ name: 'menu'})
+    Router.push({ name: 'Home'})
 };
 
 const reset=()=>{

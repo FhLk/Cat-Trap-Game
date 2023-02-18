@@ -19,7 +19,7 @@ const reset=()=>{
           hover:bg-blue-700 ">BACK</button>
         </div>
         <div class="reset absolute mt-5">
-            <button @click="reset()" class="px-6 py-2.5 bg-blue-600 text-white font-medium 
+            <button @click="reset" class="px-6 py-2.5 bg-blue-600 text-white font-medium 
           text-xs leading-tight uppercase rounded shadow-md 
           hover:bg-blue-700 ">RESET</button>
         </div>

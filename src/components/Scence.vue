@@ -217,6 +217,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  console.log("------------------");
   console.log("Data Start");
   console.log("------------------");
   console.log('1. Board');
@@ -235,6 +236,7 @@ onMounted(() => {
 })
 
 onUpdated(()=>{
+  console.log("------------------");
   console.log('Data Updated');
   console.log("------------------");
   console.log("1. Board");

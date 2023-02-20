@@ -1,6 +1,7 @@
 <script setup>
-import { onBeforeMount, onBeforeUpdate, onUpdated, ref, onMounted } from 'vue';
+import { onBeforeMount, onUpdated, ref, onMounted,computed } from 'vue';
 import { winGame, loseGame } from './Alert.js';
+import Timer from '../components/Timer.vue'
 
 const hexagon_normal = './hexagon.svg'
 const hexagon_cat = './hexagon-red.svg'
@@ -9,6 +10,13 @@ const hexagon_Q1 = "./hexagon-green.svg"
 const hexagon_Q2 = "./hexagon-purple.svg"
 const hexagon_Q3 = "./hexagon-blue.svg"
 const hexagon_Q4 = "./hexagon-orange.svg"
+
+const props = defineProps({
+  blocks :{
+    type: Number,
+    rquire: true
+  }
+})
 
 const gameBoard = ref(new Array(11).fill().map((_, i) => new Array(11).fill().map((_, j) => (
   { x: i, y: j, hexagon: hexagon_normal, select: false, cat: false }
@@ -33,14 +41,47 @@ const divideBoardIntoFour = (gameBoard) => {
   return [Q1, Q2, Q3, Q4]
 }
 
-const Q = divideBoardIntoFour(gameBoard.value)
+const divideBoardIntoTwo = (gameBoard) => {
+  const Q_TOP = gameBoard.slice(0, 5)
+  const Q_BOTTOM = gameBoard.slice(6, 11)
+  const Q1 = []
+  const Q2 = []
+  for (let i = 0; i < Q_TOP.length; i++) {
+    Q1.push(Q_TOP[i].slice(0, 11));
+  }
+
+  for (let i = 0; i < Q_BOTTOM.length; i++) {
+    Q2.push(Q_BOTTOM[i].slice(0, 11));
+  }
+
+  Q1.forEach((Q)=>{
+    Q.forEach((n)=>{
+      n.hexagon = hexagon_Q1
+    })
+  })
+
+  Q2.forEach((Q)=>{
+    Q.forEach((n)=>{
+      n.hexagon = hexagon_Q2
+    })
+  })
+
+  return [Q1, Q2]
+}
+
+const Q = divideBoardIntoTwo(gameBoard.value)
+
+
+// const Q = divideBoardIntoFour(gameBoard.value)
 
 const RandomBlock = (Q) => {
   let blocks = [];
+  // let countBlocks = props.blocks
+  let countBlocks = 12
   for (let i = 0; i < Q.length; i++) {
     let part = Q[i];
     let partBlocks = new Set();
-    while (partBlocks.size < 3) {
+    while (partBlocks.size < countBlocks) {
       const block = part[Math.floor(Math.random() * part.length)][Math.floor(Math.random() * part[0].length)];
       block.hexagon = hexagon_disable;
       block.select = true
@@ -216,50 +257,54 @@ onBeforeMount(() => {
   }
 })
 
-onMounted(() => {
-  console.log("------------------");
-  console.log("Data Start");
-  console.log("------------------");
-  console.log('1. Board');
-  console.log(gameBoard.value);
-  console.log('2. Cat Posiotion');
-  console.log(cat.value);
-  console.log('3. Set of Destination');
-  console.log(setDestination.value);
-  console.log("4. Destination");
-  console.log(end.value);
-  console.log("5. Path");
-  console.log(path.value);
-  console.log("6. Block Position");
-  console.log(blocks);
-  console.log("------------------");
-})
+// onMounted(() => {
+//   console.log("------------------");
+//   console.log("Data Start");
+//   console.log("------------------");
+//   console.log('1. Board');
+//   console.log(gameBoard.value);
+//   console.log('2. Cat Posiotion');
+//   console.log(cat.value);
+//   console.log('3. Set of Destination');
+//   console.log(setDestination.value);
+//   console.log("4. Destination");
+//   console.log(end.value);
+//   console.log("5. Path");
+//   console.log(path.value);
+//   console.log("6. Block Position");
+//   console.log(blocks);
+//   console.log("------------------");
+// })
 
-onUpdated(()=>{
-  console.log("------------------");
-  console.log('Data Updated');
-  console.log("------------------");
-  console.log("1. Board");
-  console.log(gameBoard.value);
-  console.log("2. Cat Position");
-  console.log(cat.value);
-  console.log('3. Set of Destination');
-  console.log(setDestination.value);
-  console.log("4. Destination");
-  console.log(end.value);
-  console.log('5. Path');
-  console.log(path.value);
-  console.log("6. Block Position");
-  console.log(blocks);
-  console.log("------------------");
-})
+// onUpdated(()=>{
+//   console.log("------------------");
+//   console.log('Data Updated');
+//   console.log("------------------");
+//   console.log("1. Board");
+//   console.log(gameBoard.value);
+//   console.log("2. Cat Position");
+//   console.log(cat.value);
+//   console.log('3. Set of Destination');
+//   console.log(setDestination.value);
+//   console.log("4. Destination");
+//   console.log(end.value);
+//   console.log('5. Path');
+//   console.log(path.value);
+//   console.log("6. Block Position");
+//   console.log(blocks);
+//   console.log("------------------");
+// })
 
+const Test = (data)=>{
+  console.log(data);
+}
 
 </script>
  
 <template>
   <div class="game bg-[#5f9ea0] h-screen p-5">
-    <div class="game-board mt-10">
+    <Timer @time-out="Test"/>
+    <div class="game-board translate-x-1/2 mt-5">
       <div v-for="(row, rowIndex) in gameBoard" :class="`board-row ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
         <div v-for="(hexagon, index) in row" :key="index" :class="`cell-${index}`">
           <button :disabled="hexagon.select || hexagon.cat" class="hexagon">
@@ -272,15 +317,16 @@ onUpdated(()=>{
 </template>
  
 <style scoped>
+
 .hexagon {
   clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%);
 }
-
 .game-board {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   transform-origin: 0px 0px;
+  width:50%;
 }
 
 .translate-x {

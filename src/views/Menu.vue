@@ -1,6 +1,7 @@
 <script setup>
 import Tutorial from '../components/Tutorrial.vue'
 import { useRoute, useRouter } from 'vue-router'
+import { computed,ref } from 'vue';
 const Router = useRouter()
 const goToGame = () => {
     Router.push({ name: 'Game' })

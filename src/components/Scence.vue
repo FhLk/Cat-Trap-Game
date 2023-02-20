@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, onBeforeUpdate, onUpdated, ref } from 'vue';
+import { onBeforeMount, onBeforeUpdate, onUpdated, ref, onMounted } from 'vue';
 import { winGame, loseGame } from './Alert.js';
 
 const hexagon_normal = './hexagon.svg'
@@ -142,30 +142,34 @@ function aStar(start, end) {
   return [];
 }
 
-const currentMove = ref({})
+const cat = ref({})
 const selectHexagon = (row, index) => {
   try {
-    gameBoard.value[row][index].hexagon = hexagon_disable
-    gameBoard.value[row][index].select = true
-    currentMove.value = gameBoard.value[path.value[0].x][path.value[0].y]
-    path.value = aStar(currentMove.value, end.value)
-    if (path.value.length <= 5) {
-      end.value = closestCat(currentMove.value)
-      path.value = aStar(currentMove.value, end.value)
+    if (!gameBoard.value[row][index].select && !gameBoard.value[row][index].cat) {
+      gameBoard.value[row][index].hexagon = hexagon_disable
+      gameBoard.value[row][index].select = true
+      blocks.push(gameBoard.value[row][index])
+      const currentMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      path.value = aStar(currentMove, end.value)
+      if (path.value.length < 5) {
+        end.value = closestCat(currentMove)
+        path.value = aStar(currentMove, end.value)
+      }
+      if (path.value.length > 7) {
+        end.value = closestCat(currentMove)
+        path.value = aStar(currentMove, end.value)
+      }
+      const previousMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      previousMove.hexagon = hexagon_normal;
+      previousMove.cat = false
+      previousMove.select = false
+      path.value.shift()
+      const nextMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      nextMove.hexagon = hexagon_cat
+      nextMove.cat = true
+      checkLoseGame(nextMove)
+      cat.value = nextMove
     }
-    if (path.value.length > 6) {
-      end.value = closestCat(currentMove.value)
-      path.value = aStar(currentMove.value, end.value)
-    }
-    const previousMove = gameBoard.value[path.value[0].x][path.value[0].y]
-    previousMove.hexagon = hexagon_normal;
-    previousMove.cat = false
-    previousMove.select = false
-    path.value.shift()
-    const nextMove = gameBoard.value[path.value[0].x][path.value[0].y]
-    nextMove.hexagon = hexagon_cat
-    nextMove.cat = true
-    checkLoseGame(nextMove)
     return
   } catch (error) {
     winGame()
@@ -198,18 +202,57 @@ const closestCat = (currentCat) => {
 
 gameBoard.value[5][5].hexagon = hexagon_cat;
 gameBoard.value[5][5].cat = true
-RandomBlock(Q)
+const blocks = RandomBlock(Q)
 const setDestination = ref(Destination())
-const destination = ref(setDestination.value[Math.floor(Math.random() * setDestination.value.length)])
+const destination = setDestination.value[Math.floor(Math.random() * setDestination.value.length)]
 const path = ref([])
 const start = gameBoard.value[5][5];
-const end = ref(gameBoard.value[destination.value.x][destination.value.y])
+cat.value = start
+const end = ref(gameBoard.value[destination.x][destination.y])
 onBeforeMount(() => {
   path.value = aStar(start, end.value);
   if (path.value.length === 0) {
     path.value = aStar(start, end.value);
   }
 })
+
+onMounted(() => {
+  console.log("Data Start");
+  console.log("------------------");
+  console.log('1. Board');
+  console.log(gameBoard.value);
+  console.log('2. Cat Posiotion');
+  console.log(cat.value);
+  console.log('3. Set of Destination');
+  console.log(setDestination.value);
+  console.log("4. Destination");
+  console.log(end.value);
+  console.log("5. Path");
+  console.log(path.value);
+  console.log("6. Block Position");
+  console.log(blocks);
+  console.log("------------------");
+})
+
+onUpdated(()=>{
+  console.log('Data Updated');
+  console.log("------------------");
+  console.log("1. Board");
+  console.log(gameBoard.value);
+  console.log("2. Cat Position");
+  console.log(cat.value);
+  console.log('3. Set of Destination');
+  console.log(setDestination.value);
+  console.log("4. Destination");
+  console.log(end.value);
+  console.log('5. Path');
+  console.log(path.value);
+  console.log("6. Block Position");
+  console.log(blocks);
+  console.log("------------------");
+})
+
+
 </script>
  
 <template>

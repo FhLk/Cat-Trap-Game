@@ -1,10 +1,14 @@
 <script setup>
 import Scence from '../components/Scence.vue';
 import { useRoute, useRouter } from 'vue-router'
+import { onBeforeMount } from 'vue';
+let { params } = useRoute()
 const Router = useRouter()
 const goToMenu = () => {
     Router.push({ name: 'Home'})
 };
+
+const level = Number(params.level)
 
 const reset=()=>{
     location.reload()
@@ -23,7 +27,7 @@ const reset=()=>{
           text-xs leading-tight uppercase rounded shadow-md 
           hover:bg-blue-700 ">RESET</button>
         </div>
-        <Scence />
+        <Scence :level="level" />
     </div>
 </template>
  

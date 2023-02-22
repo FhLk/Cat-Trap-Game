@@ -1,11 +1,8 @@
 <script setup>
 import Tutorial from '../components/Tutorrial.vue'
-import { useRoute, useRouter } from 'vue-router'
-import { computed,ref } from 'vue';
-const Router = useRouter()
-const goToGame = () => {
-    Router.push({ name: 'Game' })
-};
+import LevelButton from '../components/Level-Button.vue';
+import { ref } from 'vue';
+const isLevel = ref(true)
 </script>
  
 <template>
@@ -15,10 +12,11 @@ const goToGame = () => {
                 <h1>Trap The Cat</h1>
             </div>
             <div class="play">
-                <button type="button" @click="goToGame()" class="
+                <button v-if="isLevel" type="button" @click="isLevel = false" class="
                     bg-blue-600 text-white font-medium 
                     text-xs leading-tight uppercase rounded shadow-md 
                     hover:bg-blue-700 ">PLAY</button>
+                    <LevelButton v-else/>
             </div>
             <Tutorial />
         </div>

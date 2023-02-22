@@ -9,10 +9,9 @@ const routes = [
         component: Menu
     },
     {
-        path:"/game",
+        path:"/game-level:level",
         name:"Game",
         component: Game,
-        props: true
     }
 
 ]

@@ -273,9 +273,13 @@ const closestCat = (currentCat) => {
 //Game set-up
 gameBoard.value[5][5].hexagon = hexagon_cat;
 gameBoard.value[5][5].cat = true
+//generate Block
 const blocks = RandomBlock(Q)
+// SET of Destination
 const setDestination = ref(Destination())
+// generate destination position
 const destination = setDestination.value[Math.floor(Math.random() * setDestination.value.length)]
+// calculate the paht
 const path = ref([])
 const start = gameBoard.value[5][5];
 cat.value = start
@@ -287,6 +291,7 @@ onBeforeMount(() => {
   }
 })
 
+// Time limit
 const timeOut = ()=>{
   loseGame()
 }

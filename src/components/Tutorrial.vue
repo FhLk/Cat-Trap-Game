@@ -13,7 +13,7 @@ const information = ref([
     <div class="bg-white rounded-lg p-5 space-y-3">
         <h1 class="text-lg font-medium">How To Play</h1>
         <div class="text-center">
-            <p class="font-medium">Don't let the cat get away, By placing blocks to keep the cat away in 90 second, By placing a block 1 time, the cat moves 1 time.</p>
+            <p class="font-medium">Don't let the cat get away, By placing blocks to keep the cat away in 60 second, By placing a block 1 time, the cat moves 1 time.</p>
             <p class="font-medium"> {{ ">>" }} <span class="underline"> {{ "Left-click is to place a block." }}</span> {{ "<<" }} </p>
         </div>
         <div>

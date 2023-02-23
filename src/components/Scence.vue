@@ -18,10 +18,17 @@ const hexagon_Q2 = "./hexagon-purple.svg"
 const hexagon_Q3 = "./hexagon-blue.svg"
 const hexagon_Q4 = "./hexagon-orange.svg"
 
+// Generate Board 11x11 
+// attribute ->
+// x: Position on X
+// y: Position on Y
+// block: Is block ?
+// cat: Is cat ?  
 const gameBoard = ref(new Array(11).fill().map((_, i) => new Array(11).fill().map((_, j) => (
-  { x: i, y: j, hexagon: hexagon_normal, select: false, cat: false }
+  { x: i, y: j, hexagon: hexagon_normal, block: false, cat: false }
 ))));
 
+// Divide Board to 4 part for generate blocks
 const divideBoardIntoFour = (gameBoard) => {
   const Q_TOP = gameBoard.slice(0, 5)
   const Q_BOTTOM = gameBoard.slice(6, 11)
@@ -41,6 +48,7 @@ const divideBoardIntoFour = (gameBoard) => {
   return [Q1, Q2, Q3, Q4]
 }
 
+// Divide Board to 2 part for generate blocks but not sure to use
 const divideBoardIntoTwo = (gameBoard) => {
   const Q_TOP = gameBoard.slice(0, 5)
   const Q_BOTTOM = gameBoard.slice(6, 11)
@@ -57,8 +65,12 @@ const divideBoardIntoTwo = (gameBoard) => {
   return [Q1, Q2]
 }
 
+// Divide Board
 const Q = divideBoardIntoFour(gameBoard.value)
 
+// Generate Blocks 
+// Number of Blocks depen on Level
+// get parameter is Array of Board 4/2 part
 const RandomBlock = (Q) => {
   let blocks = [];
   let countBlocks = props.level === 1 ? 4 : props.level === 2 ? 3 : props.level === 3 ? 2 : 1
@@ -68,7 +80,7 @@ const RandomBlock = (Q) => {
     while (partBlocks.size < countBlocks) {
       const block = part[Math.floor(Math.random() * part.length)][Math.floor(Math.random() * part[0].length)];
       block.hexagon = hexagon_disable;
-      block.select = true
+      block.block = true
       partBlocks.add(block);
     }
     blocks = blocks.concat(Array.from(partBlocks));
@@ -78,6 +90,7 @@ const RandomBlock = (Q) => {
   return blockArray
 }
 
+// Generate SET of Destiantion
 const Destination = () => {
   const BOARD_SIZE = gameBoard.value[0].length;
   const setDestination = new Set();
@@ -88,21 +101,25 @@ const Destination = () => {
     setDestination.add(gameBoard.value[i][BOARD_SIZE - 1]);
   }
   let destination = Array.from(setDestination)
-  destination = destination.filter(n => !n.select)
+  // without blocks position
+  destination = destination.filter(n => !n.block)
   return destination
 }
 
+// Find Neighbors 
+// get parameter is node (hexagon in board)
 const getNeighbors = (node) => {
   const x = node.x;
   const y = node.y;
   let neighbors = [];
   const addNeighbor = (x, y) => {
     const n = gameBoard.value[x] && gameBoard.value[x][y];
-    if (n && !n.select) {
+    // without blocks
+    if (n && !n.block) {
       neighbors.push(n);
     }
   };
-
+  // Add 6 directions
   addNeighbor(x - 1, y);
   addNeighbor(x + 1, y);
   addNeighbor(x, y - 1);
@@ -118,11 +135,14 @@ const getNeighbors = (node) => {
   return neighbors;
 };
 
+// Use this value in A* algorithms 
 function heuristic(a, b) {
   // Returns the estimated cost between two nodes
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
+// A* algorithms 
+// get parameter is (cat,destination) 
 function aStar(start, end) {
   // Returns the shortest path from start to end using A* algorithm
   const openSet = new Set([start]);
@@ -167,15 +187,25 @@ function aStar(start, end) {
   return [];
 }
 
+
 const cat = ref({})
+// When player click on board 
 const selectHexagon = (row, index) => {
+  // try catch for end game
   try {
-    if (!gameBoard.value[row][index].select && !gameBoard.value[row][index].cat) {
+    // If that position isn't block and cat
+    if (!gameBoard.value[row][index].block && !gameBoard.value[row][index].cat) {
+
+      // change to block
       gameBoard.value[row][index].hexagon = hexagon_disable
-      gameBoard.value[row][index].select = true
+      gameBoard.value[row][index].block = true
       blocks.push(gameBoard.value[row][index])
+
+      // get current position of cat [5][5]
       const currentMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      // calculate the path everytime when click on board
       path.value = aStar(currentMove, end.value)
+      // condition for realistic
       if (path.value.length < 5) {
         end.value = closestCat(currentMove)
         path.value = aStar(currentMove, end.value)
@@ -184,24 +214,37 @@ const selectHexagon = (row, index) => {
         end.value = closestCat(currentMove)
         path.value = aStar(currentMove, end.value)
       }
+      
+      // get previous position of cat [5][5]
       const previousMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      // change to normal way
       previousMove.hexagon = hexagon_normal;
       previousMove.cat = false
-      previousMove.select = false
+      previousMove.block = false
+      // remove position in path [5][5]
       path.value.shift()
+
+      // get next position of cat [5 +- 1][5 +- 1]
+      // now cat is change position [5 +- 1][5 +- 1]
       const nextMove = gameBoard.value[path.value[0].x][path.value[0].y]
       nextMove.hexagon = hexagon_cat
       nextMove.cat = true
+      // check everytime when click is to destination ?
       checkLoseGame(nextMove)
       cat.value = nextMove
     }
     return
-  } catch (error) {
+  } 
+  // If player can catch the cat is exception that mean player win
+  catch (error) {
     winGame()
     return
   }
 }
 
+
+// check cat position
+// If cat position = one in SET Destination
 const checkLoseGame = (currentCat) => {
   setDestination.value.forEach((n) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
@@ -210,14 +253,15 @@ const checkLoseGame = (currentCat) => {
   })
 }
 
+// Find position closest the cat
 const closestCat = (currentCat) => {
-  setDestination.value = setDestination.value.filter(n => !n.select)
+  setDestination.value = setDestination.value.filter(n => !n.block)
   let distance = Number.POSITIVE_INFINITY
   let newDestination = end.value
   for (let i = 0; i < setDestination.value.length; i++) {
     let newPath = aStar(currentCat, setDestination.value[i])
     newPath.shift()
-    if (newPath.length < distance && newPath.length !== 0 && !setDestination.value.select) {
+    if (newPath.length < distance && newPath.length !== 0 && !setDestination.value.block) {
       newDestination = newPath[newPath.length - 1]
       distance = newPath.length
     }
@@ -225,6 +269,8 @@ const closestCat = (currentCat) => {
   return newDestination
 }
 
+
+//Game set-up
 gameBoard.value[5][5].hexagon = hexagon_cat;
 gameBoard.value[5][5].cat = true
 const blocks = RandomBlock(Q)
@@ -241,44 +287,6 @@ onBeforeMount(() => {
   }
 })
 
-onMounted(() => {
-  console.log("------------------");
-  console.log("Data Start");
-  console.log("------------------");
-  console.log('1. Board');
-  console.log(gameBoard.value);
-  console.log('2. Cat Posiotion');
-  console.log(cat.value);
-  console.log('3. Set of Destination');
-  console.log(setDestination.value);
-  console.log("4. Destination");
-  console.log(end.value);
-  console.log("5. Path");
-  console.log(path.value);
-  console.log("6. Block Position");
-  console.log(blocks);
-  console.log("------------------");
-})
-
-onUpdated(()=>{
-  console.log("------------------");
-  console.log('Data Updated');
-  console.log("------------------");
-  console.log("1. Board");
-  console.log(gameBoard.value);
-  console.log("2. Cat Position");
-  console.log(cat.value);
-  console.log('3. Set of Destination');
-  console.log(setDestination.value);
-  console.log("4. Destination");
-  console.log(end.value);
-  console.log('5. Path');
-  console.log(path.value);
-  console.log("6. Block Position");
-  console.log(blocks);
-  console.log("------------------");
-})
-
 const timeOut = ()=>{
   loseGame()
 }
@@ -291,7 +299,7 @@ const timeOut = ()=>{
     <div class="game-board translate-x-1/2 mt-5">
       <div v-for="(row, rowIndex) in gameBoard" :class="`board-row ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
         <div v-for="(hexagon, index) in row" :key="index" :class="`cell-${index}`">
-          <button :disabled="hexagon.select || hexagon.cat" class="hexagon">
+          <button :disabled="hexagon.block || hexagon.cat" class="hexagon">
             <img :src="hexagon.hexagon" class="scale-hexagon" @click="selectHexagon(rowIndex, index)">
           </button>
         </div>

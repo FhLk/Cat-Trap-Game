@@ -4,13 +4,13 @@ import { loseGame } from './Alert';
 
 const emit = defineEmits(['time-out'])
 
-const time = ref(10)
+const time = ref(60)
 const timer = setInterval(()=>{
     if(time.value === 1){
-        // clearInterval(timer)
-        emit('time-out',"wow")
+        clearInterval(timer)
+        emit('time-out')
     }
-    // time.value--
+    time.value--
 },1000)
 
 </script>

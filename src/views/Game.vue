@@ -9,6 +9,11 @@ const goToMenu = () => {
 };
 
 const level = Number(params.level)
+onBeforeMount(()=>{
+    if(level > 3 || level < 1){
+        Router.push({name:'not-found'})
+    }
+})
 
 const reset=()=>{
     location.reload()

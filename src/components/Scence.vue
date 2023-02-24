@@ -22,6 +22,7 @@ const hexagon_Q4 = "./hexagon-orange.svg"
 // attribute ->
 // x: Position on X
 // y: Position on Y
+// hexagon: (img)
 // block: Is block ?
 // cat: Is cat ?  
 const gameBoard = ref(new Array(11).fill().map((_, i) => new Array(11).fill().map((_, j) => (

@@ -1,42 +1,49 @@
 <script setup>
-import { onBeforeMount, onUpdated, ref, onMounted,computed } from 'vue';
-import { winGame, loseGame } from './Alert.js';
-import Timer from '../components/Timer.vue'
+import { onBeforeMount, onUpdated, ref, onMounted, computed } from "vue";
+import { winGame, loseGame } from "./Alert.js";
+import Timer from "../components/Timer.vue";
 
 const props = defineProps({
-  level:{
+  level: {
     type: Number,
-    require : true,
-  }
-})
+    require: true,
+  },
+});
 
-const hexagon_normal = './hexagon.svg'
-const hexagon_cat = './hexagon-red.svg'
-const hexagon_disable = "./hexagon-grey.svg"
-const hexagon_Q1 = "./hexagon-green.svg"
-const hexagon_Q2 = "./hexagon-purple.svg"
-const hexagon_Q3 = "./hexagon-blue.svg"
-const hexagon_Q4 = "./hexagon-orange.svg"
-
-// Generate Board 11x11 
+const hexagon_normal = "./hexagon-white.svg";
+const hexagon_cat = "./hexagon-red.svg";
+const hexagon_disable = "./hexagon.svg";
+const hexagon_Q1 = "./hexagon-green.svg";
+const hexagon_Q2 = "./hexagon-purple.svg";
+const hexagon_Q3 = "./hexagon-blue.svg";
+const hexagon_Q4 = "./hexagon-orange.svg";
+// Generate Board 11x11
 // attribute ->
 // x: Position on X
 // y: Position on Y
 // hexagon: (img)
 // block: Is block ?
-// cat: Is cat ?  
-const gameBoard = ref(new Array(11).fill().map((_, i) => new Array(11).fill().map((_, j) => (
-  { x: i, y: j, hexagon: hexagon_normal, block: false, cat: false }
-))));
+// cat: Is cat ?
+const gameBoard = ref(
+  new Array(11).fill().map((_, i) =>
+    new Array(11).fill().map((_, j) => ({
+      x: i,
+      y: j,
+      hexagon: hexagon_normal,
+      block: false,
+      cat: false,
+    }))
+  )
+);
 
 // Divide Board to 4 part for generate blocks
 const divideBoardIntoFour = (gameBoard) => {
-  const Q_TOP = gameBoard.slice(0, 5)
-  const Q_BOTTOM = gameBoard.slice(6, 11)
-  const Q1 = []
-  const Q2 = []
-  const Q3 = []
-  const Q4 = []
+  const Q_TOP = gameBoard.slice(0, 5);
+  const Q_BOTTOM = gameBoard.slice(6, 11);
+  const Q1 = [];
+  const Q2 = [];
+  const Q3 = [];
+  const Q4 = [];
   for (let i = 0; i < Q_TOP.length; i++) {
     Q1.push(Q_TOP[i].slice(0, 5));
     Q2.push(Q_TOP[i].slice(6, 11));
@@ -46,15 +53,15 @@ const divideBoardIntoFour = (gameBoard) => {
     Q3.push(Q_BOTTOM[i].slice(0, 5));
     Q4.push(Q_BOTTOM[i].slice(6, 11));
   }
-  return [Q1, Q2, Q3, Q4]
-}
+  return [Q1, Q2, Q3, Q4];
+};
 
 // Divide Board to 2 part for generate blocks but not sure to use
 const divideBoardIntoTwo = (gameBoard) => {
-  const Q_TOP = gameBoard.slice(0, 5)
-  const Q_BOTTOM = gameBoard.slice(6, 11)
-  const Q1 = []
-  const Q2 = []
+  const Q_TOP = gameBoard.slice(0, 5);
+  const Q_BOTTOM = gameBoard.slice(6, 11);
+  const Q1 = [];
+  const Q2 = [];
   for (let i = 0; i < Q_TOP.length; i++) {
     Q1.push(Q_TOP[i].slice(0, 11));
   }
@@ -63,33 +70,37 @@ const divideBoardIntoTwo = (gameBoard) => {
     Q2.push(Q_BOTTOM[i].slice(0, 11));
   }
 
-  return [Q1, Q2]
-}
+  return [Q1, Q2];
+};
 
 // Divide Board
-const Q = divideBoardIntoFour(gameBoard.value)
+const Q = divideBoardIntoFour(gameBoard.value);
 
-// Generate Blocks 
+// Generate Blocks
 // Number of Blocks depen on Level
 // get parameter is Array of Board 4/2 part
 const RandomBlock = (Q) => {
   let blocks = [];
-  let countBlocks = props.level === 1 ? 4 : props.level === 2 ? 3 : props.level === 3 ? 2 : 1
+  let countBlocks =
+    props.level === 1 ? 4 : props.level === 2 ? 3 : props.level === 3 ? 2 : 1;
   for (let i = 0; i < Q.length; i++) {
     let part = Q[i];
     let partBlocks = new Set();
     while (partBlocks.size < countBlocks) {
-      const block = part[Math.floor(Math.random() * part.length)][Math.floor(Math.random() * part[0].length)];
+      const block =
+        part[Math.floor(Math.random() * part.length)][
+          Math.floor(Math.random() * part[0].length)
+        ];
       block.hexagon = hexagon_disable;
-      block.block = true
+      block.block = true;
       partBlocks.add(block);
     }
     blocks = blocks.concat(Array.from(partBlocks));
   }
 
   const blockArray = Array.from(blocks);
-  return blockArray
-}
+  return blockArray;
+};
 
 // Generate SET of Destiantion
 const Destination = () => {
@@ -101,13 +112,13 @@ const Destination = () => {
     setDestination.add(gameBoard.value[BOARD_SIZE - 1][i]);
     setDestination.add(gameBoard.value[i][BOARD_SIZE - 1]);
   }
-  let destination = Array.from(setDestination)
+  let destination = Array.from(setDestination);
   // without blocks position
-  destination = destination.filter(n => !n.block)
-  return destination
-}
+  destination = destination.filter((n) => !n.block);
+  return destination;
+};
 
-// Find Neighbors 
+// Find Neighbors
 // get parameter is node (hexagon in board)
 const getNeighbors = (node) => {
   const x = node.x;
@@ -136,14 +147,14 @@ const getNeighbors = (node) => {
   return neighbors;
 };
 
-// Use this value in A* algorithms 
+// Use this value in A* algorithms
 function heuristic(a, b) {
   // Returns the estimated cost between two nodes
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
-// A* algorithms 
-// get parameter is (cat,destination) 
+// A* algorithms
+// get parameter is (cat,destination)
 function aStar(start, end) {
   // Returns the shortest path from start to end using A* algorithm
   const openSet = new Set([start]);
@@ -188,143 +199,157 @@ function aStar(start, end) {
   return [];
 }
 
-
-const cat = ref({})
-// When player click on board 
+const cat = ref({});
+// When player click on board
 const selectHexagon = (row, index) => {
   // try catch for end game
   try {
     // If that position isn't block and cat
-    if (!gameBoard.value[row][index].block && !gameBoard.value[row][index].cat) {
-
+    if (
+      !gameBoard.value[row][index].block &&
+      !gameBoard.value[row][index].cat
+    ) {
       // change to block
-      gameBoard.value[row][index].hexagon = hexagon_disable
-      gameBoard.value[row][index].block = true
-      blocks.push(gameBoard.value[row][index])
+      gameBoard.value[row][index].hexagon = hexagon_disable;
+      gameBoard.value[row][index].block = true;
+      blocks.push(gameBoard.value[row][index]);
 
       // get current position of cat [5][5]
-      const currentMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      const currentMove = gameBoard.value[path.value[0].x][path.value[0].y];
       // calculate the path everytime when click on board
-      path.value = aStar(currentMove, end.value)
+      path.value = aStar(currentMove, end.value);
       // condition for realistic
       if (path.value.length < 5) {
-        end.value = closestCat(currentMove)
-        path.value = aStar(currentMove, end.value)
+        end.value = closestCat(currentMove);
+        path.value = aStar(currentMove, end.value);
       }
       if (path.value.length > 7) {
-        end.value = closestCat(currentMove)
-        path.value = aStar(currentMove, end.value)
+        end.value = closestCat(currentMove);
+        path.value = aStar(currentMove, end.value);
       }
-      
+
       // get previous position of cat [5][5]
-      const previousMove = gameBoard.value[path.value[0].x][path.value[0].y]
+      const previousMove = gameBoard.value[path.value[0].x][path.value[0].y];
       // change to normal way
       previousMove.hexagon = hexagon_normal;
-      previousMove.cat = false
-      previousMove.block = false
+      previousMove.cat = false;
+      previousMove.block = false;
       // remove position in path [5][5]
-      path.value.shift()
+      path.value.shift();
 
       // get next position of cat [5 +- 1][5 +- 1]
       // now cat is change position [5 +- 1][5 +- 1]
-      const nextMove = gameBoard.value[path.value[0].x][path.value[0].y]
-      nextMove.hexagon = hexagon_cat
-      nextMove.cat = true
+      const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
+      nextMove.hexagon = hexagon_cat;
+      nextMove.cat = true;
       // check everytime when click is to destination ?
-      checkLoseGame(nextMove)
-      cat.value = nextMove
+      checkLoseGame(nextMove);
+      cat.value = nextMove;
     }
-    return
-  } 
-  // If player can catch the cat is exception that mean player win
-  catch (error) {
-    winGame()
-    return
+    return;
+  } catch (error) {
+    // If player can catch the cat is exception that mean player win
+    winGame();
+    return;
   }
-}
-
+};
 
 // check cat position
 // If cat position = one in SET Destination
 const checkLoseGame = (currentCat) => {
   setDestination.value.forEach((n) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
-      loseGame()
+      loseGame();
     }
-  })
-}
+  });
+};
 
 // Find position closest the cat
 const closestCat = (currentCat) => {
-  setDestination.value = setDestination.value.filter(n => !n.block)
-  let distance = Number.POSITIVE_INFINITY
-  let newDestination = end.value
+  setDestination.value = setDestination.value.filter((n) => !n.block);
+  let distance = Number.POSITIVE_INFINITY;
+  let newDestination = end.value;
   for (let i = 0; i < setDestination.value.length; i++) {
-    let newPath = aStar(currentCat, setDestination.value[i])
-    newPath.shift()
-    if (newPath.length < distance && newPath.length !== 0 && !setDestination.value.block) {
-      newDestination = newPath[newPath.length - 1]
-      distance = newPath.length
+    let newPath = aStar(currentCat, setDestination.value[i]);
+    newPath.shift();
+    if (
+      newPath.length < distance &&
+      newPath.length !== 0 &&
+      !setDestination.value.block
+    ) {
+      newDestination = newPath[newPath.length - 1];
+      distance = newPath.length;
     }
   }
-  return newDestination
-}
-
+  return newDestination;
+};
 
 //Game set-up
 gameBoard.value[5][5].hexagon = hexagon_cat;
-gameBoard.value[5][5].cat = true
+gameBoard.value[5][5].cat = true;
 //generate Block
-const blocks = RandomBlock(Q)
+const blocks = RandomBlock(Q);
 // SET of Destination
-const setDestination = ref(Destination())
+const setDestination = ref(Destination());
 // generate destination position
-const destination = setDestination.value[Math.floor(Math.random() * setDestination.value.length)]
+const destination =
+  setDestination.value[Math.floor(Math.random() * setDestination.value.length)];
 // calculate the paht
-const path = ref([])
+const path = ref([]);
 const start = gameBoard.value[5][5];
-cat.value = start
-const end = ref(gameBoard.value[destination.x][destination.y])
+cat.value = start;
+const end = ref(gameBoard.value[destination.x][destination.y]);
 onBeforeMount(() => {
   path.value = aStar(start, end.value);
   if (path.value.length === 0) {
     path.value = aStar(start, end.value);
   }
-})
+});
 
 // Time limit
-const timeOut = ()=>{
-  loseGame()
-}
-
+const timeOut = (time) => {
+  console.log("wow");
+  // loseGame()
+};
 </script>
- 
+
 <template>
-  <div class="game bg-[#5f9ea0] h-screen p-5">
-    <Timer @time-out="timeOut"/>
-    <div class="game-board translate-x-1/2 mt-5">
-      <div v-for="(row, rowIndex) in gameBoard" :class="`board-row ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
-        <div v-for="(hexagon, index) in row" :key="index" :class="`cell-${index}`">
-          <button :disabled="hexagon.block || hexagon.cat" class="hexagon">
-            <img :src="hexagon.hexagon" class="scale-hexagon" @click="selectHexagon(rowIndex, index)">
+  <div class="bg-[#5f9ea0] h-screen pt-5 pb-5">
+    <Timer @time-out="timeOut" />
+    <div class="game-board pr-4 border-4">
+      <div
+        v-for="(row, rowIndex) in gameBoard"
+        :class="`board-row h-10 ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`"
+      >
+        <div
+          v-for="(hexagon, index) in row"
+          :key="index"
+          :class="`h-10 cell-${index}`"
+        >
+          <button :disabled="hexagon.block || hexagon.cat">
+            <img
+              :src="hexagon.hexagon"
+              class="h-10 scale-hexagon"
+              @click="selectHexagon(rowIndex, index)"
+            />
           </button>
         </div>
       </div>
     </div>
   </div>
 </template>
- 
-<style scoped>
 
+<style scoped>
 .hexagon {
-  clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%);
+  /* clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%); */
+  /* width: 70px; */
+  /* height: 60px; */
 }
 .game-board {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   transform-origin: 0px 0px;
-  width:50%;
 }
 
 .translate-x {
@@ -333,12 +358,29 @@ const timeOut = ()=>{
 
 .board-row {
   display: flex;
-  justify-content: center;
-  height: 7vh;
 }
 
 .scale-hexagon {
   width: 70px;
   height: 60px;
 }
+/* @media (min-width: 400px) {
+  .game-board {
+  }
+
+  .scale-hexagon {
+    width: 90px;
+    height: 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .game-board {
+    width: 50%;
+  }
+
+  .board-row{
+    height: 7vh;
+  }
+} */
 </style>

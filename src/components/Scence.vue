@@ -311,25 +311,30 @@ const timeOut = (time) => {
   console.log("wow");
   // loseGame()
 };
+
+const test = window.innerWidth
 </script>
 
 <template>
-  <div class="bg-[#5f9ea0] h-screen pt-5 pb-5">
-    <Timer @time-out="timeOut" />
-    <div class="game-board pr-4 border-4">
+  <div class="bg-[#5f9ea0] h-screen pt-5">
+    <p>{{ test }}</p>
+    <Timer class="" @time-out="timeOut"/>
+    <div class="game-board pr-4 h-fit">
       <div
         v-for="(row, rowIndex) in gameBoard"
-        :class="`board-row h-10 ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`"
+        :class="`board-row ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`"
       >
         <div
           v-for="(hexagon, index) in row"
           :key="index"
-          :class="`h-10 cell-${index}`"
+          :class="`cell-${index}`"
         >
-          <button :disabled="hexagon.block || hexagon.cat">
+          <button
+            class="scale-hexagon"
+            :disabled="hexagon.block || hexagon.cat"
+          >
             <img
               :src="hexagon.hexagon"
-              class="h-10 scale-hexagon"
               @click="selectHexagon(rowIndex, index)"
             />
           </button>
@@ -341,15 +346,14 @@ const timeOut = (time) => {
 
 <style scoped>
 .hexagon {
-  /* clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%); */
-  /* width: 70px; */
-  /* height: 60px; */
+  clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%);
 }
 .game-board {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   transform-origin: 0px 0px;
+  /* transform: translate(0% ,30%); */
 }
 
 .translate-x {
@@ -358,29 +362,144 @@ const timeOut = (time) => {
 
 .board-row {
   display: flex;
+  height: 3.5vh;
 }
 
 .scale-hexagon {
-  width: 70px;
-  height: 60px;
+  height: 35px;
+  width:  35px;
 }
-/* @media (min-width: 400px) {
+
+@media (min-width: 300px){
   .game-board {
+    margin: 0 auto;
+    transform: translate(0% ,15%);
+  }
+
+  .board-row {
+    height: 3.3vh;
   }
 
   .scale-hexagon {
-    width: 90px;
-    height: 80px;
+    height: 33px;
+    width:  33px;
+  }
+}
+
+@media (min-width: 428px){
+  .game-board {
+    margin: 0 auto;
+    transform: translate(0% ,15%);
+  }
+
+  .board-row {
+    height: 3.3vh;
+  }
+
+  .scale-hexagon {
+    height: 36px;
+    width:  36px;
+  }
+}
+
+@media (min-width: 700px) {
+  .game-board {
+    margin: 0 auto;
+    padding-right: 4%;
+  }
+
+  .board-row {
+    height: 5vh;
+  }
+
+  .scale-hexagon {
+    height: 66px;
+    width:  66px;
+  }
+}
+
+@media (min-width: 768px){
+  .board-row {
+    height: 10vh;
+  }
+  .scale-hexagon {
+    height: 65px;
+    width:  65px;
+  }
+}
+
+@media (min-width: 800px) {
+  .game-board {
+    margin: 0 auto;
+    padding-right: 4.3%;
+    width: 50%;
+  }
+
+  .board-row {
+    height: 4.5vh;
+  }
+
+  .scale-hexagon {
+    height: 69px;
+    width:  69px;
+  }
+}
+
+@media (min-width: 820px) {
+  .game-board {
+    margin: 0 auto;
+    padding-right: 4%;
+    width: 50%;
+  }
+
+  .board-row {
+    height: 100px;
+  }
+
+  .scale-hexagon {
+    height: 69px;
+    width:  69px;
+  }
+}
+
+@media (min-width: 900px) {
+  .game-board {
+    margin: 0 auto;
+    width: 50%;
+  }
+
+  .board-row {
+    height: 5vh;
   }
 }
 
 @media (min-width: 1024px) {
   .game-board {
+    margin: 0 auto;
     width: 50%;
   }
 
-  .board-row{
+  .board-row {
+    height: 5.6vh;
+  }
+  .scale-hexagon {
+    height: 88px;
+    width:  88px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .game-board {
+    width: 50%;
+  }
+
+  .board-row {
     height: 7vh;
   }
-} */
+  .scale-hexagon {
+    height: 70px;
+    width: 70px;
+  }
+}
+
 </style>

@@ -2,6 +2,7 @@
 import { onBeforeMount, onUpdated, ref, onMounted, computed } from "vue";
 import { winGame, loseGame } from "./Alert.js";
 import Timer from "../components/Timer.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   level: {
@@ -312,13 +313,35 @@ const timeOut = (time) => {
   // loseGame()
 };
 
-const test = window.innerWidth
+const reset = () => {
+  location.reload();
+};
+
+const Router = useRouter();
+const goToMenu = () => {
+  Router.push({ name: "Home" });
+};
 </script>
 
 <template>
   <div class="bg-[#5f9ea0] h-screen pt-5">
-    <p>{{ test }}</p>
-    <Timer class="" @time-out="timeOut"/>
+    <!-- <p>{{ test1 }}</p>
+    <p>{{ test2 }}</p> -->
+    <div class="control flex justify-around">
+      <button
+        @click="goToMenu()"
+        class="px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
+      >
+        HOME
+      </button>
+      <button
+        @click="reset"
+        class="px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
+      >
+        RESET
+      </button>
+    </div>
+    <Timer class="py-3" @time-out="timeOut" />
     <div class="game-board pr-4 h-fit">
       <div
         v-for="(row, rowIndex) in gameBoard"
@@ -353,7 +376,7 @@ const test = window.innerWidth
   flex-wrap: wrap;
   justify-content: center;
   transform-origin: 0px 0px;
-  /* transform: translate(0% ,30%); */
+  transform: translate(0%, 7%);
 }
 
 .translate-x {
@@ -362,69 +385,87 @@ const test = window.innerWidth
 
 .board-row {
   display: flex;
-  height: 3.5vh;
 }
 
-.scale-hexagon {
-  height: 35px;
-  width:  35px;
-}
-
-@media (min-width: 300px){
+@media (min-width: 375px) {
   .game-board {
     margin: 0 auto;
-    transform: translate(0% ,15%);
   }
 
   .board-row {
-    height: 3.3vh;
+    height: 27px;
+  }
+
+  .scale-hexagon {
+    height: 32px;
+    width: 32px;
+  }
+}
+
+@media (min-width: 390px) {
+  .game-board {
+    margin: 0 auto;
+  }
+
+  .board-row {
+    height: 28px;
   }
 
   .scale-hexagon {
     height: 33px;
-    width:  33px;
+    width: 33px;
+  }
+
+  .control{
+    font-size: 11px;
   }
 }
 
-@media (min-width: 428px){
+@media (min-width: 414px) {
   .game-board {
     margin: 0 auto;
-    transform: translate(0% ,15%);
   }
 
   .board-row {
-    height: 3.3vh;
+    height: 30px;
+  }
+
+  .scale-hexagon {
+    height: 35px;
+    width: 35px;
+  }
+}
+
+@media (min-width: 428px) {
+  .game-board {
+    margin: 0 auto;
+  }
+
+  .board-row {
+    height: 30px;
   }
 
   .scale-hexagon {
     height: 36px;
-    width:  36px;
+    width: 36px;
   }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 768px) {
   .game-board {
     margin: 0 auto;
     padding-right: 4%;
+    transform: translate(0%, 3%);
   }
-
   .board-row {
-    height: 5vh;
-  }
-
-  .scale-hexagon {
-    height: 66px;
-    width:  66px;
-  }
-}
-
-@media (min-width: 768px){
-  .board-row {
-    height: 10vh;
+    height: 54px;
   }
   .scale-hexagon {
-    height: 65px;
-    width:  65px;
+    height: 64px;
+    width:  64px;
+  }
+  .control{
+    font-size: 18px;
   }
 }
 
@@ -436,12 +477,12 @@ const test = window.innerWidth
   }
 
   .board-row {
-    height: 4.5vh;
+    height: 57px;
   }
 
   .scale-hexagon {
     height: 69px;
-    width:  69px;
+    width: 69px;
   }
 }
 
@@ -453,12 +494,12 @@ const test = window.innerWidth
   }
 
   .board-row {
-    height: 100px;
+    height: 55px;
   }
 
   .scale-hexagon {
-    height: 69px;
-    width:  69px;
+    height: 65px;
+    width: 65px;
   }
 }
 
@@ -469,37 +510,42 @@ const test = window.innerWidth
   }
 
   .board-row {
-    height: 5vh;
+    height: 52px;
   }
 }
 
 @media (min-width: 1024px) {
   .game-board {
     margin: 0 auto;
+    padding-right: 4%;
     width: 50%;
   }
 
   .board-row {
-    height: 5.6vh;
+    height: 62px;
   }
   .scale-hexagon {
-    height: 88px;
-    width:  88px;
+    height: 75px;
+    width:  75px;
+  }
+  .control{
+    font-size: 20px;
   }
 }
 
 @media (min-width: 1280px) {
   .game-board {
+    margin: 0 auto;
+    padding-right: 4%;
     width: 50%;
   }
 
   .board-row {
-    height: 7vh;
+    height: 58px;
   }
   .scale-hexagon {
     height: 70px;
     width: 70px;
   }
 }
-
 </style>

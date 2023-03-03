@@ -10,7 +10,7 @@ const goToGame = (level) => {
  
 <template>
     <div>
-        <div class="play flex justify-around">
+        <div class="play flex justify-evenly">
             <button type="button" @click="goToGame(1)" class="
                         bg-blue-600 text-white font-medium 
                         text-xs leading-tight uppercase rounded shadow-md 
@@ -29,8 +29,9 @@ const goToGame = (level) => {
  
 <style scoped>
 .play button {
-    font-size: 2vh;
+    font-size: 100%;
     height: 60px;
-    width: 15%;
+    width: fit-content;
+    padding: 10px;
 }
 </style>

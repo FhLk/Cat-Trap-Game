@@ -11,6 +11,7 @@ const props = defineProps({
   },
 });
 
+const time = ref(10);
 const hexagon_normal = "./hexagon-white.svg";
 const hexagon_cat = "./hexagon-red.svg";
 const hexagon_disable = "./hexagon.svg";
@@ -203,6 +204,9 @@ function aStar(start, end) {
 const cat = ref({});
 // When player click on board
 const selectHexagon = (row, index) => {
+  clearInterval(setTimer.value)
+  time.value = 10
+  startTime()
   // try catch for end game
   try {
     // If that position isn't block and cat
@@ -215,37 +219,7 @@ const selectHexagon = (row, index) => {
       gameBoard.value[row][index].block = true;
       blocks.push(gameBoard.value[row][index]);
 
-      // get current position of cat [5][5]
-      const currentMove = gameBoard.value[path.value[0].x][path.value[0].y];
-      // calculate the path everytime when click on board
-      path.value = aStar(currentMove, end.value);
-      // condition for realistic
-      if (path.value.length < 5) {
-        end.value = closestCat(currentMove);
-        path.value = aStar(currentMove, end.value);
-      }
-      if (path.value.length > 7) {
-        end.value = closestCat(currentMove);
-        path.value = aStar(currentMove, end.value);
-      }
-
-      // get previous position of cat [5][5]
-      const previousMove = gameBoard.value[path.value[0].x][path.value[0].y];
-      // change to normal way
-      previousMove.hexagon = hexagon_normal;
-      previousMove.cat = false;
-      previousMove.block = false;
-      // remove position in path [5][5]
-      path.value.shift();
-
-      // get next position of cat [5 +- 1][5 +- 1]
-      // now cat is change position [5 +- 1][5 +- 1]
-      const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
-      nextMove.hexagon = hexagon_cat;
-      nextMove.cat = true;
-      // check everytime when click is to destination ?
-      checkLoseGame(nextMove);
-      cat.value = nextMove;
+      catMove();
     }
     return;
   } catch (error) {
@@ -253,6 +227,40 @@ const selectHexagon = (row, index) => {
     winGame();
     return;
   }
+};
+
+const catMove = () => {
+  // get current position of cat [5][5]
+  const currentMove = gameBoard.value[path.value[0].x][path.value[0].y];
+  // calculate the path everytime when click on board
+  path.value = aStar(currentMove, end.value);
+  // condition for realistic
+  if (path.value.length < 5) {
+    end.value = closestCat(currentMove);
+    path.value = aStar(currentMove, end.value);
+  }
+  if (path.value.length > 7) {
+    end.value = closestCat(currentMove);
+    path.value = aStar(currentMove, end.value);
+  }
+
+  // get previous position of cat [5][5]
+  const previousMove = gameBoard.value[path.value[0].x][path.value[0].y];
+  // change to normal way
+  previousMove.hexagon = hexagon_normal;
+  previousMove.cat = false;
+  previousMove.block = false;
+  // remove position in path [5][5]
+  path.value.shift();
+
+  // get next position of cat [5 +- 1][5 +- 1]
+  // now cat is change position [5 +- 1][5 +- 1]
+  const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
+  nextMove.hexagon = hexagon_cat;
+  nextMove.cat = true;
+  // check everytime when click is to destination ?
+  checkLoseGame(nextMove);
+  cat.value = nextMove;
 };
 
 // check cat position
@@ -307,12 +315,6 @@ onBeforeMount(() => {
   }
 });
 
-// Time limit
-const timeOut = (time) => {
-  console.log("wow");
-  // loseGame()
-};
-
 const reset = () => {
   location.reload();
 };
@@ -321,12 +323,27 @@ const Router = useRouter();
 const goToMenu = () => {
   Router.push({ name: "Home" });
 };
+
+const setTimer = ref(null)
+const startTime = () => {
+  // emit('reset-time',)
+  setTimer.value = setInterval(() => {
+    if (time.value === 0) {
+      catMove()
+      resetTime()
+    }
+    // time.value--;
+  }, 1000);
+};
+startTime();
+
+const resetTime =()=>{
+  time.value = 10
+}
 </script>
 
 <template>
   <div class="bg-[#5f9ea0] h-screen pt-5">
-    <!-- <p>{{ test1 }}</p>
-    <p>{{ test2 }}</p> -->
     <div class="control flex justify-around">
       <button
         @click="goToMenu()"
@@ -341,7 +358,10 @@ const goToMenu = () => {
         RESET
       </button>
     </div>
-    <Timer class="py-3" @time-out="timeOut" />
+    <!-- <Timer class="py-3" @time-out="timeOut" :time="time" /> -->
+    <div>
+      <p class="time font-medium flex justify-center">Time : {{ time }}</p>
+    </div>
     <div class="game-board pr-4 h-fit">
       <div
         v-for="(row, rowIndex) in gameBoard"
@@ -387,6 +407,10 @@ const goToMenu = () => {
   display: flex;
 }
 
+.time {
+  font-size: 200%;
+}
+
 @media (min-width: 375px) {
   .game-board {
     margin: 0 auto;
@@ -416,7 +440,7 @@ const goToMenu = () => {
     width: 33px;
   }
 
-  .control{
+  .control {
     font-size: 11px;
   }
 }
@@ -462,10 +486,14 @@ const goToMenu = () => {
   }
   .scale-hexagon {
     height: 64px;
-    width:  64px;
+    width: 64px;
   }
-  .control{
+  .control {
     font-size: 18px;
+  }
+
+  .time {
+    font-size: 50px;
   }
 }
 
@@ -526,26 +554,30 @@ const goToMenu = () => {
   }
   .scale-hexagon {
     height: 75px;
-    width:  75px;
+    width: 75px;
   }
-  .control{
+  .control {
     font-size: 20px;
+  }
+
+  .time {
+    font-size: 50px;
   }
 }
 
 @media (min-width: 1280px) {
   .game-board {
     margin: 0 auto;
-    padding-right: 4%;
+    padding-right: 3%;
     width: 50%;
   }
 
   .board-row {
-    height: 58px;
+    height: 53px;
   }
   .scale-hexagon {
-    height: 70px;
-    width: 70px;
+    height: 65px;
+    width: 65px;
   }
 }
 </style>

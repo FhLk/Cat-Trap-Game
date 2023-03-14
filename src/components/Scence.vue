@@ -204,9 +204,9 @@ function aStar(start, end) {
 const cat = ref({});
 // When player click on board
 const selectHexagon = (row, index) => {
-  clearInterval(setTimer.value)
-  time.value = 10
-  startTime()
+  clearInterval(setTimer.value);
+  time.value = 10;
+  startTime();
   // try catch for end game
   try {
     // If that position isn't block and cat
@@ -218,7 +218,6 @@ const selectHexagon = (row, index) => {
       gameBoard.value[row][index].hexagon = hexagon_disable;
       gameBoard.value[row][index].block = true;
       blocks.push(gameBoard.value[row][index]);
-
       catMove();
     }
     return;
@@ -252,15 +251,43 @@ const catMove = () => {
   previousMove.block = false;
   // remove position in path [5][5]
   path.value.shift();
-
   // get next position of cat [5 +- 1][5 +- 1]
   // now cat is change position [5 +- 1][5 +- 1]
   const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  nextMove.hexagon = hexagon_cat;
-  nextMove.cat = true;
-  // check everytime when click is to destination ?
-  checkLoseGame(nextMove);
-  cat.value = nextMove;
+  checkAnimation(nextMove, getPosition.value);
+  getPosition.value.x = nextMove.x;
+  getPosition.value.y = nextMove.y;
+  const waitAnimation = setInterval(() => {
+    nextMove.hexagon = hexagon_cat;
+    nextMove.cat = true;
+    // check everytime when click is to destination ?
+    checkLoseGame(nextMove);
+    cat.value = nextMove;
+    clearInterval(waitAnimation)
+  }, 700);
+};
+
+const checkAnimation = (next, currPos) => {
+  if (currPos.y < next.y) {
+    moveRight();
+  } else if (currPos.y > next.y) {
+    moveLeft();
+  } else {
+    const isEvenX = currPos.x % 2 === 0;
+    if (currPos.x < next.x) {
+      if (isEvenX) {
+        moveRight();
+      } else {
+        moveLeft();
+      }
+    } else if (currPos.x > next.x) {
+      if (isEvenX) {
+        moveRight();
+      } else {
+        moveLeft();
+      }
+    }
+  }
 };
 
 // check cat position
@@ -324,22 +351,88 @@ const goToMenu = () => {
   Router.push({ name: "Home" });
 };
 
-const setTimer = ref(null)
+const setTimer = ref(null);
 const startTime = () => {
   // emit('reset-time',)
   setTimer.value = setInterval(() => {
     if (time.value === 0) {
-      catMove()
-      resetTime()
+      catMove();
+      resetTime();
     }
     // time.value--;
   }, 1000);
 };
 startTime();
 
-const resetTime =()=>{
-  time.value = 10
-}
+const resetTime = () => {
+  time.value = 10;
+};
+
+const isRight = ref(false);
+const isRight_Top = ref(false);
+const isRight_Bottom = ref(false);
+const isLeft = ref(false);
+const isLeft_Top = ref(false);
+const isLeft_Bottom = ref(false);
+const isFlip = ref(false);
+const getPosition = ref({ x: 5, y: 5 });
+
+const moveLeft = () => {
+  isLeft.value = true;
+  isFlip.value = true;
+  const isPlay = setInterval(() => {
+    isLeft.value = false;
+    clearInterval(isPlay);
+  }, 700);
+};
+
+const moveLeftTop = () => {
+  isLeft_Top.value = true;
+  isFlip.value = true;
+  const isPlay = setInterval(() => {
+    isLeft_Top.value = false;
+    isAnimate.value = false;
+    clearInterval(isPlay);
+  }, 700);
+};
+
+const moveLeftBottom = () => {
+  isLeft_Bottom.value = true;
+  isFlip.value = true;
+  const isPlay = setInterval(() => {
+    isLeft_Bottom.value = false;
+    clearInterval(isPlay);
+  }, 700);
+};
+
+const moveRight = () => {
+  isRight.value = true;
+  isFlip.value = false;
+  const isPlay = setInterval(() => {
+    isRight.value = false;
+    clearInterval(isPlay);
+  }, 700);
+};
+
+const moveRightTop = () => {
+  isRight_Top.value = true;
+  isFlip.value = false;
+  const isPlay = setInterval(() => {
+    isRight.value = false;
+    clearInterval(isPlay);
+  }, 700);
+};
+
+const moveRightBottom = () => {
+  isRight_Bottom.value = true;
+  isAnimate.value = true;
+  isFlip.value = false;
+  const isPlay = setInterval(() => {
+    isRight.value = false;
+    isAnimate.value = false;
+    clearInterval(isPlay);
+  }, 700);
+};
 </script>
 
 <template>
@@ -358,24 +451,30 @@ const resetTime =()=>{
         RESET
       </button>
     </div>
-    <!-- <Timer class="py-3" @time-out="timeOut" :time="time" /> -->
     <div>
       <p class="time font-medium flex justify-center">Time : {{ time }}</p>
     </div>
     <div class="game-board pr-4 h-fit">
       <div
         v-for="(row, rowIndex) in gameBoard"
+        :key="rowIndex"
         :class="`board-row ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`"
       >
-        <div
-          v-for="(hexagon, index) in row"
-          :key="index"
-          :class="`cell-${index}`"
-        >
+        <div v-for="(hexagon, index) in row" :key="index">
           <button
             class="scale-hexagon"
             :disabled="hexagon.block || hexagon.cat"
           >
+            <div
+              :class="`absolute ${
+                hexagon !== cat
+                  ? ''
+                  : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}
+            ${isRight ? 'move-right' : ''}
+            ${isLeft ? 'move-left' : ''}`
+              } 
+            `"
+            ></div>
             <img
               :src="hexagon.hexagon"
               @click="selectHexagon(rowIndex, index)"
@@ -388,6 +487,88 @@ const resetTime =()=>{
 </template>
 
 <style scoped>
+.bg-blue-400 {
+  width: 60px;
+  height: 60px;
+}
+
+.cat-stand-test {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -288px;
+  width: calc(256px / 8);
+  height: calc(320px / 10);
+  animation: stand 0.7s steps(8) infinite;
+  transform: scale(2) translateX(25%);
+}
+
+.cat-stand {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -288px;
+  width: calc(256px / 8);
+  height: calc(320px / 10);
+  animation: stand 0.7s steps(8) infinite;
+  transform: scale(2) translateX(25%);
+}
+
+.cat-stand-flip {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -288px;
+  transform: scaleX(-2) scaleY(2) translateX(25%);
+  width: calc(256px / 8);
+  height: calc(320px / 10);
+  animation: stand 0.7s steps(8) infinite;
+}
+
+@keyframes stand {
+  100% {
+    background-position-x: -256px;
+  }
+}
+
+.move-left {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -257px;
+  transform: scaleX(-2) scaleY(2);
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveLeft 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+}
+
+.move-right {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -257px;
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveRight 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+}
+
+@keyframes jump {
+  100% {
+    background-position-x: -224px;
+  }
+}
+
+@keyframes moveRight {
+  0% {
+    transform: translateX(0) scale(2);
+  }
+  100% {
+    transform: translateX(80px) scale(2);
+  }
+}
+
+@keyframes moveLeft {
+  0% {
+    transform: translateX(0) scaleX(-2, 2);
+  }
+  100% {
+    transform: translateX(-50px) scale(-2, 2);
+  }
+}
+
+.bg-black-2 {
+  transform: translate(100%, 0);
+}
 .hexagon {
   clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%);
 }

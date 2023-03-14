@@ -5,6 +5,7 @@ const isLeft = ref(false);
 const isUp = ref(false);
 const isDown = ref(false);
 const isAnimate = ref(false);
+const isFlip =ref(false)
 const getIndex = ref(13);
 const moveUp = () => {
   if (getIndex.value - 5 > 0) {
@@ -35,18 +36,20 @@ const moveDown = () => {
 const moveLeft = () => {
   isLeft.value = true;
   isAnimate.value = true;
+  isFlip.value = true
   const isPlay = setInterval(() => {
     getIndex.value = getIndex.value - 1;
     checkLenght(getIndex.value + 1);
     isLeft.value = false;
     isAnimate.value = false;
     clearInterval(isPlay);
-  }, 500);
+  }, 700);
 };
 
 const moveRight = () => {
   isRight.value = true;
   isAnimate.value = true;
+  isFlip.value = false
   const isPlay = setInterval(() => {
     getIndex.value = getIndex.value + 1;
     checkLenght(getIndex.value - 1);
@@ -66,11 +69,12 @@ const checkLenght = (current) => {
 </script>
 
 <template>
-  <div class="flex justify-center text-3xl p-3">Simple Animation Move</div>
+  <!-- <div class="flex justify-center text-3xl p-3">Simple Animation Move</div>
   <div class="flex justify-center gap-5">
     <div>
       <p>stand</p>
       <div class="cat-example-stand"></div>
+      <div class="cat-example-stand-flip"></div>
     </div>
     <div>
       <p>walk</p>
@@ -84,7 +88,7 @@ const checkLenght = (current) => {
       <p>jump</p>
       <div class="cat-example-jump"></div>
     </div>
-    <div class="cat-pic"></div>
+    <div class="cat-pic-flip"></div>
   </div>
   <div class="my-10 flex justify-around p-3">
     <button class="bg-blue-400" @click="moveLeft" :disabled="isAnimate">
@@ -103,22 +107,18 @@ const checkLenght = (current) => {
   <div class="grid grid-cols-5 gap-5 p-3">
     <div class="flex justify-center" v-for="(grid, index) in 25" :key="index">
       <div class="bg-black-2">{{}}</div>
-      <div
-        :class="`absolute ${
-          grid !== getIndex
-            ? 'bg-black-1'
-            : `cat-stand
-            ${isRight ? 'move-right cat-jump' : ''}
-            ${isLeft ? 'move-left' : ''}
-            ${isUp ? 'move-up' : ''}
-            ${isDown ? 'move-down' : ''}`
-        }`"
-      >
+      <div :class="`absolute 
+      ${grid !== getIndex ? 'bg-black-1': 
+      `${isFlip ? 'cat-stand-flip':'cat-stand'} 
+      ${isRight ? 'move-right' : ''}
+      ${isLeft ? 'move-left' : ''}
+      ${isUp ? 'move-up' : ''}
+      ${isDown ? 'move-down' : ''}`}`">
         {{}}
       </div>
     </div>
-  </div>
-  <!-- <RouterView></RouterView> -->
+  </div> -->
+  <RouterView></RouterView>
 </template>
 
 <style scoped>
@@ -130,6 +130,14 @@ const checkLenght = (current) => {
   animation: animate-example-8-frame 0.7s steps(8) infinite;
   transform: scale(2);
 }
+.cat-example-stand-flip {
+  background-image: url(assets/cat/catTest.png);
+  transform: scaleX(-2) scaleY(2);
+  background-position-y: -288px;
+  width: calc(256px / 8);
+  height: calc(320px / 10);
+  animation: animate-example-8-frame 0.7s steps(8) infinite;
+}
 
 .cat-stand {
   background-image: url(assets/cat/catTest.png);
@@ -138,6 +146,15 @@ const checkLenght = (current) => {
   height: calc(320px / 10);
   animation: animate-8-frame 0.7s steps(8) infinite;
   transform: scale(2);
+}
+
+.cat-stand-flip {
+  background-image: url(assets/cat/catTest.png);
+  background-position-y: -288px;
+  transform: scaleX(-2) scaleY(2);
+  width: calc(256px / 8);
+  height: calc(320px / 10);
+  animation: animate-8-frame 0.7s steps(8) infinite;
 }
 
 .cat-example-walk {
@@ -163,8 +180,17 @@ const checkLenght = (current) => {
   background-position-y: -257px;
   width: calc(256px / 8);
   height: calc(320px / 10);
-  animation: animate-example-7-frame .7s steps(7) infinite;
+  animation: animate-example-7-frame 0.7s steps(7) infinite;
   transform: scale(2);
+}
+
+.move-left {
+  background-image: url(assets/cat/catTest.png);
+  background-position-y: -257px;
+  transform: scaleX(-2) scaleY(2);
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveLeft 0.7s ease-out forwards, catJump 0.7s steps(7) alternate;
 }
 
 .move-right {
@@ -172,22 +198,15 @@ const checkLenght = (current) => {
   background-position-y: -257px;
   width: calc(224px / 7);
   height: calc(320px / 10);
-  animation: moveRight 1s ease-out forwards;
+  animation: moveRight 0.7s ease-out forwards,
+    catJump 0.7s steps(7) infinite;
 }
 
-.cat-jump{
-  animation-name: catJump;
-  animation-duration: .7s;
-  animation-timing-function: steps(7);
-  animation-fill-mode: forwards;
-}
-
-@keyframes catJump {
+@keyframes catJump{
   100% {
     background-position-x: -224px;
   }
 }
-
 
 @keyframes moveRight {
   0% {
@@ -198,14 +217,14 @@ const checkLenght = (current) => {
   }
 }
 
-@keyframes animate-7-frame {
+@keyframes moveLeft {
+  0% {
+    transform: translateX(0) scaleX(-2,2);
+  }
   100% {
-    /* transform: translateX(19.93vw) scale(2); */
+    transform: translateX(-19.93vw) scale(-2,2);
   }
 }
-
-
-
 
 @keyframes animate-example-7-frame {
   100% {
@@ -225,11 +244,17 @@ const checkLenght = (current) => {
   }
 }
 
-
 .cat-pic {
   background-image: url(assets/cat/catTest.png);
   width: 256px;
   height: 320px;
+}
+
+.cat-pic-flip {
+  background-image: url(assets/cat/catTest.png);
+  width: 256px;
+  height: 320px;
+  transform: scaleX(-1);
 }
 .bg-blue-400 {
   width: 100px;
@@ -247,27 +272,12 @@ const checkLenght = (current) => {
   background: #000;
 }
 
-
-.move-left {
-  animation: moveLeft 0.5s ease-out normal forwards;
-}
-
 .move-up {
   animation: moveUp 0.5s ease-out normal forwards;
 }
 
 .move-down {
   animation: moveDown 0.5s ease-out normal forwards;
-}
-
-@keyframes moveLeft {
-  from {
-    transform: translateX(0vw);
-  }
-
-  to {
-    transform: translateX(-19.93vw);
-  }
 }
 
 @keyframes moveUp {

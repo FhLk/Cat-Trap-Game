@@ -69,26 +69,18 @@ const checkLenght = (current) => {
 </script>
 
 <template>
-  <!-- <div class="flex justify-center text-3xl p-3">Simple Animation Move</div>
+  <div class="flex justify-center text-3xl p-3">Simple Animation Move</div>
   <div class="flex justify-center gap-5">
     <div>
       <p>stand</p>
       <div class="cat-example-stand"></div>
-      <div class="cat-example-stand-flip"></div>
-    </div>
-    <div>
-      <p>walk</p>
-      <div class="cat-example-walk"></div>
-    </div>
-    <div>
-      <p>run</p>
-      <div class="cat-example-run"></div>
+      <!-- <div class="cat-example-stand-flip"></div> -->
     </div>
     <div>
       <p>jump</p>
       <div class="cat-example-jump"></div>
     </div>
-    <div class="cat-pic-flip"></div>
+    <div class="cat-pic"></div>
   </div>
   <div class="my-10 flex justify-around p-3">
     <button class="bg-blue-400" @click="moveLeft" :disabled="isAnimate">
@@ -117,18 +109,39 @@ const checkLenght = (current) => {
         {{}}
       </div>
     </div>
-  </div> -->
-  <RouterView></RouterView>
+  </div>
+  <!-- <RouterView></RouterView> -->
 </template>
 
 <style scoped>
 .cat-example-stand {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -288px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-example-8-frame 0.7s steps(8) infinite;
-  transform: scale(2);
+  background-image: url(assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 5px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: animate-example-4-frame .6s steps(4) infinite ;
+}
+
+@keyframes animate-example-4-frame {
+  100% {
+    background-position-x: -440px;
+  }
+}
+
+.cat-example-jump {
+  background-image: url(assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: animate-example-9-frame 0.7s steps(9) infinite;
+}
+
+@keyframes animate-example-9-frame {
+  100% {
+    background-position-x: -894px;
+  }
 }
 .cat-example-stand-flip {
   background-image: url(assets/cat/catTest.png);
@@ -140,48 +153,9 @@ const checkLenght = (current) => {
 }
 
 .cat-stand {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -288px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-8-frame 0.7s steps(8) infinite;
-  transform: scale(2);
 }
 
 .cat-stand-flip {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -288px;
-  transform: scaleX(-2) scaleY(2);
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-8-frame 0.7s steps(8) infinite;
-}
-
-.cat-example-walk {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -128px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-example-8-frame 0.7s steps(8) infinite;
-  transform: scale(3);
-}
-
-.cat-example-run {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -160px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-example-8-frame 0.7s steps(8) infinite;
-  transform: scale(3);
-}
-
-.cat-example-jump {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -257px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-example-7-frame 0.7s steps(7) infinite;
-  transform: scale(2);
 }
 
 .move-left {
@@ -232,29 +206,15 @@ const checkLenght = (current) => {
   }
 }
 
-@keyframes animate-example-8-frame {
-  100% {
-    background-position-x: -256px;
-  }
-}
-
 @keyframes animate-8-frame {
   100% {
     background-position-x: -256px;
   }
 }
-
 .cat-pic {
-  background-image: url(assets/cat/catTest.png);
-  width: 256px;
-  height: 320px;
-}
-
-.cat-pic-flip {
-  background-image: url(assets/cat/catTest.png);
-  width: 256px;
-  height: 320px;
-  transform: scaleX(-1);
+  background-image: url(assets/cat/catBear/cat.png);
+  width: 894px;
+  height: 195px;
 }
 .bg-blue-400 {
   width: 100px;

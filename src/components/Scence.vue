@@ -211,8 +211,8 @@ const selectHexagon = (row, index) => {
   try {
     // If that position isn't block and cat
     if (
-      !gameBoard.value[row][index].block &&
-      !gameBoard.value[row][index].cat
+      (!gameBoard.value[row][index].block &&
+      !gameBoard.value[row][index].cat) && !isAnimate.value
     ) {
       // change to block
       gameBoard.value[row][index].hexagon = hexagon_disable;
@@ -263,29 +263,54 @@ const catMove = () => {
     // check everytime when click is to destination ?
     checkLoseGame(nextMove);
     cat.value = nextMove;
-    clearInterval(waitAnimation)
+    clearInterval(waitAnimation);
   }, 700);
 };
 
 const checkAnimation = (next, currPos) => {
-  if (currPos.y < next.y) {
-    moveRight();
-  } else if (currPos.y > next.y) {
-    moveLeft();
-  } else {
-    const isEvenX = currPos.x % 2 === 0;
-    if (currPos.x < next.x) {
-      if (isEvenX) {
-        moveRight();
-      } else {
-        moveLeft();
+  const isEvenX = currPos.x % 2 === 0;
+  if (!isEvenX) {
+    console.log("wow1");
+    if (currPos.y === next.y) {
+      if (currPos.x > next.x) {
+        moveLeftTop();
+      } 
+      else {
+        moveLeftBottom();
       }
-    } else if (currPos.x > next.x) {
-      if (isEvenX) {
-        moveRight();
-      } else {
-        moveLeft();
+    } 
+    else if (currPos.y < next.y && currPos.x > next.x) {
+      moveRightTop();
+    } 
+    else if (currPos.y < next.y && currPos.x < next.x) {
+      moveRightBottom();
+    } 
+    else if (currPos.y < next.y) {
+      moveRight();
+    } 
+    else if (currPos.y > next.y) {
+      moveLeft();
+    }
+  } 
+  else {
+    console.log("wow2");
+    if (currPos.y === next.y) {
+      if (currPos.x > next.x) {
+        moveRightTop();
+      } 
+      else {
+        moveRightBottom();
       }
+    } 
+    else if (currPos.y > next.y && currPos.x > next.x) {
+      moveLeftTop();
+    } 
+    else if (currPos.y > next.y && currPos.x < next.x) {
+      moveLeftBottom();
+    } else if (currPos.y < next.y) {
+      moveRight();
+    } else if (currPos.y > next.y) {
+      moveLeft();
     }
   }
 };
@@ -376,12 +401,15 @@ const isLeft_Top = ref(false);
 const isLeft_Bottom = ref(false);
 const isFlip = ref(false);
 const getPosition = ref({ x: 5, y: 5 });
+const isAnimate = ref(false)
 
 const moveLeft = () => {
   isLeft.value = true;
   isFlip.value = true;
+  isAnimate.value = true
   const isPlay = setInterval(() => {
     isLeft.value = false;
+    isAnimate.value = false
     clearInterval(isPlay);
   }, 700);
 };
@@ -389,9 +417,10 @@ const moveLeft = () => {
 const moveLeftTop = () => {
   isLeft_Top.value = true;
   isFlip.value = true;
+  isAnimate.value = true
   const isPlay = setInterval(() => {
     isLeft_Top.value = false;
-    isAnimate.value = false;
+    isAnimate.value = false
     clearInterval(isPlay);
   }, 700);
 };
@@ -399,8 +428,10 @@ const moveLeftTop = () => {
 const moveLeftBottom = () => {
   isLeft_Bottom.value = true;
   isFlip.value = true;
+  isAnimate.value = true
   const isPlay = setInterval(() => {
     isLeft_Bottom.value = false;
+    isAnimate.value = false
     clearInterval(isPlay);
   }, 700);
 };
@@ -408,8 +439,10 @@ const moveLeftBottom = () => {
 const moveRight = () => {
   isRight.value = true;
   isFlip.value = false;
+  isAnimate.value = true
   const isPlay = setInterval(() => {
     isRight.value = false;
+    isAnimate.value = false
     clearInterval(isPlay);
   }, 700);
 };
@@ -417,19 +450,21 @@ const moveRight = () => {
 const moveRightTop = () => {
   isRight_Top.value = true;
   isFlip.value = false;
+  isAnimate.value = true
   const isPlay = setInterval(() => {
-    isRight.value = false;
+    isRight_Top.value = false;
+    isAnimate.value = false
     clearInterval(isPlay);
   }, 700);
 };
 
 const moveRightBottom = () => {
   isRight_Bottom.value = true;
-  isAnimate.value = true;
   isFlip.value = false;
+  isAnimate.value = true
   const isPlay = setInterval(() => {
-    isRight.value = false;
-    isAnimate.value = false;
+    isRight_Bottom.value = false;
+    isAnimate.value = false
     clearInterval(isPlay);
   }, 700);
 };
@@ -466,19 +501,24 @@ const moveRightBottom = () => {
             :disabled="hexagon.block || hexagon.cat"
           >
             <div
-              :class="`absolute ${
+              :class="`cat-crop z-10 absolute ${
                 hexagon !== cat
                   ? ''
                   : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}
             ${isRight ? 'move-right' : ''}
-            ${isLeft ? 'move-left' : ''}`
-              } 
+            ${isLeft ? 'move-left' : ''}
+            ${isRight_Top ? 'move-top-right' : ''}
+            ${isLeft_Top ? 'move-top-left' : ''}
+            ${isLeft_Bottom ? 'move-bottom-left' : ''}
+            ${isRight_Bottom ? 'move-bottom-right' : ''}`
+          } 
             `"
             ></div>
+            
             <img
               :src="hexagon.hexagon"
               @click="selectHexagon(rowIndex, index)"
-            />
+             />
           </button>
         </div>
       </div>
@@ -513,7 +553,7 @@ const moveRightBottom = () => {
 .cat-stand-flip {
   background-image: url(../assets/cat/catTest.png);
   background-position-y: -288px;
-  transform: scaleX(-2) scaleY(2) translateX(25%);
+  transform: scaleX(-2) scaleY(2) translateX(-25%);
   width: calc(256px / 8);
   height: calc(320px / 10);
   animation: stand 0.7s steps(8) infinite;
@@ -522,6 +562,57 @@ const moveRightBottom = () => {
 @keyframes stand {
   100% {
     background-position-x: -256px;
+  }
+}
+
+.move-right {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -257px;
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveRight 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+}
+
+.move-top-right {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -257px;
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveRight-Top 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+}
+
+.move-bottom-right {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -257px;
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveRight-Bottom 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+}
+
+@keyframes moveRight {
+  0% {
+    transform: translateX(0) scale(2);
+  }
+  100% {
+    transform: translateX(80px) scale(2);
+  }
+}
+
+@keyframes moveRight-Top {
+  0% {
+    transform: translateX(0) scale(2);
+  }
+  100% {
+    transform: translateX(50px) translateY(-50px) scale(2);
+  }
+}
+
+@keyframes moveRight-Bottom {
+  0% {
+    transform: translateX(0) scale(2);
+  }
+  100% {
+    transform: translateX(50px) translateY(55px) scale(2);
   }
 }
 
@@ -534,29 +625,23 @@ const moveRightBottom = () => {
   animation: moveLeft 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
 }
 
-.move-right {
+.move-top-left {
   background-image: url(../assets/cat/catTest.png);
   background-position-y: -257px;
+  transform: scaleX(-2) scaleY(2);
   width: calc(224px / 7);
   height: calc(320px / 10);
-  animation: moveRight 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+  animation: moveLeft-Top 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
 }
 
-@keyframes jump {
-  100% {
-    background-position-x: -224px;
-  }
+.move-bottom-left {
+  background-image: url(../assets/cat/catTest.png);
+  background-position-y: -257px;
+  transform: scaleX(-2) scaleY(2);
+  width: calc(224px / 7);
+  height: calc(320px / 10);
+  animation: moveLeft-Bottom 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
 }
-
-@keyframes moveRight {
-  0% {
-    transform: translateX(0) scale(2);
-  }
-  100% {
-    transform: translateX(80px) scale(2);
-  }
-}
-
 @keyframes moveLeft {
   0% {
     transform: translateX(0) scaleX(-2, 2);
@@ -566,9 +651,35 @@ const moveRightBottom = () => {
   }
 }
 
-.bg-black-2 {
-  transform: translate(100%, 0);
+@keyframes moveLeft-Top {
+  0% {
+    transform: translateX(0) scale(-2, 2);
+  }
+  100% {
+    transform: translateX(-16px) translateY(-50px) scale(-2, 2);
+  }
 }
+
+@keyframes moveLeft-Bottom {
+  0% {
+    transform: translateX(0) scale(-2, 2);
+  }
+  100% {
+    transform: translateX(-16px) translateY(50px) scale(-2, 2);
+  }
+}
+
+@keyframes jump {
+  100% {
+    background-position-x: -224px;
+  }
+}
+
+.cat-crop{
+  clip-path: inset(50% 20% 0% 20%);
+  position: absolute;
+}
+
 .hexagon {
   clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%);
 }
@@ -581,8 +692,12 @@ const moveRightBottom = () => {
 }
 
 .translate-x {
+  /* transform: perspective(20px); */
   transform: translateX(4.5%);
+  /* transform: translateX(0%); */
+  /* transition: */
 }
+
 
 .board-row {
   display: flex;

@@ -13,12 +13,8 @@ const props = defineProps({
 
 const time = ref(10);
 const hexagon_normal = "./hexagon-white.svg";
-const hexagon_cat = "./hexagon-red.svg";
 const hexagon_disable = "./hexagon.svg";
-const hexagon_Q1 = "./hexagon-green.svg";
-const hexagon_Q2 = "./hexagon-purple.svg";
-const hexagon_Q3 = "./hexagon-blue.svg";
-const hexagon_Q4 = "./hexagon-orange.svg";
+const hexagon_cat = "./hexagon-red.svg";
 // Generate Board 11x11
 // attribute ->
 // x: Position on X
@@ -211,8 +207,9 @@ const selectHexagon = (row, index) => {
   try {
     // If that position isn't block and cat
     if (
-      (!gameBoard.value[row][index].block &&
-      !gameBoard.value[row][index].cat) && !isAnimate.value
+      !gameBoard.value[row][index].block &&
+      !gameBoard.value[row][index].cat &&
+      !isAnimate.value
     ) {
       // change to block
       gameBoard.value[row][index].hexagon = hexagon_disable;
@@ -223,6 +220,7 @@ const selectHexagon = (row, index) => {
     return;
   } catch (error) {
     // If player can catch the cat is exception that mean player win
+    clearInterval(setTimer.value);
     winGame();
     return;
   }
@@ -258,8 +256,8 @@ const catMove = () => {
   getPosition.value.x = nextMove.x;
   getPosition.value.y = nextMove.y;
   const waitAnimation = setInterval(() => {
-    nextMove.hexagon = hexagon_cat;
     nextMove.cat = true;
+    nextMove.hexagon = hexagon_cat;
     // check everytime when click is to destination ?
     checkLoseGame(nextMove);
     cat.value = nextMove;
@@ -270,42 +268,31 @@ const catMove = () => {
 const checkAnimation = (next, currPos) => {
   const isEvenX = currPos.x % 2 === 0;
   if (!isEvenX) {
-    console.log("wow1");
     if (currPos.y === next.y) {
       if (currPos.x > next.x) {
         moveLeftTop();
-      } 
-      else {
+      } else {
         moveLeftBottom();
       }
-    } 
-    else if (currPos.y < next.y && currPos.x > next.x) {
+    } else if (currPos.y < next.y && currPos.x > next.x) {
       moveRightTop();
-    } 
-    else if (currPos.y < next.y && currPos.x < next.x) {
+    } else if (currPos.y < next.y && currPos.x < next.x) {
       moveRightBottom();
-    } 
-    else if (currPos.y < next.y) {
+    } else if (currPos.y < next.y) {
       moveRight();
-    } 
-    else if (currPos.y > next.y) {
+    } else if (currPos.y > next.y) {
       moveLeft();
     }
-  } 
-  else {
-    console.log("wow2");
+  } else {
     if (currPos.y === next.y) {
       if (currPos.x > next.x) {
         moveRightTop();
-      } 
-      else {
+      } else {
         moveRightBottom();
       }
-    } 
-    else if (currPos.y > next.y && currPos.x > next.x) {
+    } else if (currPos.y > next.y && currPos.x > next.x) {
       moveLeftTop();
-    } 
-    else if (currPos.y > next.y && currPos.x < next.x) {
+    } else if (currPos.y > next.y && currPos.x < next.x) {
       moveLeftBottom();
     } else if (currPos.y < next.y) {
       moveRight();
@@ -320,6 +307,7 @@ const checkAnimation = (next, currPos) => {
 const checkLoseGame = (currentCat) => {
   setDestination.value.forEach((n) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
+      clearInterval(setTimer.value);
       loseGame();
     }
   });
@@ -346,8 +334,8 @@ const closestCat = (currentCat) => {
 };
 
 //Game set-up
-gameBoard.value[5][5].hexagon = hexagon_cat;
 gameBoard.value[5][5].cat = true;
+gameBoard.value[5][5].hexagon = hexagon_cat;
 //generate Block
 const blocks = RandomBlock(Q);
 // SET of Destination
@@ -399,78 +387,72 @@ const isRight_Bottom = ref(false);
 const isLeft = ref(false);
 const isLeft_Top = ref(false);
 const isLeft_Bottom = ref(false);
-const isFlip = ref(false);
 const getPosition = ref({ x: 5, y: 5 });
-const isAnimate = ref(false)
+const isAnimate = ref(false);
 
 const moveLeft = () => {
   isLeft.value = true;
-  isFlip.value = true;
-  isAnimate.value = true
+  isAnimate.value = true;
   const isPlay = setInterval(() => {
     isLeft.value = false;
-    isAnimate.value = false
+    isAnimate.value = false;
     clearInterval(isPlay);
   }, 700);
 };
 
 const moveLeftTop = () => {
   isLeft_Top.value = true;
-  isFlip.value = true;
-  isAnimate.value = true
+  isAnimate.value = true;
   const isPlay = setInterval(() => {
     isLeft_Top.value = false;
-    isAnimate.value = false
+    isAnimate.value = false;
     clearInterval(isPlay);
   }, 700);
 };
 
 const moveLeftBottom = () => {
   isLeft_Bottom.value = true;
-  isFlip.value = true;
-  isAnimate.value = true
+  isAnimate.value = true;
   const isPlay = setInterval(() => {
     isLeft_Bottom.value = false;
-    isAnimate.value = false
+    isAnimate.value = false;
     clearInterval(isPlay);
   }, 700);
 };
 
 const moveRight = () => {
   isRight.value = true;
-  isFlip.value = false;
-  isAnimate.value = true
+  isAnimate.value = true;
   const isPlay = setInterval(() => {
     isRight.value = false;
-    isAnimate.value = false
+    isAnimate.value = false;
     clearInterval(isPlay);
   }, 700);
 };
 
 const moveRightTop = () => {
   isRight_Top.value = true;
-  isFlip.value = false;
-  isAnimate.value = true
+  isAnimate.value = true;
   const isPlay = setInterval(() => {
     isRight_Top.value = false;
-    isAnimate.value = false
+    isAnimate.value = false;
     clearInterval(isPlay);
   }, 700);
 };
 
 const moveRightBottom = () => {
   isRight_Bottom.value = true;
-  isFlip.value = false;
-  isAnimate.value = true
+  isAnimate.value = true;
   const isPlay = setInterval(() => {
     isRight_Bottom.value = false;
-    isAnimate.value = false
+    isAnimate.value = false;
     clearInterval(isPlay);
   }, 700);
 };
 </script>
 
 <template>
+  <!-- <p>{{ p }}</p> -->
   <div class="bg-[#5f9ea0] h-screen pt-5">
     <div class="control flex justify-around">
       <button
@@ -493,32 +475,35 @@ const moveRightBottom = () => {
       <div
         v-for="(row, rowIndex) in gameBoard"
         :key="rowIndex"
-        :class="`board-row ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`"
+        :class="`board-row flex ${
+          rowIndex % 2 !== 0
+            ? 'translate-x'
+            : `${cat.x % 2 !== 0 ? '-z-10' : 'z-10'}`
+        }`"
       >
         <div v-for="(hexagon, index) in row" :key="index">
-          <button
-            class="scale-hexagon"
-            :disabled="hexagon.block || hexagon.cat"
-          >
-            <div
-              :class="`cat-crop z-10 absolute ${
-                hexagon !== cat
-                  ? ''
-                  : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}
+          <div
+            :class="`cat-crop z-10 absolute ${
+              hexagon !== cat
+                ? ''
+                : `cat-stand
             ${isRight ? 'move-right' : ''}
             ${isLeft ? 'move-left' : ''}
             ${isRight_Top ? 'move-top-right' : ''}
             ${isLeft_Top ? 'move-top-left' : ''}
             ${isLeft_Bottom ? 'move-bottom-left' : ''}
             ${isRight_Bottom ? 'move-bottom-right' : ''}`
-          } 
+            } 
             `"
-            ></div>
-            
+          ></div>
+          <button
+            class="hexagon scale-hexagon"
+            :disabled="hexagon.block || hexagon.cat"
+          >
             <img
               :src="hexagon.hexagon"
               @click="selectHexagon(rowIndex, index)"
-             />
+            />
           </button>
         </div>
       </div>
@@ -527,161 +512,107 @@ const moveRightBottom = () => {
 </template>
 
 <style scoped>
-.bg-blue-400 {
-  width: 60px;
-  height: 60px;
-}
-
-.cat-stand-test {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -288px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: stand 0.7s steps(8) infinite;
-  transform: scale(2) translateX(25%);
-}
-
 .cat-stand {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -288px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: stand 0.7s steps(8) infinite;
-  transform: scale(2) translateX(25%);
-}
-
-.cat-stand-flip {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -288px;
-  transform: scaleX(-2) scaleY(2) translateX(-25%);
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: stand 0.7s steps(8) infinite;
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 5px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: stand 1.5s steps(4) infinite;
 }
 
 @keyframes stand {
   100% {
-    background-position-x: -256px;
+    background-position-x: -440px;
   }
 }
 
+/* @keyframes jump {
+  0% {
+    clip-path: inset(0% 0% 0% 0%);
+  }
+  100% {
+    background-position-x: -894px;
+    clip-path: inset(0% 0% 0% 0%);
+  }
+} */
+
 .move-right {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -257px;
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveRight 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveRight 0.7s ease-out forwards;
+  /* jump 0.7s steps(9) alternate; */
 }
 
 .move-top-right {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -257px;
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveRight-Top 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveRight-Top 0.7s ease-out forwards;
+  /* jump 0.7s steps(9) alternate; */
 }
 
 .move-bottom-right {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -257px;
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveRight-Bottom 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
-}
-
-@keyframes moveRight {
-  0% {
-    transform: translateX(0) scale(2);
-  }
-  100% {
-    transform: translateX(80px) scale(2);
-  }
-}
-
-@keyframes moveRight-Top {
-  0% {
-    transform: translateX(0) scale(2);
-  }
-  100% {
-    transform: translateX(50px) translateY(-50px) scale(2);
-  }
-}
-
-@keyframes moveRight-Bottom {
-  0% {
-    transform: translateX(0) scale(2);
-  }
-  100% {
-    transform: translateX(50px) translateY(55px) scale(2);
-  }
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveRight-Bottom 0.7s ease-out forwards;
+  /* jump 0.7s steps(9) alternate; */
 }
 
 .move-left {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -257px;
-  transform: scaleX(-2) scaleY(2);
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveLeft 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveLeft 0.7s ease-out forwards,
+  jump 0.7s steps(9) alternate;
 }
 
 .move-top-left {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -257px;
-  transform: scaleX(-2) scaleY(2);
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveLeft-Top 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveLeft-Top 0.7s ease-out forwards,
+  jump 0.7s steps(9) alternate;
 }
 
 .move-bottom-left {
-  background-image: url(../assets/cat/catTest.png);
-  background-position-y: -257px;
-  transform: scaleX(-2) scaleY(2);
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveLeft-Bottom 0.7s ease-out forwards, jump 0.7s steps(7) alternate;
-}
-@keyframes moveLeft {
-  0% {
-    transform: translateX(0) scaleX(-2, 2);
-  }
-  100% {
-    transform: translateX(-50px) scale(-2, 2);
-  }
+  background-image: url(../assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveLeft-Bottom 0.7s ease-out forwards,
+  jump 0.7s steps(9) alternate;
 }
 
-@keyframes moveLeft-Top {
-  0% {
-    transform: translateX(0) scale(-2, 2);
-  }
-  100% {
-    transform: translateX(-16px) translateY(-50px) scale(-2, 2);
-  }
-}
-
-@keyframes moveLeft-Bottom {
-  0% {
-    transform: translateX(0) scale(-2, 2);
-  }
-  100% {
-    transform: translateX(-16px) translateY(50px) scale(-2, 2);
-  }
-}
-
-@keyframes jump {
-  100% {
-    background-position-x: -224px;
-  }
-}
-
-.cat-crop{
-  clip-path: inset(50% 20% 0% 20%);
-  position: absolute;
+.cat-crop {
+  clip-path: polygon(20% 35%, 70% 30%, 85% 90%, 10% 90%);
 }
 
 .hexagon {
-  clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%);
+  /* clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%); */
+  clip-path: polygon(
+    46% 0,
+    54% 0,
+    97% 26%,
+    97% 74%,
+    54% 100%,
+    46% 100%,
+    3% 75%,
+    3% 26%
+  );
 }
 .game-board {
   display: flex;
@@ -692,15 +623,7 @@ const moveRightBottom = () => {
 }
 
 .translate-x {
-  /* transform: perspective(20px); */
   transform: translateX(4.5%);
-  /* transform: translateX(0%); */
-  /* transition: */
-}
-
-
-.board-row {
-  display: flex;
 }
 
 .time {
@@ -720,6 +643,63 @@ const moveRightBottom = () => {
     height: 32px;
     width: 32px;
   }
+  .cat-stand {
+    transform: scale(0.5) translate(-53px, -80px);
+  }
+
+  /* @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
+    }
+    100% {
+      transform: translateX(2px) translateY(-42px) scale(-0.5, 0.5);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
+    }
+    100% {
+      transform: translateX(-14px) translateY(-70px) scale(-0.5, 0.5);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
+    }
+    100% {
+      transform: translateX(-14px) translateY(-15px) scale(-0.5, 0.5);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.5, 0.5);
+    }
+    100% {
+      transform: translateX(-60px) translateY(-42px) scale(0.5, 0.5);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.5, 0.5);
+    }
+    100% {
+      transform: translateX(-43px) translateY(-70px) scale(0.5, 0.5);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.5, 0.5);
+    }
+    100% {
+      transform: translateX(-43px) translateY(-15px) scale(0.5, 0.5);
+    }
+  } */
 }
 
 @media (min-width: 390px) {
@@ -739,6 +719,63 @@ const moveRightBottom = () => {
   .control {
     font-size: 11px;
   }
+  .cat-stand {
+    transform: scale(0.55) translate(-50px, -80px);
+  }
+
+  /* @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
+    }
+    100% {
+      transform: translateX(3px) translateY(-44px) scale(-0.55, 0.55);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-13px) translateY(-72px) scale(-0.55, 0.55);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-13px) translateY(-15px) scale(-0.55, 0.55);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-60px) translateY(-42px) scale(0.55, 0.55);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-43px) translateY(-70px) scale(0.55, 0.55);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-42px) translateY(-15px) scale(0.55, 0.55);
+    }
+  } */
 }
 
 @media (min-width: 414px) {
@@ -754,6 +791,64 @@ const moveRightBottom = () => {
     height: 35px;
     width: 35px;
   }
+
+  .cat-stand {
+    transform: scale(0.6) translate(-40px, -70px);
+  }
+
+  @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.6, 0.6);
+    }
+    100% {
+      transform: translateX(5px) translateY(-42px) scale(-0.6, 0.6);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.6, 0.6);
+    }
+    100% {
+      transform: translateX(-12px) translateY(-75px) scale(-0.6, 0.6);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.6, 0.6);
+    }
+    100% {
+      transform: translateX(-10px) translateY(-15px) scale(-0.6, 0.6);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.6, 0.6);
+    }
+    100% {
+      transform: translateX(-60px) translateY(-42px) scale(0.6, 0.6);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.6, 0.6);
+    }
+    100% {
+      transform: translateX(-43px) translateY(-75px) scale(0.6, 0.6);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.6, 0.6);
+    }
+    100% {
+      transform: translateX(-42px) translateY(-15px) scale(0.6, 0.6);
+    }
+  }
 }
 
 @media (min-width: 428px) {
@@ -768,6 +863,64 @@ const moveRightBottom = () => {
   .scale-hexagon {
     height: 36px;
     width: 36px;
+  }
+
+  .cat-stand {
+    transform: scale(0.55) translate(-50px, -70px);
+  }
+
+  @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
+    }
+    100% {
+      transform: translateX(5px) translateY(-42px) scale(-0.55, 0.55);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-12px) translateY(-75px) scale(-0.55, 0.55);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-10px) translateY(-15px) scale(-0.55, 0.55);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-60px) translateY(-42px) scale(0.55, 0.55);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-43px) translateY(-75px) scale(0.55, 0.55);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
+    }
+    100% {
+      transform: translateX(-42px) translateY(-15px) scale(0.55, 0.55);
+    }
   }
 }
 
@@ -790,6 +943,64 @@ const moveRightBottom = () => {
 
   .time {
     font-size: 50px;
+  }
+
+  .cat-stand {
+    transform: translate(-10px, -35px);
+  }
+
+  @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-1, 1);
+    }
+    100% {
+      transform: translateX(47px) translateY(-35px) scale(-1, 1);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-1, 1);
+    }
+    100% {
+      transform: translateX(15px) translateY(-90px) scale(-1, 1);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-1, 1);
+    }
+    100% {
+      transform: translateX(15px) translateY(20px) scale(-1, 1);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px);
+    }
+    100% {
+      transform: translateX(-73px) translateY(-35px);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px);
+    }
+    100% {
+      transform: translateX(-40px) translateY(-90px);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px);
+    }
+    100% {
+      transform: translateX(-42px) translateY(20px);
+    }
   }
 }
 
@@ -859,6 +1070,64 @@ const moveRightBottom = () => {
   .time {
     font-size: 50px;
   }
+
+  .cat-stand {
+    transform: scale(1.3) translate(-1px, -30px);
+  }
+
+  @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-1.3, 1.3);
+    }
+    100% {
+      transform: translateX(63px) translateY(-40px) scale(-1.3, 1.3);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-1.3, 1.3);
+    }
+    100% {
+      transform: translateX(25px) translateY(-100px) scale(-1.3, 1.3);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(-1.3, 1.3);
+    }
+    100% {
+      transform: translateX(25px) translateY(20px) scale(-1.3, 1.3);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(1.3, 1.3);
+    }
+    100% {
+      transform: translateX(-78px) translateY(-40px) scale(1.3, 1.3);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(1.3, 1.3);
+    }
+    100% {
+      transform: translateX(-40px) translateY(-100px) scale(1.3, 1.3);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scale(1.3, 1.3);
+    }
+    100% {
+      transform: translateX(-42px) translateY(20px) scale(1.3, 1.3);
+    }
+  }
 }
 
 @media (min-width: 1280px) {
@@ -875,5 +1144,63 @@ const moveRightBottom = () => {
     height: 65px;
     width: 65px;
   }
+
+  .cat-stand {
+    transform: translate(-10px, -30px);
+  }
+  /* 
+  @keyframes moveRight {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scaleX(-1);
+    }
+    100% {
+      transform: translateX(45px) translateY(-40px) scaleX(-1);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scaleX(-1);
+    }
+    100% {
+      transform: translateX(15px) translateY(-90px) scaleX(-1);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px) scaleX(-1);
+    }
+    100% {
+      transform: translateX(15px) translateY(15px) scaleX(-1);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-18px) translateY(-40px);
+    }
+    100% {
+      transform: translateX(-70px) translateY(-40px);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-18px) translateY(-40px);
+    }
+    100% {
+      transform: translateX(-40px) translateY(-90px);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-18px) translateY(-40px);
+    }
+    100% {
+      transform: translateX(-35px) translateY(10px);
+    }
+  } */
 }
 </style>

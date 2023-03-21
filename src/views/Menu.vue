@@ -1,8 +1,6 @@
 <script setup>
 import Tutorial from "../components/Tutorrial.vue";
 import LevelButton from "../components/Level-Button.vue";
-import { ref } from "vue";
-const isLevel = ref(true);
 </script>
 
 <template>
@@ -11,20 +9,21 @@ const isLevel = ref(true);
       <div class="title-name uppercase font-bold">
         <h1>Trap The Cat</h1>
       </div>
-      <div class="play">
-        <button
-          v-if="isLevel"
-          type="button"
-          @click="isLevel = false"
-          class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
-        >
-          PLAY
-        </button>
-        <LevelButton v-else />
+      <div class="play space-y-10">
+        <LevelButton />
+        <div>
+          <button @click=""
+            type="button"
+            class="bg-blue-600 z-10 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
+          >
+            How to play
+          </button>
+        </div>
       </div>
-      <div class="flex justify-around">
+      <Tutorial/>
+      <!-- <div class="flex justify-around">
         <Tutorial class="tutorial w-fit m-5 mt-0" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -45,13 +44,9 @@ const isLevel = ref(true);
   width: 20%;
 }
 
-.tutorial {
-  height: max-content;
-}
-
 @media (min-width: 428px) {
   .title {
-    transform: translate(0%, 5%);
+    transform: translate(50%, 50%);
   }
 }
 
@@ -66,6 +61,4 @@ const isLevel = ref(true);
     transform: translate(0%, 13%);
   }
 }
-
-
 </style>

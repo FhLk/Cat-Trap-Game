@@ -36,7 +36,7 @@ const moveDown = () => {
 const moveLeft = () => {
   isLeft.value = true;
   isAnimate.value = true;
-  isFlip.value = true
+  isFlip.value = false
   const isPlay = setInterval(() => {
     getIndex.value = getIndex.value - 1;
     checkLenght(getIndex.value + 1);
@@ -49,7 +49,7 @@ const moveLeft = () => {
 const moveRight = () => {
   isRight.value = true;
   isAnimate.value = true;
-  isFlip.value = false
+  isFlip.value = true
   const isPlay = setInterval(() => {
     getIndex.value = getIndex.value + 1;
     checkLenght(getIndex.value - 1);
@@ -69,16 +69,16 @@ const checkLenght = (current) => {
 </script>
 
 <template>
-  <div class="flex justify-center text-3xl p-3">Simple Animation Move</div>
+  <!-- <div class="flex justify-center text-3xl p-3">Simple Animation Move</div>
   <div class="flex justify-center gap-5">
     <div>
       <p>stand</p>
       <div class="cat-example-stand"></div>
-      <!-- <div class="cat-example-stand-flip"></div> -->
     </div>
     <div>
       <p>jump</p>
-      <div class="cat-example-jump"></div>
+      <div class="cat-example-jump bg-sky-400 cat-crop"></div>
+      <div class="cat-example-jump-flip"></div>
     </div>
     <div class="cat-pic"></div>
   </div>
@@ -101,7 +101,7 @@ const checkLenght = (current) => {
       <div class="bg-black-2">{{}}</div>
       <div :class="`absolute 
       ${grid !== getIndex ? 'bg-black-1': 
-      `${isFlip ? 'cat-stand-flip':'cat-stand'} 
+      `cat-stand
       ${isRight ? 'move-right' : ''}
       ${isLeft ? 'move-left' : ''}
       ${isUp ? 'move-up' : ''}
@@ -109,11 +109,12 @@ const checkLenght = (current) => {
         {{}}
       </div>
     </div>
-  </div>
-  <!-- <RouterView></RouterView> -->
+  </div> -->
+  <RouterView></RouterView>
 </template>
 
 <style scoped>
+
 .cat-example-stand {
   background-image: url(assets/cat/catBear/cat.png);
   background-position-x: -88px;
@@ -129,8 +130,21 @@ const checkLenght = (current) => {
   }
 }
 
+.cat-crop{
+  clip-path: inset(35% 20% 0% 10%);
+}
 .cat-example-jump {
   background-image: url(assets/cat/catBear/cat.png);
+  background-position-x:-88px ;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: animate-example-9-frame 0.7s steps(9) infinite;
+}
+
+.cat-example-jump-flip {
+  background-image: url(assets/cat/catBear/cat.png);
+  transform: scaleX(-1);
   background-position-x: -88px;
   background-position-y: 105px;
   width: calc(894px / 10);
@@ -139,78 +153,61 @@ const checkLenght = (current) => {
 }
 
 @keyframes animate-example-9-frame {
+  0%{
+    clip-path: inset(0% 0% 0% 0%);
+  }
   100% {
+    clip-path: inset(0% 0% 0% 0%);
     background-position-x: -894px;
   }
 }
-.cat-example-stand-flip {
-  background-image: url(assets/cat/catTest.png);
-  transform: scaleX(-2) scaleY(2);
-  background-position-y: -288px;
-  width: calc(256px / 8);
-  height: calc(320px / 10);
-  animation: animate-example-8-frame 0.7s steps(8) infinite;
-}
 
 .cat-stand {
-}
-
-.cat-stand-flip {
+  background-image: url(assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 5px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: animate-example-4-frame .6s steps(4) infinite ;
 }
 
 .move-left {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -257px;
-  transform: scaleX(-2) scaleY(2);
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveLeft 0.7s ease-out forwards, catJump 0.7s steps(7) alternate;
+  background-image: url(assets/cat/catBear/cat.png);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveLeft 0.7s ease-out forwards, animate-example-9-frame 0.7s steps(9) infinite;
 }
 
 .move-right {
-  background-image: url(assets/cat/catTest.png);
-  background-position-y: -257px;
-  width: calc(224px / 7);
-  height: calc(320px / 10);
-  animation: moveRight 0.7s ease-out forwards,
-    catJump 0.7s steps(7) infinite;
-}
-
-@keyframes catJump{
-  100% {
-    background-position-x: -224px;
-  }
+  background-image: url(assets/cat/catBear/cat.png);
+  transform: scaleX(-1);
+  background-position-x: -88px;
+  background-position-y: 105px;
+  width: calc(894px / 10);
+  height: calc(195px / 2);
+  animation: moveRight 0.7s ease-out forwards, animate-example-9-frame 0.7s steps(9) infinite;
 }
 
 @keyframes moveRight {
   0% {
-    transform: translateX(0) scale(2);
+    transform: translateX(0)  scaleX(-1);
   }
   100% {
-    transform: translateX(19.93vw) scale(2);
+    transform: translateX(19.93vw)  scaleX(-1);
   }
 }
 
 @keyframes moveLeft {
   0% {
-    transform: translateX(0) scaleX(-2,2);
+    transform: translateX(0);
   }
   100% {
-    transform: translateX(-19.93vw) scale(-2,2);
+    transform: translateX(-19.93vw);
   }
 }
 
-@keyframes animate-example-7-frame {
-  100% {
-    background-position-x: -224px;
-  }
-}
-
-@keyframes animate-8-frame {
-  100% {
-    background-position-x: -256px;
-  }
-}
 .cat-pic {
   background-image: url(assets/cat/catBear/cat.png);
   width: 894px;

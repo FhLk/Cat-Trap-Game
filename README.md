@@ -26,3 +26,7 @@ npm run dev
 ```sh
 npm run build
 ```
+
+```
+Steam key:LMDKPHT
+```

@@ -1,22 +1,29 @@
 <script setup>
 import { ref } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
+import { Pagination } from "swiper";
+import "swiper/css/pagination";
 import "swiper/css";
+
+const modules = ref([Pagination]);
 
 const information = ref([
   { tile: "CAT", img: "./hexagon-red.svg" },
   { tile: "WAY", img: "./hexagon.svg" },
   { tile: "BLOCK", img: "./hexagon-grey.svg" },
 ]);
+
+const emit = defineEmits(["closed"]);
 </script>
 
 <template>
-  <swiper class="header-htp">
+  <swiper :pagination="true" :modules="modules">
     <swiper-slide>Slide 1</swiper-slide>
     <swiper-slide>Slide 2</swiper-slide>
     <swiper-slide>Slide 3</swiper-slide>
     <swiper-slide>
       <button
+        @click="$emit('closed')"
         type="button"
         class="bg-blue-600 p-3 text-white font-medium text-2xl leading-tight uppercase rounded-lg shadow-md hover:bg-purple-500"
       >
@@ -55,18 +62,14 @@ const information = ref([
 </template>
 
 <style scoped>
-.close-btn {
-  /* font-size: ; */
-}
 .header-htp {
+}
+.swiper {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-.swiper {
   width: 20%;
-  height: 100%;
 }
 
 .swiper-slide {

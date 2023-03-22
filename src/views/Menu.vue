@@ -1,6 +1,18 @@
 <script setup>
 import Tutorial from "../components/Tutorrial.vue";
 import LevelButton from "../components/Level-Button.vue";
+import { ref } from "vue";
+import Music from "../components/Music.vue";
+
+const isOpen = ref(false)
+const openHtp = ()=>{
+  if(isOpen.value){
+    isOpen.value = false
+  }
+  else{
+    isOpen.value = true
+  }
+}
 </script>
 
 <template>
@@ -12,7 +24,7 @@ import LevelButton from "../components/Level-Button.vue";
       <div class="play space-y-10">
         <LevelButton />
         <div>
-          <button @click=""
+          <button @click="openHtp()"
             type="button"
             class="bg-blue-600 z-10 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
           >
@@ -20,18 +32,14 @@ import LevelButton from "../components/Level-Button.vue";
           </button>
         </div>
       </div>
-      <Tutorial/>
-      <!-- <div class="flex justify-around">
-        <Tutorial class="tutorial w-fit m-5 mt-0" />
-      </div> -->
     </div>
+    <Tutorial v-if="isOpen" @closed="openHtp()"/>
   </div>
 </template>
 
 <style scoped>
 .body {
   width: 100%;
-  background-color: #5f9ea0;
 }
 
 .title-name {

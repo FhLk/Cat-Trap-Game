@@ -1,8 +1,6 @@
 <script setup>
-import { onBeforeMount, onUpdated, ref, onMounted, computed } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { winGame, loseGame } from "./Alert.js";
-import Timer from "../components/Timer.vue";
-import { useRouter } from "vue-router";
 
 const props = defineProps({
   level: {
@@ -11,6 +9,10 @@ const props = defineProps({
   },
 });
 
+const soundJump = ref(new Audio());
+onBeforeMount(async () => {
+  soundJump.value.src = "./jump-sound.mp3";
+});
 const time = ref(10);
 const hexagon_normal = "./hexagon-white.svg";
 const hexagon_disable = "./hexagon.svg";
@@ -203,6 +205,7 @@ const selectHexagon = (row, index) => {
   clearInterval(setTimer.value);
   time.value = 10;
   startTime();
+  soundJump.value.play();
   // try catch for end game
   try {
     // If that position isn't block and cat
@@ -255,6 +258,7 @@ const catMove = () => {
   checkAnimation(nextMove, getPosition.value);
   getPosition.value.x = nextMove.x;
   getPosition.value.y = nextMove.y;
+  // soundJump.value.currentTime = 30
   const waitAnimation = setInterval(() => {
     nextMove.cat = true;
     nextMove.hexagon = hexagon_cat;
@@ -355,15 +359,6 @@ onBeforeMount(() => {
   }
 });
 
-const reset = () => {
-  location.reload();
-};
-
-const Router = useRouter();
-const goToMenu = () => {
-  Router.push({ name: "Home" });
-};
-
 const setTimer = ref(null);
 const startTime = () => {
   // emit('reset-time',)
@@ -453,21 +448,7 @@ const moveRightBottom = () => {
 
 <template>
   <!-- <p>{{ p }}</p> -->
-  <div class="bg-[#5f9ea0] h-screen pt-5">
-    <div class="control flex justify-around">
-      <button
-        @click="goToMenu()"
-        class="px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
-      >
-        HOME
-      </button>
-      <button
-        @click="reset"
-        class="px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
-      >
-        RESET
-      </button>
-    </div>
+  <div class="bg-[#5f9ea0] pt-5">
     <div>
       <p class="time font-medium flex justify-center">Time : {{ time }}</p>
     </div>
@@ -527,7 +508,7 @@ const moveRightBottom = () => {
   }
 }
 
-/* @keyframes jump {
+@keyframes jump {
   0% {
     clip-path: inset(0% 0% 0% 0%);
   }
@@ -535,7 +516,7 @@ const moveRightBottom = () => {
     background-position-x: -894px;
     clip-path: inset(0% 0% 0% 0%);
   }
-} */
+}
 
 .move-right {
   background-image: url(../assets/cat/catBear/cat.png);
@@ -543,8 +524,7 @@ const moveRightBottom = () => {
   background-position-y: 105px;
   width: calc(894px / 10);
   height: calc(195px / 2);
-  animation: moveRight 0.7s ease-out forwards;
-  /* jump 0.7s steps(9) alternate; */
+  animation: moveRight 0.7s ease-out forwards, jump 0.7s steps(9) alternate;
 }
 
 .move-top-right {
@@ -553,8 +533,7 @@ const moveRightBottom = () => {
   background-position-y: 105px;
   width: calc(894px / 10);
   height: calc(195px / 2);
-  animation: moveRight-Top 0.7s ease-out forwards;
-  /* jump 0.7s steps(9) alternate; */
+  animation: moveRight-Top 0.7s ease-out forwards, jump 0.7s steps(9) alternate;
 }
 
 .move-bottom-right {
@@ -563,8 +542,8 @@ const moveRightBottom = () => {
   background-position-y: 105px;
   width: calc(894px / 10);
   height: calc(195px / 2);
-  animation: moveRight-Bottom 0.7s ease-out forwards;
-  /* jump 0.7s steps(9) alternate; */
+  animation: moveRight-Bottom 0.7s ease-out forwards,
+    jump 0.7s steps(9) alternate;
 }
 
 .move-left {
@@ -573,8 +552,7 @@ const moveRightBottom = () => {
   background-position-y: 105px;
   width: calc(894px / 10);
   height: calc(195px / 2);
-  animation: moveLeft 0.7s ease-out forwards,
-  jump 0.7s steps(9) alternate;
+  animation: moveLeft 0.7s ease-out forwards, jump 0.7s steps(9) alternate;
 }
 
 .move-top-left {
@@ -583,8 +561,7 @@ const moveRightBottom = () => {
   background-position-y: 105px;
   width: calc(894px / 10);
   height: calc(195px / 2);
-  animation: moveLeft-Top 0.7s ease-out forwards,
-  jump 0.7s steps(9) alternate;
+  animation: moveLeft-Top 0.7s ease-out forwards, jump 0.7s steps(9) alternate;
 }
 
 .move-bottom-left {
@@ -594,7 +571,7 @@ const moveRightBottom = () => {
   width: calc(894px / 10);
   height: calc(195px / 2);
   animation: moveLeft-Bottom 0.7s ease-out forwards,
-  jump 0.7s steps(9) alternate;
+    jump 0.7s steps(9) alternate;
 }
 
 .cat-crop {
@@ -647,7 +624,7 @@ const moveRightBottom = () => {
     transform: scale(0.5) translate(-53px, -80px);
   }
 
-  /* @keyframes moveRight {
+  @keyframes moveRight {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
     }
@@ -699,7 +676,7 @@ const moveRightBottom = () => {
     100% {
       transform: translateX(-43px) translateY(-15px) scale(0.5, 0.5);
     }
-  } */
+  }
 }
 
 @media (min-width: 390px) {
@@ -716,14 +693,11 @@ const moveRightBottom = () => {
     width: 33px;
   }
 
-  .control {
-    font-size: 11px;
-  }
   .cat-stand {
     transform: scale(0.55) translate(-50px, -80px);
   }
 
-  /* @keyframes moveRight {
+  @keyframes moveRight {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
@@ -775,7 +749,7 @@ const moveRightBottom = () => {
     100% {
       transform: translateX(-42px) translateY(-15px) scale(0.55, 0.55);
     }
-  } */
+  }
 }
 
 @media (min-width: 414px) {
@@ -937,9 +911,6 @@ const moveRightBottom = () => {
     height: 64px;
     width: 64px;
   }
-  .control {
-    font-size: 18px;
-  }
 
   .time {
     font-size: 50px;
@@ -1063,10 +1034,6 @@ const moveRightBottom = () => {
     height: 75px;
     width: 75px;
   }
-  .control {
-    font-size: 20px;
-  }
-
   .time {
     font-size: 50px;
   }
@@ -1148,7 +1115,7 @@ const moveRightBottom = () => {
   .cat-stand {
     transform: translate(-10px, -30px);
   }
-  /* 
+
   @keyframes moveRight {
     0% {
       transform: translateX(-18px) translateY(-40px) scaleX(-1);
@@ -1201,6 +1168,6 @@ const moveRightBottom = () => {
     100% {
       transform: translateX(-35px) translateY(10px);
     }
-  } */
+  }
 }
 </style>

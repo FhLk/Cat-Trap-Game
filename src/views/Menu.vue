@@ -4,19 +4,19 @@ import LevelButton from "../components/Level-Button.vue";
 import { ref } from "vue";
 import Music from "../components/Music.vue";
 
-const isOpen = ref(false)
-const openHtp = ()=>{
-  if(isOpen.value){
-    isOpen.value = false
+const isOpen = ref(false);
+const openHtp = () => {
+  if (isOpen.value) {
+    isOpen.value = false;
+  } else {
+    isOpen.value = true;
   }
-  else{
-    isOpen.value = true
-  }
-}
+};
 </script>
 
 <template>
-  <div class="body h-screen text-center">
+  <div class="body text-center">
+    <Tutorial v-if="isOpen" @closed="openHtp()" />
     <div class="title space-y-7">
       <div class="title-name uppercase font-bold">
         <h1>Trap The Cat</h1>
@@ -24,16 +24,15 @@ const openHtp = ()=>{
       <div class="play space-y-10">
         <LevelButton />
         <div>
-          <button @click="openHtp()"
-            type="button"
-            class="bg-blue-600 z-10 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
+          <button
+            @click="openHtp()"
+            class="bg-blue-600 p-1 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
           >
             How to play
           </button>
         </div>
       </div>
     </div>
-    <Tutorial v-if="isOpen" @closed="openHtp()"/>
   </div>
 </template>
 
@@ -42,31 +41,36 @@ const openHtp = ()=>{
   width: 100%;
 }
 
+.title {
+  transform: translate(0, 25%);
+}
+
 .title-name {
   font-size: 50px;
 }
 
 .play button {
-  font-size: 3vh;
+  font-size: 100%;
   height: 60px;
-  width: 20%;
+  width: fit-content;
+  padding: 10px;
 }
 
 @media (min-width: 428px) {
   .title {
-    transform: translate(50%, 50%);
+    /* transform: translate(50%, 50%); */
   }
 }
 
 @media (min-width: 390px) and (max-width: 400px) {
   .title {
-    transform: translate(0%, 5%);
+    /* transform: translate(0%, 30%); */
   }
 }
 
 @media (min-width: 768px) {
   .title {
-    transform: translate(0%, 13%);
+    /* transform: translate(0%, 13%); */
   }
 }
 </style>

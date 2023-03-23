@@ -9,14 +9,9 @@ const props = defineProps({
   },
 });
 
-const soundJump = ref(new Audio());
-onBeforeMount(async () => {
-  soundJump.value.src = "./jump-sound.mp3";
-});
 const time = ref(10);
 const hexagon_normal = "./hexagon-white.svg";
 const hexagon_disable = "./hexagon.svg";
-const hexagon_cat = "./hexagon-red.svg";
 // Generate Board 11x11
 // attribute ->
 // x: Position on X
@@ -205,7 +200,6 @@ const selectHexagon = (row, index) => {
   clearInterval(setTimer.value);
   time.value = 10;
   startTime();
-  soundJump.value.play();
   // try catch for end game
   try {
     // If that position isn't block and cat
@@ -261,7 +255,7 @@ const catMove = () => {
   // soundJump.value.currentTime = 30
   const waitAnimation = setInterval(() => {
     nextMove.cat = true;
-    nextMove.hexagon = hexagon_cat;
+    // nextMove.hexagon = hexagon_cat;
     // check everytime when click is to destination ?
     checkLoseGame(nextMove);
     cat.value = nextMove;
@@ -339,7 +333,7 @@ const closestCat = (currentCat) => {
 
 //Game set-up
 gameBoard.value[5][5].cat = true;
-gameBoard.value[5][5].hexagon = hexagon_cat;
+// gameBoard.value[5][5].hexagon = hexagon_cat;
 //generate Block
 const blocks = RandomBlock(Q);
 // SET of Destination

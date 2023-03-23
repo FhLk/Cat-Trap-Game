@@ -17,59 +17,68 @@ const emit = defineEmits(["closed"]);
 </script>
 
 <template>
-  <swiper :pagination="true" :modules="modules">
-    <swiper-slide>Slide 1</swiper-slide>
-    <swiper-slide>Slide 2</swiper-slide>
-    <swiper-slide>Slide 3</swiper-slide>
-    <swiper-slide>
-      <button
-        @click="$emit('closed')"
-        type="button"
-        class="bg-blue-600 p-3 text-white font-medium text-2xl leading-tight uppercase rounded-lg shadow-md hover:bg-purple-500"
-      >
-        Closed
-      </button>
-    </swiper-slide>
-  </swiper>
-  <!-- <div class="bg-white rounded-lg p-10 py-3 space-y-3">
-    <h1 class="text-lg font-medium">How To Play</h1>
-    <div class="text-center">
-      <p class="text-base font-medium">
-        Don't let the cat get away, By placing blocks to keep the cat away in 60
-        second, By placing a block 1 time, the cat moves 1 time.
-      </p>
-      <p class="text-base font-bold">
-        {{ ">>" }}
-        <span class="underline"> {{ "Left-click is to place a block." }}</span>
-        {{ "<<" }}
-      </p>
-    </div>
-    <div>
-      <div class="flex justify-center">
-        <img src="../assets/example.png" class="board-example rounded-lg" />
-      </div>
-      <p class="font-medium">Area of Cat (11x11)</p>
-    </div>
-    <div class="flex justify-evenly">
-      <div v-for="(info, index) in information" :key="index">
-        <div class="flex justify-around">
-          <img :src="info.img" class="hexagon" />
+  <div class="bg-tutorial absolute h-screen">
+    <swiper class="rounded-2xl" :pagination="true" :modules="modules">
+      <swiper-slide>
+        <div class="text-center">
+          <p class="text-base font-medium">
+            Don't let the cat get away, By placing blocks to keep the cat away
+            in 10 second, By placing a block 1 time, the cat moves 1 time.
+          </p>
+          <p class="text-base font-bold">
+            {{ ">>" }}
+            <span class="underline">
+              {{ "Left-click is to place a block." }}</span
+            >
+            {{ "<<" }}
+          </p>
         </div>
-        <p class="font-medium">{{ info.tile }}</p>
-      </div>
-    </div>
-  </div> -->
+      </swiper-slide>
+      <swiper-slide>
+        <div>
+          <div class="flex justify-center">
+            <img src="../assets/example.png" class="board-example rounded-lg" />
+          </div>
+          <p class="font-medium">Area of Cat (11x11)</p>
+        </div>
+      </swiper-slide>
+      <swiper-slide>
+        <div class="flex">
+          <div v-for="(info, index) in information" :key="index">
+            <div class="flex justify-around">
+              <img :src="info.img" class="hexagon" />
+            </div>
+            <p class="font-medium">{{ info.tile }}</p>
+          </div>
+        </div>
+      </swiper-slide>
+      <swiper-slide>
+        <div>
+          <button
+            @click="$emit('closed')"
+            type="button"
+            class="bg-blue-600 p-3 text-white font-medium text-2xl leading-tight uppercase rounded-lg shadow-md hover:bg-purple-500"
+          >
+            Closed
+          </button>
+        </div>
+      </swiper-slide>
+    </swiper>
+  </div>
 </template>
 
 <style scoped>
-.header-htp {
+.bg-tutorial {
+  z-index: 1;
+  background-color: rgb(0, 0, 0, 0.8);
+  width: 100%;
 }
 .swiper {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 20%;
+  width: 70%;
 }
 
 .swiper-slide {
@@ -77,7 +86,6 @@ const emit = defineEmits(["closed"]);
   font-size: 18px;
   background: #fff;
   height: 400px;
-  /* Center slide text vertically */
   display: flex;
   justify-content: center;
   align-items: center;

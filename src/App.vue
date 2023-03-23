@@ -13,7 +13,7 @@ import Music from './components/Music.vue';
 <style scoped>
 .music{
   position: absolute;
-  top: 5%;
+  top: 2%;
   left: 5%;
 }
 </style>

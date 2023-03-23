@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 body {
-  /* position: relative; */
-  /* height: 100%; */
-  /* overflow: hidden; */
+  position: relative;
+  height: 100%;
+  overflow: hidden;
   background-color: #5f9ea0;
 }

@@ -8,7 +8,7 @@ import "swiper/css";
 const modules = ref([Pagination]);
 
 const information = ref([
-  { tile: "CAT", img: "./hexagon-red.svg" },
+  { tile: "CAT", img: "./assets/cat/catBear/cat.png" },
   { tile: "WAY", img: "./hexagon.svg" },
   { tile: "BLOCK", img: "./hexagon-grey.svg" },
 ]);
@@ -43,13 +43,10 @@ const emit = defineEmits(["closed"]);
         </div>
       </swiper-slide>
       <swiper-slide>
-        <div class="flex">
-          <div v-for="(info, index) in information" :key="index">
-            <div class="flex justify-around">
-              <img :src="info.img" class="hexagon" />
-            </div>
-            <p class="font-medium">{{ info.tile }}</p>
-          </div>
+        <div class="flex space-x-7">
+          <div class="cat"></div>
+          <div class="way"></div>
+          <div class="block"></div>
         </div>
       </swiper-slide>
       <swiper-slide>
@@ -68,6 +65,26 @@ const emit = defineEmits(["closed"]);
 </template>
 
 <style scoped>
+.cat {
+  background-image: url(../assets/cat/cat-sit.png);
+  background-size: 70px;
+  height: 70px;
+  width: 70px;
+}
+
+.way {
+  background-image: url(../assets/hexagon-white.svg);
+  background-size: 70px;
+  height: 70px;
+  width: 70px;
+}
+
+.block {
+  background-image: url(../assets/hexagon.svg);
+  background-size: 70px;
+  height: 70px;
+  width: 70px;
+}
 .bg-tutorial {
   z-index: 1;
   background-color: rgb(0, 0, 0, 0.8);
@@ -84,7 +101,7 @@ const emit = defineEmits(["closed"]);
 .swiper-slide {
   text-align: center;
   font-size: 18px;
-  background: #fff;
+  background: #a1dd9f;
   height: 400px;
   display: flex;
   justify-content: center;

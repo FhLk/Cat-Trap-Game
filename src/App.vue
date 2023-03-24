@@ -1,13 +1,15 @@
 <script setup>
+import Loading from './components/Loading.vue';
 import Music from './components/Music.vue';
 
 
 </script>
 
 <template>
-  <RouterView>
+  <Loading/>
+  <!-- <RouterView>
   </RouterView>
-  <Music class="music"/>
+  <Music class="music"/> -->
 </template>
 
 <style scoped>

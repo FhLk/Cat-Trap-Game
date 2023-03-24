@@ -12,7 +12,7 @@ onBeforeMount(() => {
 });
 
 const reset = () => {
-  location.reload();
+  location.reload()
 };
 
 const Router = useRouter();

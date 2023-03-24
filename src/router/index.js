@@ -5,17 +5,17 @@ import NotFound from '../views/NotFoundPage.vue'
 const history = createWebHistory()
 const routes = [
     {
-        path:"/",
+        path:"/catthetrap",
         name:"Home",
         component: Menu
     },
     {
-        path:"/game-level:level",
+        path:"/catthetrap/game-level:level",
         name:"Game",
         component: Game,
     },
     {
-        path: "/:pathMatch(.*)*",
+        path: "/catthetrap/:pathMatch(.*)*",
         name: "not-found",
         component: NotFound
       },

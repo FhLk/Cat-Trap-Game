@@ -307,6 +307,7 @@ const checkLoseGame = (currentCat) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
       clearInterval(setTimer.value);
       loseGame();
+      
     }
   });
 };
@@ -333,17 +334,16 @@ const closestCat = (currentCat) => {
 
 //Game set-up
 gameBoard.value[5][5].cat = true;
-// gameBoard.value[5][5].hexagon = hexagon_cat;
 //generate Block
-const blocks = RandomBlock(Q);
+let blocks = RandomBlock(Q);
 // SET of Destination
 const setDestination = ref(Destination());
 // generate destination position
-const destination =
+let destination =
   setDestination.value[Math.floor(Math.random() * setDestination.value.length)];
 // calculate the paht
 const path = ref([]);
-const start = gameBoard.value[5][5];
+let start = gameBoard.value[5][5];
 cat.value = start;
 const end = ref(gameBoard.value[destination.x][destination.y]);
 onBeforeMount(() => {
@@ -352,6 +352,29 @@ onBeforeMount(() => {
     path.value = aStar(start, end.value);
   }
 });
+
+const resetGame = () => {
+  console.log("wow");
+  gameBoard.value[5][5].cat = true;
+  //generate Block
+  blocks = RandomBlock(Q);
+  // SET of Destination
+  setDestination.value = Destination();
+  // generate destination position
+  destination =
+    setDestination.value[
+      Math.floor(Math.random() * setDestination.value.length)
+    ];
+  // calculate the paht
+  path.value = [];
+  start = gameBoard.value[5][5];
+  cat.value = start;
+  end.value = gameBoard.value[destination.x][destination.y];
+  path.value = aStar(start, end.value);
+  if (path.value.length === 0) {
+    path.value = aStar(start, end.value);
+  }
+};
 
 const setTimer = ref(null);
 const startTime = () => {

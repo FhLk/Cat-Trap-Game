@@ -8,6 +8,7 @@ export function winGame() {
         text:'You can catch a cat.',
     }).then(()=>{
         location.reload()
+        // window.location.href = '../index.html'
     })
 }
 
@@ -19,5 +20,6 @@ export function loseGame(){
         text:'You let the cat escape.',
     }).then(()=>{
         location.reload()
+        // window.location.href = '../index.html'
     })
 }

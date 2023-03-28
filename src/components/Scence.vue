@@ -1,6 +1,5 @@
 <script setup>
 import { onBeforeMount, ref } from "vue";
-import { winGame, loseGame } from "./Alert.js";
 
 const props = defineProps({
   level: {
@@ -8,6 +7,8 @@ const props = defineProps({
     require: true,
   },
 });
+
+const emit = defineEmits(['loseGame','winGame'])
 
 const time = ref(10);
 const hexagon_normal = "./hexagon-white.svg";
@@ -218,7 +219,8 @@ const selectHexagon = (row, index) => {
   } catch (error) {
     // If player can catch the cat is exception that mean player win
     clearInterval(setTimer.value);
-    winGame();
+    emit('winGame')
+    // winGame();
     return;
   }
 };
@@ -306,7 +308,8 @@ const checkLoseGame = (currentCat) => {
   setDestination.value.forEach((n) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
       clearInterval(setTimer.value);
-      loseGame();
+      // loseGame();
+      emit('loseGame')
       
     }
   });

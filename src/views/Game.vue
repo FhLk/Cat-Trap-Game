@@ -2,7 +2,10 @@
 import Scence from "../components/Scence.vue";
 import { useRoute, useRouter } from "vue-router";
 import { onBeforeMount } from "vue";
+import Swal from "sweetalert2";
 let { params } = useRoute();
+
+console.log(document.visibilityState);
 
 const level = Number(params.level);
 onBeforeMount(() => {
@@ -19,11 +22,34 @@ const Router = useRouter();
 const goToMenu = () => {
   Router.push({ name: "Home" });
 };
+
+
+function winGame() {
+    Swal.fire({
+        icon:'success',
+        allowOutsideClick:false,
+        title:'YOU WIN!!!',
+        text:'You can catch a cat.',
+    }).then(()=>{
+        goToMenu()
+    })
+}
+
+function loseGame(){
+    Swal.fire({
+        icon:'error',
+        allowOutsideClick:false,
+        title:'YOU LOSE!!!',
+        text:'You let the cat escape.',
+    }).then(()=>{
+      goToMenu()
+    })
+}
 </script>
 
 <template>
   <div>
-    <Scence :level="level" />
+    <Scence :level="level" @winGame="winGame()" @loseGame="loseGame()" />
     <div class="control flex justify-around">
       <button
         @click="goToMenu()"

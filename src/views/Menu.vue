@@ -1,8 +1,9 @@
 <script setup>
 import Tutorial from "../components/Tutorrial.vue";
 import LevelButton from "../components/Level-Button.vue";
-import { ref } from "vue";
+import { onBeforeUnmount, onBeforeMount, ref, onBeforeUpdate, computed } from "vue";
 import Music from "../components/Music.vue";
+import { Howl, Howler } from "howler";
 
 const isOpen = ref(false);
 const openHtp = () => {
@@ -15,6 +16,7 @@ const openHtp = () => {
 </script>
 
 <template>
+  <button ref="button" style="display: none"></button>
   <div class="body text-center">
     <Tutorial v-if="isOpen" @closed="openHtp()" />
     <div class="title space-y-7">
@@ -56,21 +58,4 @@ const openHtp = () => {
   padding: 10px;
 }
 
-@media (min-width: 428px) {
-  .title {
-    /* transform: translate(50%, 50%); */
-  }
-}
-
-@media (min-width: 390px) and (max-width: 400px) {
-  .title {
-    /* transform: translate(0%, 30%); */
-  }
-}
-
-@media (min-width: 768px) {
-  .title {
-    /* transform: translate(0%, 13%); */
-  }
-}
 </style>

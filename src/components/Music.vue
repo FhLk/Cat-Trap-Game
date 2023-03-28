@@ -3,7 +3,7 @@ export default {
   data() {
     return {
       musicSrc: "./bg-music.mp3",
-      isPlaying: true,
+      isPlaying: false,
     };
   },
   mounted() {

@@ -3,12 +3,13 @@ import Tutorial from "../components/Tutorrial.vue";
 import LevelButton from "../components/Level-Button.vue";
 import { onBeforeUnmount, onBeforeMount, ref, onBeforeUpdate } from "vue";
 import LgButton from "../components/Lg-Button.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps({
   language: String,
 });
 
-const emit = defineEmits(['toGame'])
+const emit = defineEmits(["toGame"]);
 
 const isOpen = ref(false);
 const openHtp = () => {
@@ -17,6 +18,11 @@ const openHtp = () => {
   } else {
     isOpen.value = true;
   }
+};
+
+const Router = useRouter();
+const goToGame = (level) => {
+  Router.push({ name: "Game", params: { level: level } });
 };
 </script>
 
@@ -28,7 +34,14 @@ const openHtp = () => {
         <h1>Trap The Cat</h1>
       </div>
       <div class="play space-y-10">
-        <LevelButton :language="language" @toGame="$emit('toGame')"/>
+        <button
+          @click="goToGame(1)"
+          type="button"
+          class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
+        >
+          {{ language === "TH" || language === null ? "เล่น" : "Play" }}
+        </button>
+        <!-- <LevelButton :language="language" @toGame="$emit('toGame')"/> -->
         <div>
           <button
             @click="openHtp()"
@@ -68,7 +81,7 @@ const openHtp = () => {
 .play button {
   font-size: 100%;
   height: 60px;
-  width: fit-content;
+  width: 100px;
   padding: 10px;
 }
 

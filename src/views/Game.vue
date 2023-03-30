@@ -9,7 +9,7 @@ const props = defineProps({
   language: String,
 });
 
-const emit = defineEmits(['toMenu'])
+const emit = defineEmits(["toMenu"]);
 
 const level = Number(params.level);
 onBeforeMount(() => {
@@ -20,13 +20,17 @@ onBeforeMount(() => {
 
 const reset = () => {
   Router.push({ name: "Home" });
-  emit('toMenu')
+  emit("toMenu");
 };
 
 const Router = useRouter();
 const goToMenu = () => {
   Router.push({ name: "Home" });
-  emit('toMenu')
+  emit("toMenu");
+};
+
+const nextLevel = (level) => {
+  Router.push({ name: "Game", params: { level: level } });
 };
 
 function winGame() {
@@ -35,8 +39,21 @@ function winGame() {
     allowOutsideClick: false,
     title: "YOU WIN!!!",
     text: "You can catch a cat.",
-  }).then(() => {
-    goToMenu();
+    showCancelButton: true,
+    confirmButtonText: "Next Level",
+    cancelButtonText: "Closed",
+    reverseButtons: true,
+  }).then((r) => {
+    console.log(r);
+    // if (r.isConfirmed) {
+    //   if (level === 1) {
+    //     nextLevel(2);
+    //   } else {
+    //     nextLevel(3);
+    //   }
+    // } else {
+    //   goToMenu();
+    // }
   });
 }
 
@@ -46,8 +63,27 @@ function loseGame() {
     allowOutsideClick: false,
     title: "YOU LOSE!!!",
     text: "You let the cat escape.",
-  }).then(() => {
-    goToMenu();
+    showCancelButton: true,
+    confirmButtonText: "Next Level",
+    cancelButtonText: "Closed",
+    reverseButtons: true,
+  }).then((r) => {
+    console.log(r);
+    if (r.isConfirmed) {
+      console.log("wow1");
+      console.log(level);
+      if (level === 1) {
+        console.log("wow2");
+        nextLevel(2);
+      } else {
+        console.log("wow3");
+        nextLevel(3);
+      }
+    } 
+    else {
+      console.log("wow4");
+      goToMenu();
+    }
   });
 }
 </script>
@@ -71,7 +107,7 @@ function loseGame() {
         @click="reset()"
         class="reset-btn px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
       >
-      {{ language === "TH" || language === null ? "เริ่มใหม่" : "Reset" }}
+        {{ language === "TH" || language === null ? "เริ่มใหม่" : "Reset" }}
       </button>
     </div>
   </div>
@@ -87,7 +123,6 @@ function loseGame() {
     font-size: 9px;
   }
 }
-
 
 @media (min-width: 390px) {
   .control {

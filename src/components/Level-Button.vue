@@ -13,7 +13,6 @@ const isShow = ref(false)
 const Router = useRouter();
 const goToGame = (level) => {
   Router.push({ name: "Game", params: { level: level } });
-  emit('toGame')
 };
 </script>
 

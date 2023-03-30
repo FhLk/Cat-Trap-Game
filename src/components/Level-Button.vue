@@ -2,11 +2,18 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+const props = defineProps({
+  language : String
+})
+
+const emit = defineEmits(['toGame'])
+
 const isShow = ref(false)
 
 const Router = useRouter();
 const goToGame = (level) => {
   Router.push({ name: "Game", params: { level: level } });
+  emit('toGame')
 };
 </script>
 
@@ -18,7 +25,7 @@ const goToGame = (level) => {
         @click="isShow = true"
         class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
       >
-        Play
+        {{ language === "TH" || language === null ? "เล่น":"Play" }}
       </button>
       <div v-show="isShow">
         <button
@@ -26,7 +33,7 @@ const goToGame = (level) => {
           @click="goToGame(1)"
           class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
         >
-          Level 1
+        {{ language === "TH" || language === null ? "ระดับ 1":"Level 1" }}
         </button>
       </div>
       <div v-show="isShow">
@@ -35,7 +42,7 @@ const goToGame = (level) => {
           @click="goToGame(2)"
           class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
         >
-          Level 2
+        {{ language === "TH" || language === null ? "ระดับ 2":"Level 2" }}
         </button>
       </div>
       <div v-show="isShow">
@@ -44,7 +51,7 @@ const goToGame = (level) => {
           @click="goToGame(3)"
           class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
         >
-          Level 3
+        {{ language === "TH" || language === null ? "ระดับ 3":"Level 3" }}
         </button>
       </div>
     </div>

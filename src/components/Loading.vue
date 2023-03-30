@@ -1,4 +1,5 @@
-<script setup></script>
+<script setup>
+</script>
 
 <template>
   <div class="flex h-screen p-5">
@@ -16,8 +17,8 @@
 </template>
 
 <style scoped>
-.loading-body{
-    transform: translate(0,35%);
+.loading-body {
+  transform: translate(0, 35%);
 }
 .loading-bg {
   padding: 5px;

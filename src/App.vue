@@ -2,43 +2,48 @@
 import Loading from "./components/Loading.vue";
 import Music from "./components/Music.vue";
 
-import { ref, onBeforeMount } from "vue";
+import { ref, onBeforeMount, computed } from "vue";
 import LgButton from "./components/Lg-Button.vue";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 
 const progress = ref(0);
 const progressing = () => {
   let progressBar = setInterval(() => {
     progress.value = progress.value + 1;
-    console.log(progress.value);
     if (progress.value === 120) {
       clearInterval(progressBar);
+      sessionStorage.setItem("loading", 100);
     }
   }, 20);
 };
 
-progressing();
+const getProgress = ref(Number(sessionStorage.getItem("loading")));
+const getLG = ref(sessionStorage.getItem("language"));
+onBeforeMount(() => {
+  if (getProgress.value === 0) {
+    progressing();
+  }
+  if (getLG.value === null || getLG.value === "TH") {
+    sessionStorage.setItem("language", "TH");
+  } else {
+    sessionStorage.setItem("language", "EN");
+  }
+});
 
-const getLG = ref(localStorage.getItem("language"))
-onBeforeMount(()=>{
-    if(localStorage.getItem("language")=== null){
-        localStorage.setItem("language","TH")
-        // language.value = localStorage.getItem("language")
-    }
-    else{
-        localStorage.setItem("language","EN")
-        // language.value = localStorage.getItem("language")
-    }
-})
+const changeLanguage = (language) => {
+  getLG.value = language;
+};
 
+const page = ref(0)
 </script>
 
 <template>
-  <Loading v-if="progress !== 120"/>
-  <div v-show="progress === 120">
-    <RouterView> </RouterView>
+  <Loading v-if="getProgress !== 100 && progress !== 120" />
+  <div v-else>
+    <RouterView :language="getLG" @toGame="page=1" @toMenu="page=0"> </RouterView>
     <div class="flex justify-between">
-      <Music class="music" />
-      <LgButton class="language"/>
+      <Music :language="getLG" class="music" />
+      <LgButton v-show="page === 0" class="language" @change="changeLanguage" />
     </div>
   </div>
 </template>
@@ -54,5 +59,35 @@ onBeforeMount(()=>{
   position: absolute;
   top: 2%;
   right: 5%;
+}
+
+@media (min-width: 300px) {
+  .music {
+    transform: scale(0.7);
+  }
+
+  .language {
+    transform: scale(0.7);
+  }
+}
+
+@media (min-width: 414px) {
+  .music {
+    transform: scale(0.8);
+  }
+
+  .language {
+    transform: scale(0.8);
+  }
+}
+
+@media (min-width: 800px) {
+  .music {
+    transform: scale(1);
+  }
+
+  .language {
+    transform: scale(1);
+  }
 }
 </style>

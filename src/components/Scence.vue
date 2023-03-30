@@ -6,6 +6,7 @@ const props = defineProps({
     type: Number,
     require: true,
   },
+  language: String
 });
 
 const emit = defineEmits(['loseGame','winGame'])
@@ -254,10 +255,8 @@ const catMove = () => {
   checkAnimation(nextMove, getPosition.value);
   getPosition.value.x = nextMove.x;
   getPosition.value.y = nextMove.y;
-  // soundJump.value.currentTime = 30
   const waitAnimation = setInterval(() => {
     nextMove.cat = true;
-    // nextMove.hexagon = hexagon_cat;
     // check everytime when click is to destination ?
     checkLoseGame(nextMove);
     cat.value = nextMove;
@@ -308,7 +307,6 @@ const checkLoseGame = (currentCat) => {
   setDestination.value.forEach((n) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
       clearInterval(setTimer.value);
-      // loseGame();
       emit('loseGame')
       
     }
@@ -356,38 +354,14 @@ onBeforeMount(() => {
   }
 });
 
-const resetGame = () => {
-  console.log("wow");
-  gameBoard.value[5][5].cat = true;
-  //generate Block
-  blocks = RandomBlock(Q);
-  // SET of Destination
-  setDestination.value = Destination();
-  // generate destination position
-  destination =
-    setDestination.value[
-      Math.floor(Math.random() * setDestination.value.length)
-    ];
-  // calculate the paht
-  path.value = [];
-  start = gameBoard.value[5][5];
-  cat.value = start;
-  end.value = gameBoard.value[destination.x][destination.y];
-  path.value = aStar(start, end.value);
-  if (path.value.length === 0) {
-    path.value = aStar(start, end.value);
-  }
-};
-
 const setTimer = ref(null);
 const startTime = () => {
-  // emit('reset-time',)
   setTimer.value = setInterval(() => {
     if (time.value === 0) {
       catMove();
       resetTime();
     }
-    // time.value--;
+    time.value--;
   }, 1000);
 };
 startTime();
@@ -470,7 +444,7 @@ const moveRightBottom = () => {
   <!-- <p>{{ p }}</p> -->
   <div class="bg-[#5f9ea0] pt-5">
     <div>
-      <p class="time font-medium flex justify-center">Time : {{ time }}</p>
+      <p class="time font-medium flex justify-center">{{ `${language === "TH" || language === null ? "เวลา":"Time"} : ${time}` }}</p>
     </div>
     <div class="game-board pr-4 h-fit">
       <div
@@ -519,7 +493,6 @@ const moveRightBottom = () => {
   background-position-y: 5px;
   width: calc(894px / 10);
   height: calc(195px / 2);
-  animation: stand 1.5s steps(4) infinite;
 }
 
 @keyframes stand {
@@ -599,7 +572,6 @@ const moveRightBottom = () => {
 }
 
 .hexagon {
-  /* clip-path: polygon(50% -10%, 95% 24%, 95% 72%, 50% 110%, 4% 72%, 4% 26%); */
   clip-path: polygon(
     46% 0,
     54% 0,
@@ -625,6 +597,93 @@ const moveRightBottom = () => {
 
 .time {
   font-size: 200%;
+}
+
+@media (min-width: 320px){
+  .game-board {
+    margin: 0 auto;
+  }
+
+  .board-row {
+    height: 23px;
+  }
+
+  .scale-hexagon {
+    height: 27px;
+    width: 27px;
+  }
+  .cat-stand {
+    transform: scale(0.45) translate(-65px, -95px);
+  }
+
+  @keyframes moveRight {
+    0% {
+      transform: translateX(-29px) translateY(-44px) scale(-0.45, 0.45);
+    }
+    100% {
+      transform: translateX(-6px) translateY(-44px) scale(-0.45, 0.45);
+    }
+  }
+
+  @keyframes moveRight-Top {
+    0% {
+      transform: translateX(-29px) translateY(-44px) scale(-0.45, 0.45);
+    }
+    100% {
+      transform: translateX(-20px) translateY(-67px) scale(-0.45, 0.45);
+    }
+  }
+
+  @keyframes moveRight-Bottom {
+    0% {
+      transform: translateX(-29px) translateY(-44px) scale(-0.45, 0.45);
+    }
+    100% {
+      transform: translateX(-19px) translateY(-22px) scale(-0.45, 0.45);
+    }
+  }
+
+  @keyframes moveLeft {
+    0% {
+      transform: translateX(-29px) translateY(-44px) scale(0.45, 0.45);
+    }
+    100% {
+      transform: translateX(-56px) translateY(-44px) scale(0.45, 0.45);
+    }
+  }
+
+  @keyframes moveLeft-Top {
+    0% {
+      transform: translateX(-29px) translateY(-44px) scale(0.45, 0.45);
+    }
+    100% {
+      transform: translateX(-42px) translateY(-67px) scale(0.45, 0.45);
+    }
+  }
+
+  @keyframes moveLeft-Bottom {
+    0% {
+      transform: translateX(-29px) translateY(-44px) scale(0.45, 0.45);
+    }
+    100% {
+      transform: translateX(-43px) translateY(-20px) scale(0.45, 0.45);
+    }
+  }
+}
+
+@media (min-width: 360px){
+  .game-board {
+    margin: 0 auto;
+  }
+
+  .board-row {
+    height: 25px;
+  }
+
+  .scale-hexagon {
+    height: 30px;
+    width: 30px;
+  }
 }
 
 @media (min-width: 375px) {

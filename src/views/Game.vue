@@ -5,7 +5,11 @@ import { onBeforeMount } from "vue";
 import Swal from "sweetalert2";
 let { params } = useRoute();
 
-console.log(document.visibilityState);
+const props = defineProps({
+  language: String,
+});
+
+const emit = defineEmits(['toMenu'])
 
 const level = Number(params.level);
 onBeforeMount(() => {
@@ -15,53 +19,59 @@ onBeforeMount(() => {
 });
 
 const reset = () => {
-  location.reload()
+  Router.push({ name: "Home" });
+  emit('toMenu')
 };
 
 const Router = useRouter();
 const goToMenu = () => {
   Router.push({ name: "Home" });
+  emit('toMenu')
 };
 
-
 function winGame() {
-    Swal.fire({
-        icon:'success',
-        allowOutsideClick:false,
-        title:'YOU WIN!!!',
-        text:'You can catch a cat.',
-    }).then(()=>{
-        goToMenu()
-    })
+  Swal.fire({
+    icon: "success",
+    allowOutsideClick: false,
+    title: "YOU WIN!!!",
+    text: "You can catch a cat.",
+  }).then(() => {
+    goToMenu();
+  });
 }
 
-function loseGame(){
-    Swal.fire({
-        icon:'error',
-        allowOutsideClick:false,
-        title:'YOU LOSE!!!',
-        text:'You let the cat escape.',
-    }).then(()=>{
-      goToMenu()
-    })
+function loseGame() {
+  Swal.fire({
+    icon: "error",
+    allowOutsideClick: false,
+    title: "YOU LOSE!!!",
+    text: "You let the cat escape.",
+  }).then(() => {
+    goToMenu();
+  });
 }
 </script>
 
 <template>
   <div>
-    <Scence :level="level" @winGame="winGame()" @loseGame="loseGame()" />
+    <Scence
+      :language="language"
+      :level="level"
+      @winGame="winGame()"
+      @loseGame="loseGame()"
+    />
     <div class="control flex justify-around">
       <button
         @click="goToMenu()"
         class="home-btn px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
       >
-        HOME
+        Home
       </button>
       <button
-        @click="reset"
+        @click="reset()"
         class="reset-btn px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700"
       >
-        RESET
+      {{ language === "TH" || language === null ? "เริ่มใหม่" : "Reset" }}
       </button>
     </div>
   </div>
@@ -71,6 +81,13 @@ function loseGame(){
 .control {
   transform: translate(0px, 50px);
 }
+
+@media (min-width: 300px) {
+  .control {
+    font-size: 9px;
+  }
+}
+
 
 @media (min-width: 390px) {
   .control {

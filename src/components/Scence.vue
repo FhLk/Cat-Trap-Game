@@ -1,15 +1,31 @@
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, onBeforeUpdate } from "vue";
+import { onBeforeRouteUpdate } from "vue-router";
 
 const props = defineProps({
   level: {
     type: Number,
     require: true,
   },
-  language: String
+  language: String,
+  reset: Boolean,
 });
 
-const emit = defineEmits(['loseGame','winGame'])
+onBeforeUpdate(() => {
+  if (props.reset) {
+    resetGame();
+    gameSetup();
+    path.value = aStar(start.value, end.value);
+    if (path.value.length === 0) {
+      path.value = aStar(start.value, end.value);
+    }
+    emit("reset", false);
+  }
+});
+
+const level = ref(props.level);
+
+const emit = defineEmits(["loseGame", "winGame", "reset"]);
 
 const time = ref(10);
 const hexagon_normal = "./hexagon-white.svg";
@@ -21,8 +37,8 @@ const hexagon_disable = "./hexagon.svg";
 // hexagon: (img)
 // block: Is block ?
 // cat: Is cat ?
-const gameBoard = ref(
-  new Array(11).fill().map((_, i) =>
+const generateBoard = () => {
+  return new Array(11).fill().map((_, i) =>
     new Array(11).fill().map((_, j) => ({
       x: i,
       y: j,
@@ -30,8 +46,8 @@ const gameBoard = ref(
       block: false,
       cat: false,
     }))
-  )
-);
+  );
+};
 
 // Divide Board to 4 part for generate blocks
 const divideBoardIntoFour = (gameBoard) => {
@@ -70,16 +86,13 @@ const divideBoardIntoTwo = (gameBoard) => {
   return [Q1, Q2];
 };
 
-// Divide Board
-const Q = divideBoardIntoFour(gameBoard.value);
-
 // Generate Blocks
 // Number of Blocks depen on Level
 // get parameter is Array of Board 4/2 part
 const RandomBlock = (Q) => {
   let blocks = [];
   let countBlocks =
-    props.level === 1 ? 4 : props.level === 2 ? 3 : props.level === 3 ? 2 : 1;
+    level.value === 1 ? 4 : level.value === 2 ? 3 : level.value === 3 ? 2 : 1;
   for (let i = 0; i < Q.length; i++) {
     let part = Q[i];
     let partBlocks = new Set();
@@ -196,7 +209,6 @@ function aStar(start, end) {
   return [];
 }
 
-const cat = ref({});
 // When player click on board
 const selectHexagon = (row, index) => {
   clearInterval(setTimer.value);
@@ -213,14 +225,14 @@ const selectHexagon = (row, index) => {
       // change to block
       gameBoard.value[row][index].hexagon = hexagon_disable;
       gameBoard.value[row][index].block = true;
-      blocks.push(gameBoard.value[row][index]);
+      blocks.value.push(gameBoard.value[row][index]);
       catMove();
     }
     return;
   } catch (error) {
     // If player can catch the cat is exception that mean player win
     clearInterval(setTimer.value);
-    emit('winGame')
+    emit("winGame");
     // winGame();
     return;
   }
@@ -307,8 +319,7 @@ const checkLoseGame = (currentCat) => {
   setDestination.value.forEach((n) => {
     if (currentCat.x === n.x && currentCat.y === n.y) {
       clearInterval(setTimer.value);
-      emit('loseGame')
-      
+      emit("loseGame");
     }
   });
 };
@@ -333,24 +344,65 @@ const closestCat = (currentCat) => {
   return newDestination;
 };
 
-//Game set-up
-gameBoard.value[5][5].cat = true;
-//generate Block
-let blocks = RandomBlock(Q);
-// SET of Destination
-const setDestination = ref(Destination());
-// generate destination position
-let destination =
-  setDestination.value[Math.floor(Math.random() * setDestination.value.length)];
-// calculate the paht
+const blocks = ref([]);
+const setDestination = ref(null);
 const path = ref([]);
-let start = gameBoard.value[5][5];
-cat.value = start;
-const end = ref(gameBoard.value[destination.x][destination.y]);
-onBeforeMount(() => {
-  path.value = aStar(start, end.value);
+const end = ref(null);
+const start = ref(null);
+const Q = ref(null);
+const gameBoard = ref(null);
+const cat = ref(null);
+const gameSetup = () => {
+  gameBoard.value = generateBoard();
+  gameBoard.value[5][5].cat = true;
+  // Divide Board
+  Q.value = divideBoardIntoFour(gameBoard.value);
+  //generate Block
+  blocks.value = RandomBlock(Q.value);
+  // SET of Destination
+  setDestination.value = Destination();
+  // generate destination position
+  let destination =
+    setDestination.value[
+      Math.floor(Math.random() * setDestination.value.length)
+    ];
+  // calculate the paht
+  start.value = gameBoard.value[5][5];
+  cat.value = start.value;
+  end.value = gameBoard.value[destination.x][destination.y];
+};
+
+const resetGame = () => {
+  blocks.value = [];
+  setDestination.value = null;
+  path.value = null;
+  end.value = null;
+  start.value = null;
+  gameBoard.value = null;
+  Q.value = null;
+  cat.value = null;
+  getPosition.value = { x: 5, y: 5 };
+  clearInterval(setTimer.value);
+  resetTime();
+  startTime();
+};
+
+onBeforeRouteUpdate(() => {
+  level.value = level.value + 1;
+  resetGame();
+  gameSetup();
+  path.value = aStar(start.value, end.value);
   if (path.value.length === 0) {
-    path.value = aStar(start, end.value);
+    path.value = aStar(start.value, end.value);
+  }
+});
+
+//Game set-up
+onBeforeMount(() => {
+  gameSetup();
+  path.value = aStar(start.value, end.value);
+  if (path.value.length === 0) {
+    path.value = aStar(start.value, end.value);
   }
 });
 
@@ -444,7 +496,13 @@ const moveRightBottom = () => {
   <!-- <p>{{ p }}</p> -->
   <div class="bg-[#5f9ea0] pt-5">
     <div>
-      <p class="time font-medium flex justify-center">{{ `${language === "TH" || language === null ? "เวลา":"Time"} : ${time}` }}</p>
+      <p class="time font-medium flex justify-center">
+        {{
+          `${
+            language === "TH" || language === null ? "เวลา" : "Time"
+          } : ${time}`
+        }}
+      </p>
     </div>
     <div class="game-board pr-4 h-fit">
       <div
@@ -599,7 +657,7 @@ const moveRightBottom = () => {
   font-size: 200%;
 }
 
-@media (min-width: 320px){
+@media (min-width: 320px) {
   .game-board {
     margin: 0 auto;
   }
@@ -671,7 +729,7 @@ const moveRightBottom = () => {
   }
 }
 
-@media (min-width: 360px){
+@media (min-width: 360px) {
   .game-board {
     margin: 0 auto;
   }

@@ -1,4 +1,16 @@
 <script setup>
+import { onBeforeMount, ref } from 'vue';
+
+const token = ref(
+    "eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGVObyI6Im1wUTBSMTJHTzAzNmY4ckVCbmZqVTg4OWwyczNnZGlGQUVzcCtNRWUrNzQ9IiwidGltZXN0YW1wIjoiMjAyMi0wMS0xNFQxMzowMDowNSswNzowMCJ9.gUvmq2MI9DAa5-AgWAX8DE7tL2elCD7VW8g-2gtYz9g"
+);
+
+const setToken = ()=>{
+  localStorage.setItem("token",token.value) 
+}
+
+setToken()
+
 </script>
 
 <template>

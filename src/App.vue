@@ -4,7 +4,7 @@ import Music from "./components/Music.vue";
 
 import { ref, onBeforeMount, computed } from "vue";
 import LgButton from "./components/Lg-Button.vue";
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
+
 
 const progress = ref(0);
 const progressing = () => {

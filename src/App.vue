@@ -4,22 +4,32 @@ import Music from "./components/Music.vue";
 
 import { ref, onBeforeMount, computed } from "vue";
 import LgButton from "./components/Lg-Button.vue";
+import API from "./components/api.js"
 
 
 const progress = ref(0);
+const api = new API();
+const resAPI = ref({
+  authen:{},
+  reward:{},
+  play:{}
+})
 const progressing = () => {
-  let progressBar = setInterval(() => {
+  let progressBar = setInterval(async () => {
     progress.value = progress.value + 1;
     if (progress.value === 120) {
       clearInterval(progressBar);
       sessionStorage.setItem("loading", 100);
+      resAPI.value.reward = await api.RewardInfo()
     }
   }, 20);
 };
 
 const getProgress = ref(Number(sessionStorage.getItem("loading")));
 const getLG = ref(sessionStorage.getItem("language"));
-onBeforeMount(() => {
+
+onBeforeMount( async () => {
+  resAPI.value.authen = await api.Authen()
   if (getProgress.value === 0) {
     progressing();
   }
@@ -35,6 +45,7 @@ const changeLanguage = (language) => {
 };
 
 const page = ref(0)
+
 </script>
 
 <template>

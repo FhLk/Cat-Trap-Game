@@ -4,10 +4,13 @@ import LevelButton from "../components/Level-Button.vue";
 import { onBeforeUnmount, onBeforeMount, ref, onBeforeUpdate } from "vue";
 import LgButton from "../components/Lg-Button.vue";
 import { useRouter } from "vue-router";
+import API from "../components/api";
 
 const props = defineProps({
   language: String,
 });
+
+const api = new API()
 
 const emit = defineEmits(["toGame"]);
 
@@ -21,7 +24,8 @@ const openHtp = () => {
 };
 
 const Router = useRouter();
-const goToGame = (level) => {
+const goToGame = async (level) => {
+  await api.Play()
   Router.push({ name: "Game", params: { level: level } });
 };
 </script>
@@ -41,7 +45,6 @@ const goToGame = (level) => {
         >
           {{ language === "TH" || language === null ? "เล่น" : "Play" }}
         </button>
-        <!-- <LevelButton :language="language" @toGame="$emit('toGame')"/> -->
         <div>
           <button
             @click="openHtp()"

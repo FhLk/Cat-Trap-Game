@@ -3,6 +3,7 @@ import Scence from "../components/Scence.vue";
 import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { onBeforeMount, ref } from "vue";
 import Swal from "sweetalert2";
+import API from "../components/api";
 let { params } = useRoute();
 
 const props = defineProps({
@@ -21,13 +22,14 @@ onBeforeMount(() => {
 });
 
 const reset = () => {
-  // Router.push({ name: "Home" });
   isReset.value = true;
   emit("toMenu");
 };
 
+const api = new API()
 const Router = useRouter();
-const goToMenu = () => {
+const goToMenu = async () => {
+  await api.RewardInfo()
   Router.push({ name: "Home" });
   emit("toMenu");
 };

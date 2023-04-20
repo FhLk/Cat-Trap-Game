@@ -6,8 +6,9 @@ html, body {
   position: relative;
   /* overflow: hidden; */
   height: 100%;
+  width: 100%;
   background-image: url(../assets/trapthecat_asset/play_bg.png);
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-size: 100% 100%;
+  background-size: 100% auto;
 }

@@ -55,7 +55,7 @@ const goToGame = async (level) => {
   background-image: url(../assets/trapthecat_asset/home_bg.png);
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-size: 100% 100%;
+  background-size: 100% auto;
 }
 
 .logo-game {

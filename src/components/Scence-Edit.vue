@@ -30,13 +30,6 @@ const emit = defineEmits(["loseGame", "winGame", "reset"]);
 const time = ref(10);
 const hexagon_normal = "./hexagon-pre-test.svg";
 const hexagon_disable = "./hexagon-pre-test.svg";
-// Generate Board 11x11
-// attribute ->
-// x: Position on X
-// y: Position on Y
-// hexagon: (img)
-// block: Is block ?
-// cat: Is cat ?
 const generateBoard = () => {
   return new Array(11).fill().map((_, i) =>
     new Array(11).fill().map((_, j) => ({
@@ -55,46 +48,65 @@ const gameBoard = ref(generateBoard())
 </script>
 
 <template>
-  <div class="game-board bg-white">
-    <!-- <div v-for="(row,rowIndex) in gameBoard" :key="rowIndex" :class="`flex ${rowIndex % 2 !== 0 ? 'translate-y-odd':''}`">
-      <div v-for="(hexagon,index) in row" class="hexagon-body"></div>
-    </div> -->
-    <div class="flex">
-      <div v-for="(hexagon, index) in 11" :key="index" class="hexagon-body"></div>
+  <div>
+    <div class="time-level flex items-center space-x-7">
+      <div class="time-div flex justify-evenly items-center font-semibold text-2xl"> <span class="time-text"> 00:00
+        </span> </div>
+      <div class="level-div flex justify-center items-center text-white"> Level: {{ level }}</div>
     </div>
-    <div class="translate-y-odd flex">
-      <div v-for="(hexagon, index) in 11" :key="index" class="hexagon-body"></div>
+    <div class="game-board">
+      <div v-for="(row, rowIndex) in gameBoard" :key="rowIndex"
+        :class="`board-row flex w-max ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
+        <div v-for="(hexagon, index) in row" class="hexagon-body"></div>
+      </div>
     </div>
-    <div class="flex translate-y-even">
-      <div v-for="(hexagon, index) in 11" :key="index" class="hexagon-body "></div>
-    </div>
-    <div class="flex translate-y-odd">
-      <div v-for="(hexagon, index) in 11" :key="index" class="hexagon-body"></div>
-    </div>
-    <!-- <div class="game-board pr-4 h-fit">
-              <div v-for="(row, rowIndex) in gameBoard" :key="rowIndex"
-                :class="`board-row flex ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
-                <div v-for="(hexagon, index) in row" :key="index">
-                  <button class="hexagon bg-sky-400 scale-hexagon" :disabled="hexagon.block || hexagon.cat">
-                    <img :src="hexagon.hexagon" @click="" />
-                  </button>
-                </div>
-              </div>
-            </div> -->
   </div>
 </template>
 
 <style scoped>
+.time-level {
+  position: absolute;
+  top: 12%;
+  right: 5%;
+}
+
+.level-div {
+  background-image: url(../assets/trapthecat_asset/level_ic.svg);
+  width: 92px;
+  height: 34px;
+  top: 87px;
+  left: 270px;
+  font: normal normal normal 26px/32px;
+  box-shadow: inset 0px 3px 6px #000000CC;
+  border-radius: 32px;
+  opacity: 1;
+}
+
+.time-div {
+  background-image: url(../assets/trapthecat_asset/time_bar_ic.svg);
+  width: 148px;
+  height: 63px;
+  top: 15%;
+  left: 50%;
+}
+
+.time-text {
+  transform: translate(30%, -10%);
+}
 
 .game-board {
-  width: 100%;
-  height: 440px;
+  max-width: 100%;
+}
+
+.board-row {
+  margin-bottom: -30px;
+  margin-left: 4px;
 }
 
 .hexagon-body {
   background-image: url(../assets/hexagon-pre-test.svg);
   background-size: cover;
-  width:  80px;
+  width: 80px;
   height: 80px;
   clip-path: polygon(50% 6%,
       50% 6%,
@@ -109,11 +121,135 @@ const gameBoard = ref(generateBoard())
   margin-left: -7px;
 }
 
-.translate-y-odd {
-  transform: translate(31px, -35%)
+.translate-x {
+  transform: translate(31px, 0%);
 }
 
-.translate-y-even {
-  /* transform: translate(0,-70%) */
+@media (min-width: 320px) {
+  .game-board {
+    transform: translate(0%, 35%);
+  }
+
+  .board-row {
+    margin-bottom: -14px;
+  }
+
+  .hexagon-body {
+    margin-right: -5px;
+    margin-left: -3px;
+    width: 35px;
+    height: 35px;
+  }
+
+  .translate-x {
+    transform: translate(14px, 0%)
+  }
+}
+
+@media (min-width: 360px) {
+  .game-board {
+    transform: translate(0%, 40%);
+  }
+
+  .board-row {
+    margin-bottom: -15px;
+  }
+
+  .hexagon-body {
+    margin-right: -6px;
+    margin-left: -3px;
+    width: 41px;
+    height: 41px;
+  }
+
+  .translate-x {
+    transform: translate(16px, 0%)
+  }
+}
+
+
+
+@media (min-width: 375px) {
+  .game-board {
+    transform: translate(0%, 40%);
+  }
+
+  .board-row {
+    margin-bottom: -16px;
+  }
+
+  .hexagon-body {
+    margin-right: -6px;
+    margin-left: -4px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .translate-x {
+    transform: translate(18px, 0%)
+  }
+}
+
+@media (min-width: 390px) {
+  .game-board {
+    transform: translate(0%, 45%);
+  }
+
+  .board-row {
+    margin-bottom: -16px;
+  }
+
+  .hexagon-body {
+    margin-right: -6px;
+    margin-left: -4px;
+    width: 43px;
+    height: 43px;
+  }
+
+  .translate-x {
+    transform: translate(17px, 0%)
+  }
+}
+
+@media (min-width: 414px) {
+  .game-board {
+    transform: translate(0%, 50%);
+  }
+
+  .board-row {
+    margin-bottom: -17px;
+  }
+
+  .hexagon-body {
+    margin-right: -7px;
+    margin-left: -3px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .translate-x {
+    transform: translate(17px, 0%)
+  }
+}
+
+@media (min-width: 425px) {
+  .game-board {
+    transform: translate(0%, 20%);
+  }
+
+  .board-row {
+    margin-bottom: -17px;
+  }
+
+  .hexagon-body {
+    margin-right: -7px;
+    margin-left: -4px;
+    width: 47px;
+    height: 47px;
+  }
+
+  .translate-x {
+    transform: translate(18px, 0%)
+  }
 }
 </style>

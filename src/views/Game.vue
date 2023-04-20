@@ -15,6 +15,7 @@ const emit = defineEmits(["toMenu"]);
 
 const level = ref(Number(params.level));
 const isReset = ref(false);
+const isSound = ref(false)
 
 onBeforeMount(() => {
   if (level.value > 3 || level.value < 1) {
@@ -40,30 +41,33 @@ const nextLevel = (level) => {
 };
 
 function winGame() {
-  Swal.fire({
-    icon: "success",
-    allowOutsideClick: false,
-    title: `${props.language === "TH" || props.language === null ? 'คุณชนะ!!!' : 'YOU WIN!!!'} `,
-    text: `${props.language === "TH" || props.language === null ? 'คุณสามรถจับแมวได้' : 'You can catch a cat.'}`,
-    showCancelButton: true,
-    showConfirmButton: level.value === 3 ? false : true,
-    confirmButtonText: `${props.language === "TH" || props.language === null ? 'ต่อไป' : 'Next Level'}`,
-    cancelButtonText: `${props.language === "TH" || props.language === null ? 'ปิด' : 'Closed'}`,
-    reverseButtons: true,
-  }).then((r) => {
-    if (r.isConfirmed) {
-      if (level.value === 1) {
-        nextLevel(2);
-        level.value = 2;
-      } else if (level.value === 2) {
-        nextLevel(3);
-        level.value = 3;
-      }
-    } else {
-      goToMenu();
-    }
-  });
+
+  // Swal.fire({
+  //   icon: "success",
+  //   allowOutsideClick: false,
+  //   title: `${props.language === "TH" || props.language === null ? 'คุณชนะ!!!' : 'YOU WIN!!!'} `,
+  //   text: `${props.language === "TH" || props.language === null ? 'คุณสามรถจับแมวได้' : 'You can catch a cat.'}`,
+  //   showCancelButton: true,
+  //   showConfirmButton: level.value === 3 ? false : true,
+  //   confirmButtonText: `${props.language === "TH" || props.language === null ? 'ต่อไป' : 'Next Level'}`,
+  //   cancelButtonText: `${props.language === "TH" || props.language === null ? 'ปิด' : 'Closed'}`,
+  //   reverseButtons: true,
+  // }).then((r) => {
+  //   if (r.isConfirmed) {
+  //     if (level.value === 1) {
+  //       nextLevel(2);
+  //       level.value = 2;
+  //     } else if (level.value === 2) {
+  //       nextLevel(3);
+  //       level.value = 3;
+  //     }
+  //   } else {
+  //     goToMenu();
+  //   }
+  // });
 }
+
+winGame()
 
 function loseGame() {
   Swal.fire({
@@ -87,30 +91,67 @@ function loseGame() {
 <template>
   <div class="bg-body">
     <!-- <Scence :language="language" :level="level" @winGame="winGame()" @loseGame="loseGame()" :reset="isReset"
-      @reset="isReset = false" /> -->
-      <ScenceEdit/>
-    <!-- <div class="control flex justify-around">
-      <button @click="goToMenu()"
-        class="home-btn px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700">
-        Home
-      </button>
-      <p class="text-4xl font-medium uppercase rounded">
-        {{ language === "TH" || language === null ? `ด่าน ${level}` : `level ${level}` }}
-      </p>
-      <button @click="reset()"
-        class="reset-btn px-6 py-2.5 bg-blue-600 text-white font-medium leading-tight uppercase rounded shadow-md hover:bg-blue-700">
-        {{ language === "TH" || language === null ? "เริ่มใหม่" : "Reset" }}
-      </button>
-    </div> -->
+        @reset="isReset = false" /> -->
+    <div class="win-div absolute"></div>
+    <ScenceEdit :level="level"  @winGame="winGame()" @loseGame="loseGame()" />
+    <div class="control-btn space-y-6">
+      <div class="flex justify-center">
+        <div class="reset-btn1"></div>
+      </div>
+      <div @click="isSound = !isSound" class="flex justify-center">
+        <div v-if="isSound" class="speaker-on-btn"></div>
+        <div v-else class="speaker-off-btn"></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.bg-body{
-  height: 100%;
+
+.win-div{
+  background-image: url(../assets/trapthecat_asset/win_ic.png);
+  background-size: cover;
+  width: 290px;
+  height: 206px;
+  z-index: 1;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
-.control {
-  transform: translate(0px, 50px);
+.speaker-on-btn {
+  background-image: url(../assets/trapthecat_asset/sound_on_ic.svg);
+  background-size: cover;
+  width: 36.46px;
+  height: 41.63px;
+}
+
+.speaker-off-btn {
+  background-image: url(../assets/trapthecat_asset/sound_off_ic.svg);
+  background-size: cover;
+  width: 36.46px;
+  height: 41.63px;
+}
+
+.reset-btn1 {
+  background-image: url(../assets/trapthecat_asset/select_btn.svg);
+  background-size: 100%;
+  width: 141.5px;
+  height: 51.39px;
+}
+
+.reset-btn2 {
+  background-image: url(../assets/trapthecat_asset/select_ic.png);
+  background-size: 100%;
+  width: 141.5px;
+  height: 51.39px;
+}
+
+.bg-body {
+  height: auto;
+}
+
+.control-btn {
+  transform: translate(0%, 200px);
 }
 
 @media (min-width: 300px) {
@@ -135,5 +176,4 @@ function loseGame() {
   .control {
     font-size: 20px;
   }
-}
-</style>
+}</style>

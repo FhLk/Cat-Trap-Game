@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="144.5" height="54.391" viewBox="0 0 144.5 54.391">
+  <g id="_select_ic" data-name=" select_ic" transform="translate(23.5 -1842.305)">
+    <rect id="Rectangle_4244" data-name="Rectangle 4244" width="134" height="48.389" rx="18" transform="translate(-16 1845.307)" fill="#aecb5d" style="mix-blend-mode: multiply;isolation: isolate"/>
+    <g id="Group_11014" data-name="Group 11014" transform="translate(-23.5 1842.305)">
+      <g id="Group_11008" data-name="Group 11008" transform="translate(0 0)">
+        <g id="Group_11005" data-name="Group 11005" transform="translate(1.677 5.03)">
+          <g id="Group_11004" data-name="Group 11004" opacity="0.25">
+            <rect id="Rectangle_4238" data-name="Rectangle 4238" width="134.147" height="41.402" rx="20.701"/>
+          </g>
+        </g>
+        <g id="Group_11007" data-name="Group 11007">
+          <g id="Group_11006" data-name="Group 11006">
+            <rect id="Rectangle_4239" data-name="Rectangle 4239" width="135.823" height="43.079" rx="14" transform="translate(0.839 0.838)" fill="#fd9830"/>
+            <path id="Path_11666" data-name="Path 11666" d="M696.249,126.2a13.718,13.718,0,0,1,13.681,13.675v14.089a13.718,13.718,0,0,1-13.681,13.676H589.426a13.718,13.718,0,0,1-13.681-13.676V139.872A13.718,13.718,0,0,1,589.426,126.2H696.249m0-1.658H589.426a15.354,15.354,0,0,0-15.339,15.333v14.089a15.354,15.354,0,0,0,15.339,15.333H696.249a15.353,15.353,0,0,0,15.338-15.333V139.872a15.353,15.353,0,0,0-15.338-15.333Z" transform="translate(-574.087 -124.539)" fill="#af2771"/>
+          </g>
+        </g>
+        <rect id="Rectangle_4240" data-name="Rectangle 4240" width="127.038" height="38.328" rx="19.164" transform="translate(5.231 1.677)" fill="#fc3"/>
+        <path id="Path_11667" data-name="Path 11667" d="M697.114,134.268H590.321c-7.522,0-13.677,13.227-13.677,13.227v-6.567A13.8,13.8,0,0,1,590.321,127.1H697.114a13.8,13.8,0,0,1,13.677,13.832v6.334S704.636,134.268,697.114,134.268Z" transform="translate(-574.967 -125.419)" fill="#f9fdb1"/>
+        <path id="Path_11668" data-name="Path 11668" d="M589.167,137.243c1.007,1.745,4.134,1.826,6.983.182s4.341-4.393,3.334-6.138-4.134-1.826-6.982-.182S588.16,135.5,589.167,137.243Z" transform="translate(-579.169 -126.392)" fill="#fff"/>
+      </g>
+    </g>
+    <text id="SELECT" transform="translate(7 1875)" fill="#fff" stroke="#8b2869" stroke-width="1" font-size="26" font-family="LuckiestGuy-Regular, Luckiest Guy"><tspan x="0" y="0">SELECT</tspan></text>
+  </g>
+</svg>

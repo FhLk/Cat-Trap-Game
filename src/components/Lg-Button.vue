@@ -24,24 +24,23 @@ const changeLanguage = () => {
 <template>
   <div>
     <div class="flex justify-center">
-      <button
-        @click="changeLanguage()"
-        :class="`${
-          language === `TH` ? 'bg-blue-700' : 'bg-blue-600'
-        } p-3 leading-tight rounded-l-md hover:bg-blue-700`"
-      >
-        <div class="text-white font-medium text-sm">TH</div>
-      </button>
-      <button
-        @click="changeLanguage()"
-        :class="`${
-          language === `EN` ? 'bg-blue-700' : 'bg-blue-600'
-        } p-3 leading-tight rounded-r-md hover:bg-blue-700`"
-      >
-        <div class="text-white font-medium text-sm">EN</div>
-      </button>
+      <div @click="changeLanguage()" v-if="language===`TH`" class="lg-btn-th"></div>
+      <div @click="changeLanguage()" v-else class="lg-btn-en"></div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.lg-btn-th{
+  width: 94px;
+  height: 37px;
+  background-image: url(../assets/trapthecat_asset/th_ic.png);
+  background-size: cover;
+}
+.lg-btn-en{
+  width: 94px;
+  height: 37px;
+  background-image: url(../assets/trapthecat_asset/en_ic.png);
+  background-size: cover;
+}
+</style>

@@ -26,36 +26,23 @@ const openHtp = () => {
 const Router = useRouter();
 const goToGame = async (level) => {
   await api.Play()
+  emit('toGame')
   Router.push({ name: "Game", params: { level: level } });
 };
 </script>
 
 <template>
-  <div class="body text-center">
+  <div class="body-title text-center">
     <Tutorial v-if="isOpen" @closed="openHtp()" />
-    <div class="title space-y-7">
-      <div class="title-name uppercase font-bold">
-        <h1>Trap The Cat</h1>
-      </div>
-      <div class="play space-y-10">
-        <button
-          @click="goToGame(1)"
-          type="button"
-          class="bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
-        >
-          {{ language === "TH" || language === null ? "เล่น" : "Play" }}
-        </button>
-        <div>
-          <button
-            @click="openHtp()"
-            class="bg-blue-600 p-1 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700"
-          >
-            {{
-              language === "TH" || language === null
-                ? "วิธีการเล่น"
-                : "How to play"
-            }}
-          </button>
+    <div class="title">
+      <div class="logo-game absolute"></div>
+      <div class="play absolute space-y-3">
+        <div class="flex justify-center" @click="goToGame(1)">
+          <div class="play-btn"></div>
+        </div>
+        <div @click="openHtp()" class="flex justify-center items-center space-x-1">
+          <div class="htp-btn"></div>
+          <div class="font-medium">{{ language === "TH" || language === null ? "วิธีการเล่น" : "How to play" }}</div>
         </div>
       </div>
     </div>
@@ -63,29 +50,51 @@ const goToGame = async (level) => {
 </template>
 
 <style scoped>
-.body {
-  width: 100%;
+.body-title {
+  height: 100%;
+  background-image: url(../assets/trapthecat_asset/home_bg.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
 }
 
-.language {
-  position: absolute;
-  top: 2%;
-  right: 5%;
+.logo-game {
+  left: 50%;
+  top: 15%;
+  transform: translate(-50%, -5%);
+  width: 250px;
+  height: 135px;
+  background-image: url(../assets/trapthecat_asset/logo.png);
+  background-size: 100% 100%;
 }
 
 .title {
-  transform: translate(0, 25%);
+  height: 100%;
+  left: 50%;
 }
 
-.title-name {
-  font-size: 50px;
+.play {
+  bottom: 20%;
+  left: 50%;
+  transform: translate(-50%, 100%);
 }
 
-.play button {
-  font-size: 100%;
-  height: 60px;
-  width: 100px;
-  padding: 10px;
+.play-btn {
+  width: 142px;
+  height: 51.57px;
+  background-image: url(../assets/trapthecat_asset/play_ic.svg);
+  background-size: cover;
+}
+
+.htp-btn {
+  width: 17px;
+  height: 17px;
+  background-image: url(../assets/trapthecat_asset/info_ic.svg);
+  background-size: 100% 100%;
+}
+
+.font-medium {
+  font-size: 15px;
 }
 
 @media (min-width: 300px) {

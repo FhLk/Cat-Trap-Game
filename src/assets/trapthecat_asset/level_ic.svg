@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="92" height="33.942" viewBox="0 0 92 33.942">
+  <defs>
+    <filter id="level_ic">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.8" result="color"/>
+      <feComposite operator="out" in="SourceGraphic" in2="blur"/>
+      <feComposite operator="in" in="color"/>
+      <feComposite operator="in" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g data-type="innerShadowGroup">
+    <rect id="level_ic-2" data-name="level_ic" width="92" height="33.942" rx="16.971" fill="#7b962e"/>
+    <g transform="matrix(1, 0, 0, 1, 0, 0)" filter="url(#level_ic)">
+      <rect id="level_ic-3" data-name="level_ic" width="92" height="33.942" rx="16.971" fill="#fff"/>
+    </g>
+  </g>
+</svg>

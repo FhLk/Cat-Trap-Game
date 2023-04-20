@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="flex h-screen p-5">
+  <div class="bg-loading flex p-5">
     <div class="space-y-5 w-full loading-body">
       <div class="flex justify-center text-3xl font-medium">
         <p>Loading...</p>
@@ -17,6 +17,13 @@
 </template>
 
 <style scoped>
+.bg-loading{
+  height: 100%;
+  background-image: url(../assets/trapthecat_asset/play_bg.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
 .loading-body {
   transform: translate(0, 35%);
 }

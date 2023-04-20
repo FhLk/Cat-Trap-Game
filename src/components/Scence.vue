@@ -28,8 +28,8 @@ const level = ref(props.level);
 const emit = defineEmits(["loseGame", "winGame", "reset"]);
 
 const time = ref(10);
-const hexagon_normal = "./hexagon-white.svg";
-const hexagon_disable = "./hexagon.svg";
+const hexagon_normal = "./hexagon-pre-test.svg";
+const hexagon_disable = "./hexagon-pre-test.svg";
 // Generate Board 11x11
 // attribute ->
 // x: Position on X
@@ -99,7 +99,7 @@ const RandomBlock = (Q) => {
     while (partBlocks.size < countBlocks) {
       const block =
         part[Math.floor(Math.random() * part.length)][
-          Math.floor(Math.random() * part[0].length)
+        Math.floor(Math.random() * part[0].length)
         ];
       block.hexagon = hexagon_disable;
       block.block = true;
@@ -364,7 +364,7 @@ const gameSetup = () => {
   // generate destination position
   let destination =
     setDestination.value[
-      Math.floor(Math.random() * setDestination.value.length)
+    Math.floor(Math.random() * setDestination.value.length)
     ];
   // calculate the paht
   start.value = gameBoard.value[5][5];
@@ -413,7 +413,7 @@ const startTime = () => {
       catMove();
       resetTime();
     }
-    time.value--;
+    // time.value--;
   }, 1000);
 };
 startTime();
@@ -493,50 +493,34 @@ const moveRightBottom = () => {
 </script>
 
 <template>
-  <!-- <p>{{ p }}</p> -->
-  <div class="bg-[#5f9ea0] pt-5">
+  <div class="pt-5">
     <div>
       <p class="time font-medium flex justify-center">
         {{
-          `${
-            language === "TH" || language === null ? "เวลา" : "Time"
+          `${language === "TH" || language === null ? "เวลา" : "Time"
           } : ${time}`
         }}
       </p>
     </div>
     <div class="game-board pr-4 h-fit">
-      <div
-        v-for="(row, rowIndex) in gameBoard"
-        :key="rowIndex"
-        :class="`board-row flex ${
-          rowIndex % 2 !== 0
-            ? 'translate-x'
-            : `${cat.x % 2 !== 0 ? '-z-10' : 'z-10'}`
-        }`"
-      >
+      <div v-for="(row, rowIndex) in gameBoard" :key="rowIndex" :class="`board-row flex ${rowIndex % 2 !== 0
+          ? 'translate-x'
+          : `${cat.x % 2 !== 0 ? '-z-10' : 'z-10'}`
+        }`">
         <div v-for="(hexagon, index) in row" :key="index">
-          <div
-            :class="`cat-crop z-10 absolute ${
-              hexagon !== cat
-                ? ''
-                : `cat-stand
-            ${isRight ? 'move-right' : ''}
-            ${isLeft ? 'move-left' : ''}
-            ${isRight_Top ? 'move-top-right' : ''}
-            ${isLeft_Top ? 'move-top-left' : ''}
-            ${isLeft_Bottom ? 'move-bottom-left' : ''}
-            ${isRight_Bottom ? 'move-bottom-right' : ''}`
+          <div :class="`cat-crop z-10 absolute ${hexagon !== cat
+              ? ''
+              : `cat-stand
+                        ${isRight ? 'move-right' : ''}
+                        ${isLeft ? 'move-left' : ''}
+                        ${isRight_Top ? 'move-top-right' : ''}
+                        ${isLeft_Top ? 'move-top-left' : ''}
+                        ${isLeft_Bottom ? 'move-bottom-left' : ''}
+                        ${isRight_Bottom ? 'move-bottom-right' : ''}`
             } 
-            `"
-          ></div>
-          <button
-            class="hexagon scale-hexagon"
-            :disabled="hexagon.block || hexagon.cat"
-          >
-            <img
-              :src="hexagon.hexagon"
-              @click="selectHexagon(rowIndex, index)"
-            />
+                        `"></div>
+          <button class="hexagon bg-black scale-hexagon" :disabled="hexagon.block || hexagon.cat">
+            <img :src="hexagon.hexagon" @click="selectHexagon(rowIndex, index)" />
           </button>
         </div>
       </div>
@@ -563,6 +547,7 @@ const moveRightBottom = () => {
   0% {
     clip-path: inset(0% 0% 0% 0%);
   }
+
   100% {
     background-position-x: -894px;
     clip-path: inset(0% 0% 0% 0%);
@@ -630,23 +615,21 @@ const moveRightBottom = () => {
 }
 
 .hexagon {
-  clip-path: polygon(
-    46% 0,
-    54% 0,
-    97% 26%,
-    97% 74%,
-    54% 100%,
-    46% 100%,
-    3% 75%,
-    3% 26%
-  );
+  clip-path: polygon(46% 0,
+      54% 0,
+      97% 26%,
+      97% 74%,
+      54% 100%,
+      46% 100%,
+      3% 75%,
+      3% 26%);
 }
+
 .game-board {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  transform-origin: 0px 0px;
-  transform: translate(0%, 7%);
+  transform: translate(0%, 100%);
 }
 
 .translate-x {
@@ -670,6 +653,7 @@ const moveRightBottom = () => {
     height: 27px;
     width: 27px;
   }
+
   .cat-stand {
     transform: scale(0.45) translate(-65px, -95px);
   }
@@ -678,6 +662,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-29px) translateY(-44px) scale(-0.45, 0.45);
     }
+
     100% {
       transform: translateX(-6px) translateY(-44px) scale(-0.45, 0.45);
     }
@@ -687,6 +672,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-29px) translateY(-44px) scale(-0.45, 0.45);
     }
+
     100% {
       transform: translateX(-20px) translateY(-67px) scale(-0.45, 0.45);
     }
@@ -696,6 +682,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-29px) translateY(-44px) scale(-0.45, 0.45);
     }
+
     100% {
       transform: translateX(-19px) translateY(-22px) scale(-0.45, 0.45);
     }
@@ -705,6 +692,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-29px) translateY(-44px) scale(0.45, 0.45);
     }
+
     100% {
       transform: translateX(-56px) translateY(-44px) scale(0.45, 0.45);
     }
@@ -714,6 +702,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-29px) translateY(-44px) scale(0.45, 0.45);
     }
+
     100% {
       transform: translateX(-42px) translateY(-67px) scale(0.45, 0.45);
     }
@@ -723,6 +712,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-29px) translateY(-44px) scale(0.45, 0.45);
     }
+
     100% {
       transform: translateX(-43px) translateY(-20px) scale(0.45, 0.45);
     }
@@ -757,6 +747,7 @@ const moveRightBottom = () => {
     height: 32px;
     width: 32px;
   }
+
   .cat-stand {
     transform: scale(0.5) translate(-53px, -80px);
   }
@@ -765,6 +756,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
     }
+
     100% {
       transform: translateX(2px) translateY(-42px) scale(-0.5, 0.5);
     }
@@ -774,6 +766,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
     }
+
     100% {
       transform: translateX(-14px) translateY(-70px) scale(-0.5, 0.5);
     }
@@ -783,6 +776,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.5, 0.5);
     }
+
     100% {
       transform: translateX(-14px) translateY(-15px) scale(-0.5, 0.5);
     }
@@ -792,6 +786,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.5, 0.5);
     }
+
     100% {
       transform: translateX(-60px) translateY(-42px) scale(0.5, 0.5);
     }
@@ -801,6 +796,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.5, 0.5);
     }
+
     100% {
       transform: translateX(-43px) translateY(-70px) scale(0.5, 0.5);
     }
@@ -810,6 +806,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.5, 0.5);
     }
+
     100% {
       transform: translateX(-43px) translateY(-15px) scale(0.5, 0.5);
     }
@@ -838,6 +835,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
+
     100% {
       transform: translateX(3px) translateY(-44px) scale(-0.55, 0.55);
     }
@@ -847,6 +845,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
+
     100% {
       transform: translateX(-13px) translateY(-72px) scale(-0.55, 0.55);
     }
@@ -856,6 +855,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
+
     100% {
       transform: translateX(-13px) translateY(-15px) scale(-0.55, 0.55);
     }
@@ -865,6 +865,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
     }
+
     100% {
       transform: translateX(-60px) translateY(-42px) scale(0.55, 0.55);
     }
@@ -874,6 +875,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
     }
+
     100% {
       transform: translateX(-43px) translateY(-70px) scale(0.55, 0.55);
     }
@@ -883,6 +885,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
     }
+
     100% {
       transform: translateX(-42px) translateY(-15px) scale(0.55, 0.55);
     }
@@ -895,12 +898,12 @@ const moveRightBottom = () => {
   }
 
   .board-row {
-    height: 30px;
+    height: 20px;
   }
 
   .scale-hexagon {
-    height: 35px;
-    width: 35px;
+    height: 37px;
+    width: 32px;
   }
 
   .cat-stand {
@@ -911,6 +914,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.6, 0.6);
     }
+
     100% {
       transform: translateX(5px) translateY(-42px) scale(-0.6, 0.6);
     }
@@ -920,6 +924,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.6, 0.6);
     }
+
     100% {
       transform: translateX(-12px) translateY(-75px) scale(-0.6, 0.6);
     }
@@ -929,6 +934,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.6, 0.6);
     }
+
     100% {
       transform: translateX(-10px) translateY(-15px) scale(-0.6, 0.6);
     }
@@ -938,6 +944,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.6, 0.6);
     }
+
     100% {
       transform: translateX(-60px) translateY(-42px) scale(0.6, 0.6);
     }
@@ -947,6 +954,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.6, 0.6);
     }
+
     100% {
       transform: translateX(-43px) translateY(-75px) scale(0.6, 0.6);
     }
@@ -956,6 +964,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.6, 0.6);
     }
+
     100% {
       transform: translateX(-42px) translateY(-15px) scale(0.6, 0.6);
     }
@@ -984,6 +993,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
+
     100% {
       transform: translateX(5px) translateY(-42px) scale(-0.55, 0.55);
     }
@@ -993,6 +1003,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
+
     100% {
       transform: translateX(-12px) translateY(-75px) scale(-0.55, 0.55);
     }
@@ -1002,6 +1013,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-0.55, 0.55);
     }
+
     100% {
       transform: translateX(-10px) translateY(-15px) scale(-0.55, 0.55);
     }
@@ -1011,6 +1023,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
     }
+
     100% {
       transform: translateX(-60px) translateY(-42px) scale(0.55, 0.55);
     }
@@ -1020,6 +1033,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
     }
+
     100% {
       transform: translateX(-43px) translateY(-75px) scale(0.55, 0.55);
     }
@@ -1029,6 +1043,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(0.55, 0.55);
     }
+
     100% {
       transform: translateX(-42px) translateY(-15px) scale(0.55, 0.55);
     }
@@ -1041,9 +1056,11 @@ const moveRightBottom = () => {
     padding-right: 4%;
     transform: translate(0%, 3%);
   }
+
   .board-row {
     height: 54px;
   }
+
   .scale-hexagon {
     height: 64px;
     width: 64px;
@@ -1061,6 +1078,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-1, 1);
     }
+
     100% {
       transform: translateX(47px) translateY(-35px) scale(-1, 1);
     }
@@ -1070,6 +1088,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-1, 1);
     }
+
     100% {
       transform: translateX(15px) translateY(-90px) scale(-1, 1);
     }
@@ -1079,6 +1098,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-1, 1);
     }
+
     100% {
       transform: translateX(15px) translateY(20px) scale(-1, 1);
     }
@@ -1088,6 +1108,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px);
     }
+
     100% {
       transform: translateX(-73px) translateY(-35px);
     }
@@ -1097,6 +1118,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px);
     }
+
     100% {
       transform: translateX(-40px) translateY(-90px);
     }
@@ -1106,6 +1128,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px);
     }
+
     100% {
       transform: translateX(-42px) translateY(20px);
     }
@@ -1167,10 +1190,12 @@ const moveRightBottom = () => {
   .board-row {
     height: 62px;
   }
+
   .scale-hexagon {
     height: 75px;
     width: 75px;
   }
+
   .time {
     font-size: 50px;
   }
@@ -1183,6 +1208,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-1.3, 1.3);
     }
+
     100% {
       transform: translateX(63px) translateY(-40px) scale(-1.3, 1.3);
     }
@@ -1192,6 +1218,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-1.3, 1.3);
     }
+
     100% {
       transform: translateX(25px) translateY(-100px) scale(-1.3, 1.3);
     }
@@ -1201,6 +1228,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(-1.3, 1.3);
     }
+
     100% {
       transform: translateX(25px) translateY(20px) scale(-1.3, 1.3);
     }
@@ -1210,6 +1238,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(1.3, 1.3);
     }
+
     100% {
       transform: translateX(-78px) translateY(-40px) scale(1.3, 1.3);
     }
@@ -1219,6 +1248,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(1.3, 1.3);
     }
+
     100% {
       transform: translateX(-40px) translateY(-100px) scale(1.3, 1.3);
     }
@@ -1228,6 +1258,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scale(1.3, 1.3);
     }
+
     100% {
       transform: translateX(-42px) translateY(20px) scale(1.3, 1.3);
     }
@@ -1244,6 +1275,7 @@ const moveRightBottom = () => {
   .board-row {
     height: 53px;
   }
+
   .scale-hexagon {
     height: 65px;
     width: 65px;
@@ -1257,6 +1289,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scaleX(-1);
     }
+
     100% {
       transform: translateX(45px) translateY(-40px) scaleX(-1);
     }
@@ -1266,6 +1299,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scaleX(-1);
     }
+
     100% {
       transform: translateX(15px) translateY(-90px) scaleX(-1);
     }
@@ -1275,6 +1309,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px) scaleX(-1);
     }
+
     100% {
       transform: translateX(15px) translateY(15px) scaleX(-1);
     }
@@ -1284,6 +1319,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px);
     }
+
     100% {
       transform: translateX(-70px) translateY(-40px);
     }
@@ -1293,6 +1329,7 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px);
     }
+
     100% {
       transform: translateX(-40px) translateY(-90px);
     }
@@ -1302,9 +1339,9 @@ const moveRightBottom = () => {
     0% {
       transform: translateX(-18px) translateY(-40px);
     }
+
     100% {
       transform: translateX(-35px) translateY(10px);
     }
   }
-}
-</style>
+}</style>

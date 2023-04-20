@@ -2,9 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html, body {
   position: relative;
+  /* overflow: hidden; */
   height: 100%;
-  overflow: hidden;
-  background-color: #5f9ea0;
+  background-image: url(../assets/trapthecat_asset/play_bg.png);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
 }

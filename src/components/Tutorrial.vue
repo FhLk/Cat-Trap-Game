@@ -17,7 +17,7 @@ const emit = defineEmits(["closed"]);
 </script>
 
 <template>
-  <div class="bg-tutorial absolute h-screen">
+  <div class="bg-tutorial absolute">
     <swiper class="rounded-2xl" :pagination="true" :modules="modules">
       <swiper-slide>
         <div class="text-center">
@@ -89,6 +89,7 @@ const emit = defineEmits(["closed"]);
   z-index: 1;
   background-color: rgb(0, 0, 0, 0.8);
   width: 100%;
+  height: 100%;
 }
 .swiper {
   position: absolute;

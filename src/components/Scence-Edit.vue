@@ -55,10 +55,16 @@ const gameBoard = ref(generateBoard())
       <div class="level-div flex justify-center items-center text-white"> Level: {{ level }}</div>
     </div>
     <div class="game-board">
+      <!-- <div class="cat-stand absolute z-10">
+        </div> -->
       <div v-for="(row, rowIndex) in gameBoard" :key="rowIndex"
-        :class="`board-row flex w-max ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
-        <div v-for="(hexagon, index) in row" class="hexagon-body"></div>
-      </div>
+          :class="`board-row flex w-max ${rowIndex % 2 !== 0 ? 'translate-x' : ''}`">
+          <!-- <div class="cat-stand absolute z-10"></div> -->
+          <div v-for="(hexagon, index) in row" class="">
+            <div @click="$emit('loseGame')" class="hexagon-body"></div>
+          </div>
+        </div>
+
     </div>
   </div>
 </template>
@@ -76,7 +82,7 @@ const gameBoard = ref(generateBoard())
   height: 34px;
   top: 87px;
   left: 270px;
-  font: normal normal normal 26px/32px;
+  font: normal normal normal 26px/32px DBHeavent;
   box-shadow: inset 0px 3px 6px #000000CC;
   border-radius: 32px;
   opacity: 1;
@@ -91,7 +97,8 @@ const gameBoard = ref(generateBoard())
 }
 
 .time-text {
-  transform: translate(30%, -10%);
+  transform: translate(40%, -10%);
+  font: normal normal 20px/25px HelveticaNeue;
 }
 
 .game-board {
@@ -101,6 +108,22 @@ const gameBoard = ref(generateBoard())
 .board-row {
   margin-bottom: -30px;
   margin-left: 4px;
+}
+
+.cat-stand {
+  background-image: url(../assets/cat/cat_sprite_animation_test.png);
+  width: 80px;
+  height: 69px;
+  background-position-x: -88px;
+  background-position-y: 105px;
+  /* animation: play .8s steps(8) infinite */
+  /* transform: scale(.4); */
+}
+
+@keyframes play {
+  100% {
+    background-position-x: -625px;
+  }
 }
 
 .hexagon-body {

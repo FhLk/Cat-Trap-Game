@@ -5,6 +5,7 @@ import { onBeforeMount, ref } from "vue";
 import Swal from "sweetalert2";
 import API from "../components/api";
 import ScenceEdit from "../components/Scence-Edit.vue";
+import ResultPopup from "../components/ResultPopup.vue";
 let { params } = useRoute();
 
 const props = defineProps({
@@ -40,8 +41,14 @@ const nextLevel = (level) => {
   Router.push({ name: "Game", params: { level: level } });
 };
 
+const result = ref({
+  win: undefined,
+  lose: undefined
+})
+console.log(result.value);
 function winGame() {
-
+  result.value = true
+  console.log(result.value);
   // Swal.fire({
   //   icon: "success",
   //   allowOutsideClick: false,
@@ -67,24 +74,24 @@ function winGame() {
   // });
 }
 
-winGame()
-
 function loseGame() {
-  Swal.fire({
-    icon: "error",
-    allowOutsideClick: false,
-    title: `${props.language === "TH" || props.language === null ? 'คุณแพ้!!!' : 'YOU LOSE!!!'}`,
-    text: `${props.language === "TH" || props.language === null ? 'คุณปล่อยให้แมวหนีไปได้' : 'You let the cat escape.'}`,
-    showCancelButton: true,
-    confirmButtonText: `${props.language === "TH" || props.language === null ? 'ปิด' : 'Closed'}`,
-    cancelButtonText: `${props.language === "TH" || props.language === null ? 'ลองใหม่' : 'Try Agian'}`,
-  }).then((r) => {
-    if (r.dismiss) {
-      isReset.value = true;
-    } else {
-      goToMenu();
-    }
-  });
+  result.value = false
+  console.log(result.value);
+  // Swal.fire({
+  //   icon: "error",
+  //   allowOutsideClick: false,
+  //   title: `${props.language === "TH" || props.language === null ? 'คุณแพ้!!!' : 'YOU LOSE!!!'}`,
+  //   text: `${props.language === "TH" || props.language === null ? 'คุณปล่อยให้แมวหนีไปได้' : 'You let the cat escape.'}`,
+  //   showCancelButton: true,
+  //   confirmButtonText: `${props.language === "TH" || props.language === null ? 'ปิด' : 'Closed'}`,
+  //   cancelButtonText: `${props.language === "TH" || props.language === null ? 'ลองใหม่' : 'Try Agian'}`,
+  // }).then((r) => {
+  //   if (r.dismiss) {
+  //     isReset.value = true;
+  //   } else {
+  //     goToMenu();
+  //   }
+  // });
 }
 </script>
 
@@ -92,12 +99,12 @@ function loseGame() {
   <div class="bg-body">
     <!-- <Scence :language="language" :level="level" @winGame="winGame()" @loseGame="loseGame()" :reset="isReset"
         @reset="isReset = false" /> -->
-    <div class="win-div absolute"></div>
+    <ResultPopup :isResult="result"/>
     <ScenceEdit :level="level"  @winGame="winGame()" @loseGame="loseGame()" />
     <div class="control-btn space-y-6">
-      <div class="flex justify-center">
+      <!-- <div class="flex justify-center">
         <div class="reset-btn1"></div>
-      </div>
+      </div> -->
       <div @click="isSound = !isSound" class="flex justify-center">
         <div v-if="isSound" class="speaker-on-btn"></div>
         <div v-else class="speaker-off-btn"></div>
@@ -107,17 +114,6 @@ function loseGame() {
 </template>
 
 <style scoped>
-
-.win-div{
-  background-image: url(../assets/trapthecat_asset/win_ic.png);
-  background-size: cover;
-  width: 290px;
-  height: 206px;
-  z-index: 1;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-}
 .speaker-on-btn {
   background-image: url(../assets/trapthecat_asset/sound_on_ic.svg);
   background-size: cover;

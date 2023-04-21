@@ -12,3 +12,13 @@ html, body {
   background-attachment: fixed;
   background-size: 100% auto;
 }
+
+@font-face {
+  font-family: 'DBHeavent';
+  src: url(../assets/font/DBHeavent-Med.ttf);
+}
+
+@font-face {
+  font-family: 'HelveticaNeue';
+  src: url(../assets/font/HelveticaNeue-Bold.ttf);
+}

@@ -1,0 +1,16 @@
+<svg id="popup_btn" xmlns="http://www.w3.org/2000/svg" width="169.102" height="46.701" viewBox="0 0 169.102 46.701">
+  <g id="Group_11005" data-name="Group 11005" transform="translate(1.687 5.059)">
+    <g id="Group_11004" data-name="Group 11004" opacity="0.25">
+      <rect id="Rectangle_4238" data-name="Rectangle 4238" width="165.73" height="41.642" rx="20.821"/>
+    </g>
+  </g>
+  <g id="Group_11007" data-name="Group 11007">
+    <g id="Group_11006" data-name="Group 11006">
+      <rect id="Rectangle_4239" data-name="Rectangle 4239" width="167.416" height="43.328" rx="16.78" transform="translate(0.844 0.843)" fill="#fd9830"/>
+      <path id="Path_11666" data-name="Path 11666" d="M724.326,126.207c9.253,0,16.825,6.189,16.825,13.754v14.171c0,7.565-7.572,13.755-16.825,13.755H592.952c-9.254,0-16.825-6.189-16.825-13.755V139.961c0-7.565,7.571-13.754,16.825-13.754H724.326m0-1.668H592.952c-10.4,0-18.865,6.918-18.865,15.422v14.171c0,8.5,8.463,15.422,18.865,15.422H724.326c10.4,0,18.863-6.918,18.863-15.422V139.961c0-8.5-8.462-15.422-18.863-15.422Z" transform="translate(-574.087 -124.539)" fill="#af2771"/>
+    </g>
+  </g>
+  <rect id="Rectangle_4240" data-name="Rectangle 4240" width="158.58" height="38.55" rx="19.275" transform="translate(5.261 1.686)" fill="#fc3"/>
+  <path id="Path_11667" data-name="Path 11667" d="M725.477,134.31H593.541c-9.293,0-16.9,13.3-16.9,13.3v-6.6c0-7.652,7.6-13.912,16.9-13.912H725.477c9.293,0,16.9,6.26,16.9,13.912v6.371S734.77,134.31,725.477,134.31Z" transform="translate(-574.957 -125.409)" fill="#f9fdb1"/>
+  <path id="Path_11668" data-name="Path 11668" d="M589.169,137.286c1.013,1.755,4.158,1.837,7.023.183s4.367-4.419,3.353-6.173-4.157-1.837-7.023-.183S588.156,135.53,589.169,137.286Z" transform="translate(-579.113 -126.372)" fill="#fff"/>
+</svg>

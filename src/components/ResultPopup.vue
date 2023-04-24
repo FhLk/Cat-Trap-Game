@@ -5,14 +5,16 @@ const props = defineProps({
     isResult : Boolean
 })
 
+const emit = defineEmits(['close'])
+
 const isWin = ref(props.isResult)
 </script>
 
 <template>
-    <div v-if="!isResult" class="h-full text-center w-full absolute z-10">
+    <div v-if="isResult" class="h-full text-center w-full absolute z-10">
         <!-- <div class="win-div absolute"></div> -->
         <div class="result-div flex justify-center items-center absolute">
-            <div @click="isResult = false" class="close-btn absolute"></div>
+            <div @click="isResult = false,$emit('close')" class="close-btn absolute"></div>
             <div :class="`${isWin ? 'aunjai-win':'aunjai-cry'} absolute`"></div>
             <div class="win-text-header absolute"> {{isWin ? 'ยินดีด้วย':'เสียใจด้วย'}}
                 <div class="win-text-body">{{ isWin ? 'คุณชนะ สามารถดักจับแมวได้':'คุณแพ้ ลองใหม่อีกครั้ง' }}</div>

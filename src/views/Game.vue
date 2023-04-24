@@ -41,14 +41,9 @@ const nextLevel = (level) => {
   Router.push({ name: "Game", params: { level: level } });
 };
 
-const result = ref({
-  win: undefined,
-  lose: undefined
-})
-console.log(result.value);
+const result = ref(false)
 function winGame() {
   result.value = true
-  console.log(result.value);
   // Swal.fire({
   //   icon: "success",
   //   allowOutsideClick: false,
@@ -75,8 +70,7 @@ function winGame() {
 }
 
 function loseGame() {
-  result.value = false
-  console.log(result.value);
+  result.value = true
   // Swal.fire({
   //   icon: "error",
   //   allowOutsideClick: false,
@@ -99,7 +93,7 @@ function loseGame() {
   <div class="bg-body">
     <!-- <Scence :language="language" :level="level" @winGame="winGame()" @loseGame="loseGame()" :reset="isReset"
         @reset="isReset = false" /> -->
-    <ResultPopup :isResult="result"/>
+    <ResultPopup :isResult="result" @close="result = false"/>
     <ScenceEdit :level="level"  @winGame="winGame()" @loseGame="loseGame()" />
     <div class="control-btn space-y-6">
       <!-- <div class="flex justify-center">

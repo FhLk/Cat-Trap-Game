@@ -233,7 +233,6 @@ const selectHexagon = (row, index) => {
     // If player can catch the cat is exception that mean player win
     clearInterval(setTimer.value);
     emit("winGame");
-    // winGame();
     return;
   }
 };
@@ -419,7 +418,7 @@ const startTime = () => {
 startTime();
 
 const resetTime = () => {
-  time.value = 10;
+  time.value = 11;
 };
 
 const isRight = ref(false);
@@ -502,7 +501,7 @@ const moveRightBottom = () => {
 <template>
   <div>
     <div class="time-level flex items-center space-x-7">
-      <div class="time-div flex justify-evenly items-center font-semibold text-2xl"> <span class="time-text"> 00:00
+      <div class="time-div flex justify-evenly items-center font-semibold text-2xl"> <span class="time-text "> {{ time }}
         </span> </div>
       <div class="level-div flex justify-center items-center text-white"> Level: {{ level }}</div>
     </div>
@@ -511,12 +510,8 @@ const moveRightBottom = () => {
           ? 'translate-x'
           : `${cat.x % 2 !== 0 ? '-z-10' : 'z-10'}`
         }`">
-        <!-- <div v-for="(row, rowIndex) in gameBoard" :key="rowIndex" :class="`board-row flex w-max ${rowIndex % 2 !== 0
-          ? 'translate-x'
-          : ''}
-        }`"> -->
         <div v-for="(hexagon, index) in row">
-          <div :class="`absolute bg-sky-400 z-10 ${hexagon !== cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}  ${isRight ? 'move-right' : ''}
+          <div :class="`absolute z-10 ${hexagon !== cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}  ${isRight ? 'move-right' : ''}
                                                                 ${isLeft ? 'move-left' : ''}
                                                                 ${isRight_Top ? 'move-top-right' : ''}
                                                                 ${isLeft_Top ? 'move-top-left' : ''}
@@ -560,7 +555,7 @@ const moveRightBottom = () => {
 }
 
 .time-text {
-  transform: translate(40%, -10%);
+  transform: translate(70%, -10%);
   font: normal normal 20px/25px HelveticaNeue;
 }
 
@@ -580,6 +575,7 @@ const moveRightBottom = () => {
   width: 96px;
   height: 112px;
   transform: scale(.4) translate(-80%, -90%);
+  clip-path: polygon(95% 0, 91% 96%, 0 96%, 0 61%, 15% 38%, 7% 15%, 22% 19%, 33% 42%, 51% 30%, 48% 0);
 }
 
 .cat-stand-flip {
@@ -587,6 +583,7 @@ const moveRightBottom = () => {
   width: 96px;
   height: 112px;
   transform: scale(-.4, .4) translate(80%, -90%);
+  clip-path: polygon(95% 0, 91% 96%, 0 96%, 0 61%, 15% 38%, 7% 15%, 22% 19%, 33% 42%, 51% 30%, 48% 0);
 }
 
 .move-right {
@@ -594,6 +591,7 @@ const moveRightBottom = () => {
   width: 150px;
   height: calc(1203px/8);
   animation: moveRight 0.7s ease-out forwards, jump 0.7s steps(8) alternate;
+  clip-path: inset(0 0 15% 0)
 }
 
 .move-top-right {
@@ -601,6 +599,7 @@ const moveRightBottom = () => {
   width: 150px;
   height: calc(1203px/8);
   animation: moveRight-Top 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  clip-path: inset(0 0 15% 0)
 }
 
 .move-bottom-right {
@@ -608,6 +607,7 @@ const moveRightBottom = () => {
   width: 150px;
   height: calc(1203px/8);
   animation: moveRight-Bottom 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  clip-path: inset(0 0 15% 0)
 }
 
 .move-left {
@@ -615,6 +615,7 @@ const moveRightBottom = () => {
   width: 150px;
   height: calc(1203px/8);
   animation: moveLeft 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  clip-path: inset(0 0 15% 0)
 }
 
 .move-top-left {
@@ -622,6 +623,7 @@ const moveRightBottom = () => {
   width: 150px;
   height: calc(1203px/8);
   animation: moveLeft-Top 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  clip-path: inset(0 0 15% 0)
 }
 
 .move-bottom-left {
@@ -629,6 +631,7 @@ const moveRightBottom = () => {
   width: 150px;
   height: calc(1203px/8);
   animation: moveLeft-Bottom 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  clip-path: inset(0 0 15% 0)
 }
 
 
@@ -817,11 +820,11 @@ const moveRightBottom = () => {
 
 @media (min-width: 414px) {
   .game-board {
-    transform: translate(0%, 50%);
+    transform: translate(0%, 45%);
   }
 
   .board-row {
-    margin-bottom: -22px;
+    margin-bottom: -20px;
   }
 
   .hexagon-body {

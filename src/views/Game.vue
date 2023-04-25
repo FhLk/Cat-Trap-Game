@@ -24,26 +24,31 @@ onBeforeMount(() => {
   }
 });
 
-const reset = () => {
+const reset = (r) => {
   isReset.value = true;
-  emit("toMenu");
+  result.value = false;
 };
 
 const api = new API()
 const Router = useRouter();
 const goToMenu = async () => {
   await api.RewardInfo()
+  result.value = false;
   Router.push({ name: "Home" });
   emit("toMenu");
 };
 
-const nextLevel = (level) => {
-  Router.push({ name: "Game", params: { level: level } });
+const nextLevel = () => {
+  result.value = false;
+  level.value++
+  Router.push({ name: "Game", params: { level: level.value } });
 };
 
 const result = ref(false)
+const isWin = ref(false)
 function winGame() {
   result.value = true
+  isWin.value = true
   // Swal.fire({
   //   icon: "success",
   //   allowOutsideClick: false,
@@ -71,6 +76,8 @@ function winGame() {
 
 function loseGame() {
   result.value = true
+  isWin.value = false
+  // isReset.value =true
   // Swal.fire({
   //   icon: "error",
   //   allowOutsideClick: false,
@@ -93,12 +100,9 @@ function loseGame() {
   <div class="bg-body">
     <!-- <Scence :language="language" :level="level" @winGame="winGame()" @loseGame="loseGame()" :reset="isReset"
         @reset="isReset = false" /> -->
-    <ResultPopup :isResult="result" @close="result = false"/>
-    <ScenceEdit :level="level"  @winGame="winGame()" @loseGame="loseGame()" />
+    <ResultPopup :level="level" :isResult="result" :is-win="isWin" @close="goToMenu()" @next="nextLevel"  @reset="reset" />
+    <ScenceEdit :reset="isReset" :level="level" @reset="isReset = false" @winGame="winGame()"  @loseGame="loseGame()" />
     <div class="control-btn space-y-6">
-      <!-- <div class="flex justify-center">
-        <div class="reset-btn1"></div>
-      </div> -->
       <div @click="isSound = !isSound" class="flex justify-center">
         <div v-if="isSound" class="speaker-on-btn"></div>
         <div v-else class="speaker-off-btn"></div>

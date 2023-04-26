@@ -10,7 +10,7 @@
   "dependencies": {
     "howler": "^2.2.3",
     "sweetalert2": "^11.7.1",
-    "swiper": "^9.1.1",
+    "swiper": "^9.2.4",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },

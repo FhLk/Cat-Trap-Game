@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+html,
+body {
   position: relative;
   /* overflow: hidden; */
   height: 100%;
@@ -13,12 +14,24 @@ html, body {
   background-size: 100% auto;
 }
 
+.swiper-pagination-bullet-active  {
+  background-color: #ecf435 !important;
+  width: 10px !important;
+  height: 10px !important;
+}
+
+.swiper-pagination-bullet {
+  opacity: 1 !important;
+  width: 10px !important;
+  height: 10px !important;
+}
+
 @font-face {
-  font-family: 'DBHeavent';
+  font-family: "DBHeavent";
   src: url(../assets/font/DBHeavent-Med.ttf);
 }
 
 @font-face {
-  font-family: 'HelveticaNeue';
+  font-family: "HelveticaNeue";
   src: url(../assets/font/HelveticaNeue-Bold.ttf);
 }

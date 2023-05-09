@@ -25,7 +25,6 @@ const openHtp = () => {
 
 const Router = useRouter();
 const goToGame = async (level) => {
-  await api.Play()
   emit('toGame')
   Router.push({ name: "Game", params: { level: level } });
 };

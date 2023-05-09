@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeMount, ref, onBeforeUpdate } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
+import API from "../components/api";
 
 const props = defineProps({
   level: {
@@ -15,10 +16,10 @@ onBeforeUpdate(() => {
   if (props.reset) {
     resetGame();
     gameSetup();
-    path.value = aStar(start.value, end.value);
-    if (path.value.length === 0) {
-      path.value = aStar(start.value, end.value);
-    }
+    // path.value = aStar(start.value, end.value);
+    // if (path.value.length === 0) {
+    //   path.value = aStar(start.value, end.value);
+    // }
     emit("reset", false);
   }
 });
@@ -29,192 +30,9 @@ const emit = defineEmits(["loseGame", "winGame", "reset"]);
 
 const time = ref(10);
 const hexagon_normal = "./hexagon-pre-test.svg";
-const hexagon_disable = ['./candy1.svg', './candy2.svg', './candy3.svg', './candy4.svg', './candy5.svg', './candy6.svg', './candy7.svg',];
-// Generate Board 11x11
-// attribute ->
-// x: Position on X
-// y: Position on Y
-// hexagon: (img)
-// block: Is block ?
-// cat: Is cat ?
-const generateBoard = () => {
-  return new Array(11).fill().map((_, i) =>
-    new Array(11).fill().map((_, j) => ({
-      x: i,
-      y: j,
-      hexagon: hexagon_normal,
-      block: false,
-      cat: false,
-    }))
-  );
-};
-
-// Divide Board to 4 part for generate blocks
-const divideBoardIntoFour = (gameBoard) => {
-  const Q_TOP = gameBoard.slice(0, 5);
-  const Q_BOTTOM = gameBoard.slice(6, 11);
-  const Q1 = [];
-  const Q2 = [];
-  const Q3 = [];
-  const Q4 = [];
-  for (let i = 0; i < Q_TOP.length; i++) {
-    Q1.push(Q_TOP[i].slice(0, 5));
-    Q2.push(Q_TOP[i].slice(6, 11));
-  }
-
-  for (let i = 0; i < Q_BOTTOM.length; i++) {
-    Q3.push(Q_BOTTOM[i].slice(0, 5));
-    Q4.push(Q_BOTTOM[i].slice(6, 11));
-  }
-  return [Q1, Q2, Q3, Q4];
-};
-
-// Divide Board to 2 part for generate blocks but not sure to use
-const divideBoardIntoTwo = (gameBoard) => {
-  const Q_TOP = gameBoard.slice(0, 5);
-  const Q_BOTTOM = gameBoard.slice(6, 11);
-  const Q1 = [];
-  const Q2 = [];
-  for (let i = 0; i < Q_TOP.length; i++) {
-    Q1.push(Q_TOP[i].slice(0, 11));
-  }
-
-  for (let i = 0; i < Q_BOTTOM.length; i++) {
-    Q2.push(Q_BOTTOM[i].slice(0, 11));
-  }
-
-  return [Q1, Q2];
-};
-
-// Generate Blocks
-// Number of Blocks depen on Level
-// get parameter is Array of Board 4/2 part
-const RandomBlock = (Q) => {
-  let blocks = [];
-  let countBlocks =
-    level.value === 1 ? 4 : level.value === 2 ? 3 : level.value === 3 ? 2 : 1;
-  for (let i = 0; i < Q.length; i++) {
-    let part = Q[i];
-    let partBlocks = new Set();
-    while (partBlocks.size < countBlocks) {
-      const block =
-        part[Math.floor(Math.random() * part.length)][
-        Math.floor(Math.random() * part[0].length)
-        ];
-      block.hexagon = hexagon_disable[Math.floor(Math.random() * hexagon_disable.length)];
-      block.block = true;
-      partBlocks.add(block);
-    }
-    blocks = blocks.concat(Array.from(partBlocks));
-  }
-
-  const blockArray = Array.from(blocks);
-  return blockArray;
-};
-
-// Generate SET of Destiantion
-const Destination = () => {
-  const BOARD_SIZE = gameBoard.value[0].length;
-  const setDestination = new Set();
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    setDestination.add(gameBoard.value[0][i]);
-    setDestination.add(gameBoard.value[i][0]);
-    setDestination.add(gameBoard.value[BOARD_SIZE - 1][i]);
-    setDestination.add(gameBoard.value[i][BOARD_SIZE - 1]);
-  }
-  let destination = Array.from(setDestination);
-  // without blocks position
-  destination = destination.filter((n) => !n.block);
-  return destination;
-};
-
-// Find Neighbors
-// get parameter is node (hexagon in board)
-const getNeighbors = (node) => {
-  const x = node.x;
-  const y = node.y;
-  let neighbors = [];
-  const addNeighbor = (x, y) => {
-    const n = gameBoard.value[x] && gameBoard.value[x][y];
-    // without blocks
-    if (n && !n.block) {
-      neighbors.push(n);
-    }
-  };
-  // Add 6 directions
-  addNeighbor(x - 1, y);
-  addNeighbor(x + 1, y);
-  addNeighbor(x, y - 1);
-  addNeighbor(x, y + 1);
-
-  if (x % 2 === 0) {
-    addNeighbor(x - 1, y - 1);
-    addNeighbor(x + 1, y - 1);
-  } else {
-    addNeighbor(x - 1, y + 1);
-    addNeighbor(x + 1, y + 1);
-  }
-  return neighbors;
-};
-
-// Use this value in A* algorithms
-function heuristic(a, b) {
-  // Returns the estimated cost between two nodes
-  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-}
-
-// A* algorithms
-// get parameter is (cat,destination)
-function aStar(start, end) {
-  // Returns the shortest path from start to end using A* algorithm
-  const openSet = new Set([start]);
-  const cameFrom = new Map();
-  const gScore = new Map();
-  const fScore = new Map();
-  gScore.set(start, 0);
-  fScore.set(start, heuristic(start, end));
-  while (openSet.size > 0) {
-    // Find the node in open set with the lowest fScore
-    let current = null;
-    let currentScore = Number.POSITIVE_INFINITY;
-    for (let node of openSet) {
-      const score = fScore.get(node);
-      if (score < currentScore) {
-        current = node;
-        currentScore = score;
-      }
-    }
-    if (current === end) {
-      // Reconstruct the path from start to end
-      const path = [end];
-      let previous = cameFrom.get(end);
-      while (previous) {
-        path.unshift(previous);
-        previous = cameFrom.get(previous);
-      }
-      return path;
-    }
-    openSet.delete(current);
-    for (let neighbor of getNeighbors(current)) {
-      const tentativeGScore = gScore.get(current) + 1;
-      if (tentativeGScore >= gScore.get(neighbor)) {
-        continue;
-      }
-      cameFrom.set(neighbor, current);
-      gScore.set(neighbor, tentativeGScore);
-      fScore.set(neighbor, gScore.get(neighbor) + heuristic(neighbor, end));
-      openSet.add(neighbor);
-    }
-  }
-  return [];
-}
 
 // When player click on board
-const selectHexagon = (row, index) => {
-  clearInterval(setTimer.value);
-  time.value = 10;
-  startTime();
-  // try catch for end game
+const selectHexagon = async (row, index) => {
   try {
     // If that position isn't block and cat
     if (
@@ -222,17 +40,27 @@ const selectHexagon = (row, index) => {
       !gameBoard.value[row][index].cat &&
       !isAnimate.value
     ) {
-      // change to block
-      gameBoard.value[row][index].hexagon = hexagon_disable[Math.floor(Math.random() * hexagon_disable.length)];
-      gameBoard.value[row][index].block = true;
-      blocks.value.push(gameBoard.value[row][index]);
-      catMove();
+      let newData = await api.Play(turn.value, row, index)
+      gameBoard.value = newData.board
+      localStorage.setItem("board", newData.token)
+      turn.value = newData.turn
+      console.log(gameBoard.value);
+      gameBoard.value.forEach((row)=>{
+        row.forEach((n)=>{
+          if(n.cat){
+            cat.value = n
+          }
+        })
+      })
+      console.log(cat.value);
+      // catMove();
     }
     return;
   } catch (error) {
+    console.log(error);
     // If player can catch the cat is exception that mean player win
-    clearInterval(setTimer.value);
-    emit("winGame");
+    // clearInterval(setTimer.value);
+    // emit("winGame");
     return;
   }
 };
@@ -263,7 +91,7 @@ const catMove = () => {
   // get next position of cat [5 +- 1][5 +- 1]
   // now cat is change position [5 +- 1][5 +- 1]
   const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  checkAnimation(nextMove, getPosition.value);
+  // checkAnimation(nextMove, getPosition.value);
   getPosition.value.x = nextMove.x;
   getPosition.value.y = nextMove.y;
   const waitAnimation = setInterval(() => {
@@ -351,24 +179,11 @@ const start = ref(null);
 const Q = ref(null);
 const gameBoard = ref(null);
 const cat = ref(null);
-const gameSetup = () => {
-  gameBoard.value = generateBoard();
-  gameBoard.value[5][5].cat = true;
-  // Divide Board
-  Q.value = divideBoardIntoFour(gameBoard.value);
-  //generate Block
-  blocks.value = RandomBlock(Q.value);
-  // SET of Destination
-  setDestination.value = Destination();
-  // generate destination position
-  let destination =
-    setDestination.value[
-    Math.floor(Math.random() * setDestination.value.length)
-    ];
-  // calculate the paht
-  start.value = gameBoard.value[5][5];
-  cat.value = start.value;
-  end.value = gameBoard.value[destination.x][destination.y];
+const turn = ref(0)
+const gameSetup = (setup) => {
+  turn.value = setup.turn
+  gameBoard.value = setup.board
+  cat.value = gameBoard.value[5][5]
 };
 
 const resetGame = () => {
@@ -390,20 +205,24 @@ onBeforeRouteUpdate(() => {
   level.value = level.value + 1;
   resetGame();
   gameSetup();
-  path.value = aStar(start.value, end.value);
-  if (path.value.length === 0) {
-    path.value = aStar(start.value, end.value);
-  }
+  // path.value = aStar(start.value, end.value);
+  // if (path.value.length === 0) {
+  //   path.value = aStar(start.value, end.value);
+  // }
 });
 
 //Game set-up
-onBeforeMount(() => {
-  gameSetup();
-  path.value = aStar(start.value, end.value);
-  if (path.value.length === 0) {
-    path.value = aStar(start.value, end.value);
-  }
+const api = new API()
+const dataSetup = ref(null)
+onBeforeMount(async () => {
+  dataSetup.value = await api.Setup(level.value)
+  gameSetup(dataSetup.value);
 });
+
+window.onload = async ()=>{
+  dataSetup.value = await api.Reset(level.value)
+  gameSetup(dataSetup.value);
+}
 
 const setTimer = ref(null);
 const startTime = () => {
@@ -507,16 +326,18 @@ const moveRightBottom = () => {
     </div>
     <div class="game-board">
       <div v-for="(row, rowIndex) in gameBoard" :key="rowIndex" :class="`board-row flex w-max ${rowIndex % 2 !== 0
-          ? 'translate-x'
-          : `${cat.x % 2 !== 0 ? '-z-10' : 'z-10'}`
+        ? 'translate-x'
+        : `${cat.x % 2 !== 0 ? '-z-10' : 'z-10'}`
         }`">
         <div v-for="(hexagon, index) in row">
-          <div :class="`absolute z-10 ${hexagon !== cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}  ${isRight ? 'move-right' : ''}
-                                                                ${isLeft ? 'move-left' : ''}
-                                                                ${isRight_Top ? 'move-top-right' : ''}
-                                                                ${isLeft_Top ? 'move-top-left' : ''}
-                                                                ${isLeft_Bottom ? 'move-bottom-left' : ''}
-                                                                ${isRight_Bottom ? 'move-bottom-right' : ''}`}`"></div>
+          <div
+            :class="`absolute z-10 ${hexagon !== cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}  ${isRight ? 'move-right' : ''}
+                                                                                      ${isLeft ? 'move-left' : ''}
+                                                                                      ${isRight_Top ? 'move-top-right' : ''}
+                                                                                      ${isLeft_Top ? 'move-top-left' : ''}
+                                                                                      ${isLeft_Bottom ? 'move-bottom-left' : ''}
+                                                                                      ${isRight_Bottom ? 'move-bottom-right' : ''}`}`">
+          </div>
           <button :class="`${hexagon.block ? 'hexagon-block' : 'hexagon-body'}`" :disabled="hexagon.block || hexagon.cat">
             <img :src="hexagon.hexagon" @click="selectHexagon(rowIndex, index)" />
           </button>
@@ -598,7 +419,7 @@ const moveRightBottom = () => {
   background-image: url(../assets/cat/cat_sprite_animation_test.png);
   width: 150px;
   height: calc(1203px/8);
-  animation: moveRight-Top 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  animation: moveRight-Top 0.7s ease-out forwards, jump 0.7s steps(8) alternate;
   clip-path: inset(0 0 15% 0)
 }
 
@@ -606,7 +427,7 @@ const moveRightBottom = () => {
   background-image: url(../assets/cat/cat_sprite_animation_test.png);
   width: 150px;
   height: calc(1203px/8);
-  animation: moveRight-Bottom 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  animation: moveRight-Bottom 0.7s ease-out forwards, jump 0.7s steps(8) alternate;
   clip-path: inset(0 0 15% 0)
 }
 
@@ -614,7 +435,7 @@ const moveRightBottom = () => {
   background-image: url(../assets/cat/cat_sprite_animation_test.png);
   width: 150px;
   height: calc(1203px/8);
-  animation: moveLeft 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  animation: moveLeft 0.7s ease-out forwards, jump 0.7s steps(8) alternate;
   clip-path: inset(0 0 15% 0)
 }
 
@@ -622,7 +443,7 @@ const moveRightBottom = () => {
   background-image: url(../assets/cat/cat_sprite_animation_test.png);
   width: 150px;
   height: calc(1203px/8);
-  animation: moveLeft-Top 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  animation: moveLeft-Top 0.7s ease-out forwards, jump 0.7s steps(8) alternate;
   clip-path: inset(0 0 15% 0)
 }
 
@@ -630,7 +451,7 @@ const moveRightBottom = () => {
   background-image: url(../assets/cat/cat_sprite_animation_test.png);
   width: 150px;
   height: calc(1203px/8);
-  animation: moveLeft-Bottom 0.7s ease-out forwards,jump 0.7s steps(8) alternate;
+  animation: moveLeft-Bottom 0.7s ease-out forwards, jump 0.7s steps(8) alternate;
   clip-path: inset(0 0 15% 0)
 }
 
@@ -705,7 +526,7 @@ const moveRightBottom = () => {
 }
 
 .hexagon-body {
-  background-image: url(../assets/hexagon-pre-test.svg);
+  /* background-image: url(../assets/hexagon-pre-test.svg); */
   background-size: cover;
   width: 80px;
   height: 80px;
@@ -837,7 +658,7 @@ const moveRightBottom = () => {
   .hexagon-block {
     margin-right: -7px;
     margin-left: -3px;
-    width:  45px;
+    width: 45px;
     height: 45px;
     transform: translate(14%, 5%);
   }

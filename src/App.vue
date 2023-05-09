@@ -11,7 +11,7 @@ const progress = ref(0);
 const api = new API();
 const resAPI = ref({
   authen: {},
-  reward: {},
+  setup: {},
   play: {}
 })
 const progressing = () => {
@@ -20,7 +20,6 @@ const progressing = () => {
     if (progress.value === 120) {
       clearInterval(progressBar);
       sessionStorage.setItem("loading", 100);
-      resAPI.value.reward = await api.RewardInfo()
     }
   }, 20);
 };
@@ -45,7 +44,6 @@ const changeLanguage = (language) => {
 };
 
 const page = ref(0)
-
 </script>
 
 <template>
@@ -53,7 +51,7 @@ const page = ref(0)
   <RouterView v-else :language="getLG" @toGame="page = 1" @toMenu="page = 0"> </RouterView>
   <div class="flex justify-between">
     <!-- <Music :language="getLG" class="music" /> -->
-    <!-- <LgButton v-show="page === 0" class="language" @change="changeLanguage" /> -->
+    <LgButton v-show="page === 0" class="language" @change="changeLanguage" />
   </div>
 </template>
 

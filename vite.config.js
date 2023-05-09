@@ -13,6 +13,6 @@ export default defineConfig({
     }
   },
   server: {
-    // host:"flipkala-apistg.wisdomcloud.net"
+    host:"192.168.1.58"
   }
 })

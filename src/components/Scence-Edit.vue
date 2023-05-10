@@ -16,10 +16,6 @@ onBeforeUpdate(() => {
   if (props.reset) {
     resetGame();
     gameSetup();
-    // path.value = aStar(start.value, end.value);
-    // if (path.value.length === 0) {
-    //   path.value = aStar(start.value, end.value);
-    // }
     emit("reset", false);
   }
 });
@@ -29,8 +25,7 @@ const level = ref(props.level);
 const emit = defineEmits(["loseGame", "winGame", "reset"]);
 
 const time = ref(10);
-const hexagon_normal = "./hexagon-pre-test.svg";
-
+const hexagon_disable = ['./candy1.svg', './candy2.svg', './candy3.svg', './candy4.svg', './candy5.svg', './candy6.svg', './candy7.svg',];
 // When player click on board
 const selectHexagon = async (row, index) => {
   try {
@@ -40,20 +35,36 @@ const selectHexagon = async (row, index) => {
       !gameBoard.value[row][index].cat &&
       !isAnimate.value
     ) {
-      let newData = await api.Play(turn.value, row, index)
-      gameBoard.value = newData.board
+      let block = hexagon_disable[Math.floor(Math.random() * hexagon_disable.length)];
+      gameBoard.value[row][index].hexagon = block
+      gameBoard.value[row][index].block = true
+      let req = {
+        turn: turn.value,
+        x:row,
+        y:index,
+        block: block
+      }
+      let newData = await api.Play(req)
+      let nextMove = gameBoard.value[5][5];
+      let newBoard = newData.board
       localStorage.setItem("board", newData.token)
       turn.value = newData.turn
-      console.log(gameBoard.value);
-      gameBoard.value.forEach((row)=>{
-        row.forEach((n)=>{
-          if(n.cat){
-            cat.value = n
+      newBoard.forEach((row) => {
+        row.forEach((n) => {
+          if (n.cat) {
+            nextMove = n
           }
         })
       })
-      console.log(cat.value);
-      // catMove();
+      checkAnimation(nextMove, cat.value);
+      const waitAnimation = setInterval(() => {
+        nextMove.cat = true;
+        // check everytime when click is to destination ?
+        // checkLoseGame(nextMove);
+        cat.value = nextMove;
+        gameBoard.value = newBoard
+        clearInterval(waitAnimation);
+      }, 700);
     }
     return;
   } catch (error) {
@@ -65,42 +76,42 @@ const selectHexagon = async (row, index) => {
   }
 };
 
-const catMove = () => {
-  // get current position of cat [5][5]
-  const currentMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  // calculate the path everytime when click on board
-  path.value = aStar(currentMove, end.value);
-  // condition for realistic
-  if (path.value.length < 5) {
-    end.value = closestCat(currentMove);
-    path.value = aStar(currentMove, end.value);
-  }
-  if (path.value.length > 7) {
-    end.value = closestCat(currentMove);
-    path.value = aStar(currentMove, end.value);
-  }
+const catMove = (current, next) => {
+  // // get current position of cat [5][5]
+  // const currentMove = gameBoard.value[path.value[0].x][path.value[0].y];
+  // // calculate the path everytime when click on board
+  // path.value = aStar(currentMove, end.value);
+  // // condition for realistic
+  // if (path.value.length < 5) {
+  //   end.value = closestCat(currentMove);
+  //   path.value = aStar(currentMove, end.value);
+  // }
+  // if (path.value.length > 7) {
+  //   end.value = closestCat(currentMove);
+  //   path.value = aStar(currentMove, end.value);
+  // }
 
-  // get previous position of cat [5][5]
-  const previousMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  // change to normal way
-  previousMove.hexagon = hexagon_normal;
-  previousMove.cat = false;
-  previousMove.block = false;
-  // remove position in path [5][5]
-  path.value.shift();
-  // get next position of cat [5 +- 1][5 +- 1]
-  // now cat is change position [5 +- 1][5 +- 1]
-  const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  // checkAnimation(nextMove, getPosition.value);
-  getPosition.value.x = nextMove.x;
-  getPosition.value.y = nextMove.y;
-  const waitAnimation = setInterval(() => {
-    nextMove.cat = true;
-    // check everytime when click is to destination ?
-    checkLoseGame(nextMove);
-    cat.value = nextMove;
-    clearInterval(waitAnimation);
-  }, 700);
+  // // get previous position of cat [5][5]
+  // const previousMove = gameBoard.value[path.value[0].x][path.value[0].y];
+  // // change to normal way
+  // previousMove.hexagon = hexagon_normal;
+  // previousMove.cat = false;
+  // previousMove.block = false;
+  // // remove position in path [5][5]
+  // path.value.shift();
+  // // get next position of cat [5 +- 1][5 +- 1]
+  // // now cat is change position [5 +- 1][5 +- 1]
+  // const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
+  // // checkAnimation(nextMove, getPosition.value);
+  // getPosition.value.x = nextMove.x;
+  // getPosition.value.y = nextMove.y;
+  // const waitAnimation = setInterval(() => {
+  //   nextMove.cat = true;
+  //   // check everytime when click is to destination ?
+  //   checkLoseGame(nextMove);
+  //   cat.value = nextMove;
+  //   clearInterval(waitAnimation);
+  // }, 700);
 };
 
 const checkAnimation = (next, currPos) => {
@@ -171,12 +182,6 @@ const closestCat = (currentCat) => {
   return newDestination;
 };
 
-const blocks = ref([]);
-const setDestination = ref(null);
-const path = ref([]);
-const end = ref(null);
-const start = ref(null);
-const Q = ref(null);
 const gameBoard = ref(null);
 const cat = ref(null);
 const turn = ref(0)
@@ -187,15 +192,8 @@ const gameSetup = (setup) => {
 };
 
 const resetGame = () => {
-  blocks.value = [];
-  setDestination.value = null;
-  path.value = null;
-  end.value = null;
-  start.value = null;
   gameBoard.value = null;
-  Q.value = null;
   cat.value = null;
-  getPosition.value = { x: 5, y: 5 };
   clearInterval(setTimer.value);
   resetTime();
   startTime();
@@ -219,7 +217,7 @@ onBeforeMount(async () => {
   gameSetup(dataSetup.value);
 });
 
-window.onload = async ()=>{
+window.onload = async () => {
   dataSetup.value = await api.Reset(level.value)
   gameSetup(dataSetup.value);
 }
@@ -331,12 +329,7 @@ const moveRightBottom = () => {
         }`">
         <div v-for="(hexagon, index) in row">
           <div
-            :class="`absolute z-10 ${hexagon !== cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'}  ${isRight ? 'move-right' : ''}
-                                                                                      ${isLeft ? 'move-left' : ''}
-                                                                                      ${isRight_Top ? 'move-top-right' : ''}
-                                                                                      ${isLeft_Top ? 'move-top-left' : ''}
-                                                                                      ${isLeft_Bottom ? 'move-bottom-left' : ''}
-                                                                                      ${isRight_Bottom ? 'move-bottom-right' : ''}`}`">
+            :class="`absolute z-10 ${hexagon.cat !== cat.cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'} ${isRight ? 'move-right' : ''} ${isLeft ? 'move-left' : ''} ${isRight_Top ? 'move-top-right' : ''} ${isLeft_Top ? 'move-top-left' : ''} ${isLeft_Bottom ? 'move-bottom-left' : ''} ${isRight_Bottom ? 'move-bottom-right' : ''}`}`">
           </div>
           <button :class="`${hexagon.block ? 'hexagon-block' : 'hexagon-body'}`" :disabled="hexagon.block || hexagon.cat">
             <img :src="hexagon.hexagon" @click="selectHexagon(rowIndex, index)" />
@@ -463,7 +456,6 @@ const moveRightBottom = () => {
   }
 }
 
-/* transform: scale(.4) translate(-95%, -110%); */
 @keyframes moveRight {
   0% {
     transform: translateX(-50px) translateY(-60px) scale(.4);
@@ -526,8 +518,6 @@ const moveRightBottom = () => {
 }
 
 .hexagon-body {
-  /* background-image: url(../assets/hexagon-pre-test.svg); */
-  background-size: cover;
   width: 80px;
   height: 80px;
   clip-path: polygon(50% 6%,

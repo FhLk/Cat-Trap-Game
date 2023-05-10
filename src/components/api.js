@@ -45,8 +45,7 @@ class API {
     }
   }
 
-  async Play(turn,x,y) {
-    console.log(turn);
+  async Play(req) {
     const token = localStorage.getItem("board")
     const res = await fetch("http://192.168.1.58:8080/api/play",{
       method: "POST",
@@ -55,9 +54,10 @@ class API {
         "Authorization": `Bearer ${this.getToken}`,
       },
       body: JSON.stringify({
-        turn: turn+1,
-        x: x,
-        y: y,
+        turn: req.turn+1,
+        x: req.x,
+        y: req.y,
+        block: req.block,
         token: token
       })
     })

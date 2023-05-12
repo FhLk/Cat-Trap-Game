@@ -40,6 +40,7 @@ class API {
       dataSetup.board = getRes.board
       dataSetup.token = getRes.token
       dataSetup.turn = getRes.turn
+      dataSetup.canPlay = getRes.canPlay
       localStorage.setItem("board",dataSetup.token)
       return dataSetup
     }
@@ -58,17 +59,19 @@ class API {
         x: req.x,
         y: req.y,
         block: req.block,
-        token: token
+        token: token,
+        level: req.level
       })
     })
     if (res.status === 200) {
       const getRes = await res.json();
-      let dataSetup = {}
-      dataSetup.board = getRes.board
-      dataSetup.token = getRes.token
-      dataSetup.turn = getRes.turn
-      localStorage.setItem("board",dataSetup.token)
-      return dataSetup
+      let dataPlay = {}
+      dataPlay.board = getRes.board
+      dataPlay.token = getRes.token
+      dataPlay.turn = getRes.turn
+      dataPlay.canPlay = getRes.canPlay
+      localStorage.setItem("board",dataPlay.token)
+      return dataPlay
     }
   }
 
@@ -94,6 +97,19 @@ class API {
       localStorage.setItem("board",dataSetup.token)
       return dataSetup
     }
+  }
+
+  async Lose(){
+    const res = await fetch("http://192.168.1.58:8080/api/reset",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.getToken}`,
+      },
+      body: JSON.stringify({
+        level : level
+      })
+    })
   }
 }
 export default API;

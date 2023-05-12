@@ -12,13 +12,7 @@ const props = defineProps({
   reset: Boolean,
 });
 
-onBeforeUpdate(() => {
-  if (props.reset) {
-    resetGame();
-    gameSetup();
-    emit("reset", false);
-  }
-});
+
 
 const level = ref(props.level);
 
@@ -28,6 +22,7 @@ const time = ref(10);
 const hexagon_disable = ['./candy1.svg', './candy2.svg', './candy3.svg', './candy4.svg', './candy5.svg', './candy6.svg', './candy7.svg',];
 // When player click on board
 const selectHexagon = async (row, index) => {
+  console.log(Number.POSITIVE_INFINITY);
   try {
     // If that position isn't block and cat
     if (
@@ -42,7 +37,8 @@ const selectHexagon = async (row, index) => {
         turn: turn.value,
         x:row,
         y:index,
-        block: block
+        block: block,
+        level: level.value
       }
       let newData = await api.Play(req)
       let nextMove = gameBoard.value[5][5];
@@ -56,62 +52,31 @@ const selectHexagon = async (row, index) => {
           }
         })
       })
+      console.log(newData.token);
+      let token = newData.token.slice(11)
+      console.log(turn.value);
+      if(Number(token) < turn.value) {
+        emit("winGame");
+        return 
+      }
       checkAnimation(nextMove, cat.value);
       const waitAnimation = setInterval(() => {
         nextMove.cat = true;
-        // check everytime when click is to destination ?
-        // checkLoseGame(nextMove);
         cat.value = nextMove;
         gameBoard.value = newBoard
+        if (!newData.canPlay){
+          emit("loseGame");
+        }
         clearInterval(waitAnimation);
       }, 700);
     }
     return;
   } catch (error) {
-    console.log(error);
     // If player can catch the cat is exception that mean player win
     // clearInterval(setTimer.value);
-    // emit("winGame");
+    emit("winGame");
     return;
   }
-};
-
-const catMove = (current, next) => {
-  // // get current position of cat [5][5]
-  // const currentMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  // // calculate the path everytime when click on board
-  // path.value = aStar(currentMove, end.value);
-  // // condition for realistic
-  // if (path.value.length < 5) {
-  //   end.value = closestCat(currentMove);
-  //   path.value = aStar(currentMove, end.value);
-  // }
-  // if (path.value.length > 7) {
-  //   end.value = closestCat(currentMove);
-  //   path.value = aStar(currentMove, end.value);
-  // }
-
-  // // get previous position of cat [5][5]
-  // const previousMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  // // change to normal way
-  // previousMove.hexagon = hexagon_normal;
-  // previousMove.cat = false;
-  // previousMove.block = false;
-  // // remove position in path [5][5]
-  // path.value.shift();
-  // // get next position of cat [5 +- 1][5 +- 1]
-  // // now cat is change position [5 +- 1][5 +- 1]
-  // const nextMove = gameBoard.value[path.value[0].x][path.value[0].y];
-  // // checkAnimation(nextMove, getPosition.value);
-  // getPosition.value.x = nextMove.x;
-  // getPosition.value.y = nextMove.y;
-  // const waitAnimation = setInterval(() => {
-  //   nextMove.cat = true;
-  //   // check everytime when click is to destination ?
-  //   checkLoseGame(nextMove);
-  //   cat.value = nextMove;
-  //   clearInterval(waitAnimation);
-  // }, 700);
 };
 
 const checkAnimation = (next, currPos) => {
@@ -150,21 +115,9 @@ const checkAnimation = (next, currPos) => {
     }
   }
 };
-
-// check cat position
-// If cat position = one in SET Destination
-const checkLoseGame = (currentCat) => {
-  setDestination.value.forEach((n) => {
-    if (currentCat.x === n.x && currentCat.y === n.y) {
-      clearInterval(setTimer.value);
-      emit("loseGame");
-    }
-  });
-};
-
 // Find position closest the cat
 const closestCat = (currentCat) => {
-  setDestination.value = setDestination.value.filter((n) => !n.block);
+  setDestination = setDestination.filter((n) => !n.block);
   let distance = Number.POSITIVE_INFINITY;
   let newDestination = end.value;
   for (let i = 0; i < setDestination.value.length; i++) {
@@ -203,10 +156,6 @@ onBeforeRouteUpdate(() => {
   level.value = level.value + 1;
   resetGame();
   gameSetup();
-  // path.value = aStar(start.value, end.value);
-  // if (path.value.length === 0) {
-  //   path.value = aStar(start.value, end.value);
-  // }
 });
 
 //Game set-up
@@ -214,7 +163,17 @@ const api = new API()
 const dataSetup = ref(null)
 onBeforeMount(async () => {
   dataSetup.value = await api.Setup(level.value)
-  gameSetup(dataSetup.value);
+  if (dataSetup.value.canPlay){
+    gameSetup(dataSetup.value);
+  }
+});
+
+onBeforeUpdate(() => {
+  if (props.reset) {
+    resetGame();
+    gameSetup();
+    emit("reset", false);
+  }
 });
 
 window.onload = async () => {

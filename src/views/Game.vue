@@ -32,7 +32,7 @@ const reset = (r) => {
 const api = new API()
 const Router = useRouter();
 const goToMenu = async () => {
-  await api.RewardInfo()
+  // await api.RewardInfo()
   result.value = false;
   Router.push({ name: "Home" });
   emit("toMenu");
@@ -49,50 +49,16 @@ const isWin = ref(false)
 function winGame() {
   result.value = true
   isWin.value = true
-  // Swal.fire({
-  //   icon: "success",
-  //   allowOutsideClick: false,
-  //   title: `${props.language === "TH" || props.language === null ? 'คุณชนะ!!!' : 'YOU WIN!!!'} `,
-  //   text: `${props.language === "TH" || props.language === null ? 'คุณสามรถจับแมวได้' : 'You can catch a cat.'}`,
-  //   showCancelButton: true,
-  //   showConfirmButton: level.value === 3 ? false : true,
-  //   confirmButtonText: `${props.language === "TH" || props.language === null ? 'ต่อไป' : 'Next Level'}`,
-  //   cancelButtonText: `${props.language === "TH" || props.language === null ? 'ปิด' : 'Closed'}`,
-  //   reverseButtons: true,
-  // }).then((r) => {
-  //   if (r.isConfirmed) {
-  //     if (level.value === 1) {
-  //       nextLevel(2);
-  //       level.value = 2;
-  //     } else if (level.value === 2) {
-  //       nextLevel(3);
-  //       level.value = 3;
-  //     }
-  //   } else {
-  //     goToMenu();
-  //   }
-  // });
 }
 
 function loseGame() {
   result.value = true
   isWin.value = false
-  // isReset.value =true
-  // Swal.fire({
-  //   icon: "error",
-  //   allowOutsideClick: false,
-  //   title: `${props.language === "TH" || props.language === null ? 'คุณแพ้!!!' : 'YOU LOSE!!!'}`,
-  //   text: `${props.language === "TH" || props.language === null ? 'คุณปล่อยให้แมวหนีไปได้' : 'You let the cat escape.'}`,
-  //   showCancelButton: true,
-  //   confirmButtonText: `${props.language === "TH" || props.language === null ? 'ปิด' : 'Closed'}`,
-  //   cancelButtonText: `${props.language === "TH" || props.language === null ? 'ลองใหม่' : 'Try Agian'}`,
-  // }).then((r) => {
-  //   if (r.dismiss) {
-  //     isReset.value = true;
-  //   } else {
-  //     goToMenu();
-  //   }
-  // });
+}
+
+async function tryAgain(){
+  result.value = false;
+  // Router.push({ name: "Game", params: { level: level.value } });
 }
 </script>
 
@@ -100,7 +66,7 @@ function loseGame() {
   <div class="bg-body">
     <!-- <Scence :language="language" :level="level" @winGame="winGame()" @loseGame="loseGame()" :reset="isReset"
         @reset="isReset = false" /> -->
-    <ResultPopup :level="level" :isResult="result" :is-win="isWin" @close="goToMenu()" @next="nextLevel"  @reset="reset" />
+    <ResultPopup :level="level" :isResult="result" :is-win="isWin" @close="goToMenu()" @next="nextLevel"  @try-agin="tryAgain()" />
     <ScenceEdit :reset="isReset" :level="level" @reset="isReset = false" @winGame="winGame()"  @loseGame="loseGame()" />
     <div class="control-btn space-y-6">
       <div @click="isSound = !isSound" class="flex justify-center">
@@ -145,7 +111,7 @@ function loseGame() {
 }
 
 .control-btn {
-  transform: translate(0%, 200px);
+  transform: translate(0%, 180px);
 }
 
 @media (min-width: 300px) {

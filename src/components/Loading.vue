@@ -2,14 +2,14 @@
 </script>
 
 <template>
-  <div class="bg-loading flex p-5">
-    <div class="space-y-5 w-full loading-body">
+  <div class="bg-loading w-full p-5">
+    <div class="space-y-5 w-full">
       <div class="flex justify-center text-3xl font-medium">
         <p>Loading...</p>
       </div>
       <div class="relative">
         <div class="loading-bg absolute bg-gray-300 rounded-full">
-          <div class="h-full bg-blue-500 rounded-full loading-progress"></div>
+          <div class="rounded-full loading-progress"></div>
         </div>
       </div>
     </div>
@@ -18,14 +18,8 @@
 
 <style scoped>
 .bg-loading{
-  height: 100%;
-  background-image: url(../assets/trapthecat_asset/play_bg.png);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: 100% 100%;
-}
-.loading-body {
-  transform: translate(0, 35%);
+  height: 100vh;
+  transform: translate(0, 30%);
 }
 .loading-bg {
   padding: 5px;

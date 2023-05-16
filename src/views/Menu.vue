@@ -1,18 +1,23 @@
 <script setup>
 import Tutorial from "../components/Tutorrial.vue";
-import LevelButton from "../components/Level-Button.vue";
-import { onBeforeUnmount, onBeforeMount, ref, onBeforeUpdate } from "vue";
+import { onBeforeUnmount, onBeforeMount, ref } from "vue";
 import LgButton from "../components/Lg-Button.vue";
 import { useRouter } from "vue-router";
-import API from "../components/api";
-
-const props = defineProps({
-  language: String,
-});
-
-const api = new API()
 
 const emit = defineEmits(["toGame"]);
+const language = ref(sessionStorage.getItem("language"));
+
+const changeLanguage = (l) => {
+  language.value = l;
+};
+
+onBeforeMount(() => {
+  if (language.value === null || language.value === "TH") {
+    sessionStorage.setItem("language", "TH");
+  } else {
+    sessionStorage.setItem("language", "EN");
+  }
+})
 
 const isOpen = ref(false);
 const openHtp = () => {
@@ -28,14 +33,16 @@ const goToGame = async (level) => {
   emit('toGame')
   Router.push({ name: "Game", params: { level: level } });
 };
+
 </script>
 
 <template>
   <div class="body-title text-center">
+    <LgButton class="language" @change="changeLanguage" />
     <Tutorial v-if="isOpen" @closed="openHtp()" />
     <div class="title">
-      <div class="logo-game absolute"></div>
-      <div class="play absolute space-y-3">
+      <div class="logo-game"></div>
+      <div class="play space-y-3">
         <div class="flex justify-center" @click="goToGame(1)">
           <div class="play-btn"></div>
         </div>
@@ -49,6 +56,12 @@ const goToGame = async (level) => {
 </template>
 
 <style scoped>
+.language {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+}
+
 .body-title {
   height: 100%;
   background-image: url(../assets/trapthecat_asset/home_bg.png);
@@ -58,6 +71,7 @@ const goToGame = async (level) => {
 }
 
 .logo-game {
+  position: fixed;
   left: 50%;
   top: 15%;
   transform: translate(-50%, -5%);
@@ -73,6 +87,7 @@ const goToGame = async (level) => {
 }
 
 .play {
+  position: fixed;
   bottom: 20%;
   left: 50%;
   transform: translate(-50%, 100%);

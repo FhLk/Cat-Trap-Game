@@ -2,6 +2,7 @@
 import { onBeforeMount, ref, onBeforeUpdate } from "vue";
 import { onBeforeRouteUpdate } from "vue-router";
 import API from "../components/api";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   level: {
@@ -16,15 +17,12 @@ const props = defineProps({
 
 const level = ref(props.level);
 
-const emit = defineEmits(["loseGame", "winGame", "reset"]);
+const emit = defineEmits(["loseGame", "winGame", "reset", 'menu']);
 
 const time = ref(10);
 const hexagon_disable = ['./candy1.svg', './candy2.svg', './candy3.svg', './candy4.svg', './candy5.svg', './candy6.svg', './candy7.svg',];
-// When player click on board
 const selectHexagon = async (row, index) => {
-  console.log(Number.POSITIVE_INFINITY);
   try {
-    // If that position isn't block and cat
     if (
       !gameBoard.value[row][index].block &&
       !gameBoard.value[row][index].cat &&
@@ -35,8 +33,8 @@ const selectHexagon = async (row, index) => {
       gameBoard.value[row][index].block = true
       let req = {
         turn: turn.value,
-        x:row,
-        y:index,
+        x: row,
+        y: index,
         block: block,
         level: level.value
       }
@@ -52,19 +50,19 @@ const selectHexagon = async (row, index) => {
           }
         })
       })
-      console.log(newData.token);
       let token = newData.token.slice(11)
-      console.log(turn.value);
-      if(Number(token) < turn.value) {
+      if (Number(token) < turn.value && newData.canPlay) {
         emit("winGame");
-        return 
+        return
       }
       checkAnimation(nextMove, cat.value);
-      const waitAnimation = setInterval(() => {
+      const waitAnimation =  setInterval( async () => {
         nextMove.cat = true;
         cat.value = nextMove;
         gameBoard.value = newBoard
-        if (!newData.canPlay){
+        if (!newData.canPlay) {
+          dataSetup.value = await api.Reset(level.value)
+          gameSetup(dataSetup.value);
           emit("loseGame");
         }
         clearInterval(waitAnimation);
@@ -72,9 +70,6 @@ const selectHexagon = async (row, index) => {
     }
     return;
   } catch (error) {
-    // If player can catch the cat is exception that mean player win
-    // clearInterval(setTimer.value);
-    emit("winGame");
     return;
   }
 };
@@ -115,47 +110,28 @@ const checkAnimation = (next, currPos) => {
     }
   }
 };
-// Find position closest the cat
-const closestCat = (currentCat) => {
-  setDestination = setDestination.filter((n) => !n.block);
-  let distance = Number.POSITIVE_INFINITY;
-  let newDestination = end.value;
-  for (let i = 0; i < setDestination.value.length; i++) {
-    let newPath = aStar(currentCat, setDestination.value[i]);
-    newPath.shift();
-    if (
-      newPath.length < distance &&
-      newPath.length !== 0 &&
-      !setDestination.value.block
-    ) {
-      newDestination = newPath[newPath.length - 1];
-      distance = newPath.length;
-    }
-  }
-  return newDestination;
-};
 
 const gameBoard = ref(null);
 const cat = ref(null);
 const turn = ref(0)
 const gameSetup = (setup) => {
-  turn.value = setup.turn
-  gameBoard.value = setup.board
-  cat.value = gameBoard.value[5][5]
+  try {
+    turn.value = setup.turn
+    gameBoard.value = setup.board
+    cat.value = gameBoard.value[5][5]
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+  }
 };
 
-const resetGame = () => {
-  gameBoard.value = null;
-  cat.value = null;
-  clearInterval(setTimer.value);
-  resetTime();
-  startTime();
-};
-
-onBeforeRouteUpdate(() => {
+onBeforeRouteUpdate(async () => {
   level.value = level.value + 1;
-  resetGame();
-  gameSetup();
+  dataSetup.value = await api.Reset(level.value)
+  gameSetup(dataSetup.value);
 });
 
 //Game set-up
@@ -163,16 +139,8 @@ const api = new API()
 const dataSetup = ref(null)
 onBeforeMount(async () => {
   dataSetup.value = await api.Setup(level.value)
-  if (dataSetup.value.canPlay){
+  if (dataSetup.value.canPlay) {
     gameSetup(dataSetup.value);
-  }
-});
-
-onBeforeUpdate(() => {
-  if (props.reset) {
-    resetGame();
-    gameSetup();
-    emit("reset", false);
   }
 });
 
@@ -203,7 +171,6 @@ const isRight_Bottom = ref(false);
 const isLeft = ref(false);
 const isLeft_Top = ref(false);
 const isLeft_Bottom = ref(false);
-const getPosition = ref({ x: 5, y: 5 });
 const isAnimate = ref(false);
 const isFlip = ref(false)
 
@@ -288,7 +255,7 @@ const moveRightBottom = () => {
         }`">
         <div v-for="(hexagon, index) in row">
           <div
-            :class="`absolute z-10 ${hexagon.cat !== cat.cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'} ${isRight ? 'move-right' : ''} ${isLeft ? 'move-left' : ''} ${isRight_Top ? 'move-top-right' : ''} ${isLeft_Top ? 'move-top-left' : ''} ${isLeft_Bottom ? 'move-bottom-left' : ''} ${isRight_Bottom ? 'move-bottom-right' : ''}`}`">
+            :class="`fixed z-10 ${hexagon.cat !== cat.cat ? '' : `${isFlip ? 'cat-stand-flip' : 'cat-stand'} ${isRight ? 'move-right' : ''} ${isLeft ? 'move-left' : ''} ${isRight_Top ? 'move-top-right' : ''} ${isLeft_Top ? 'move-top-left' : ''} ${isLeft_Bottom ? 'move-bottom-left' : ''} ${isRight_Bottom ? 'move-bottom-right' : ''}`}`">
           </div>
           <button :class="`${hexagon.block ? 'hexagon-block' : 'hexagon-body'}`" :disabled="hexagon.block || hexagon.cat">
             <img :src="hexagon.hexagon" @click="selectHexagon(rowIndex, index)" />
@@ -302,8 +269,8 @@ const moveRightBottom = () => {
 
 <style scoped>
 .time-level {
-  position: absolute;
-  top: 12%;
+  position: fixed;
+  top: 10%;
   right: 5%;
 }
 

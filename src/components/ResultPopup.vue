@@ -8,24 +8,23 @@ const props = defineProps({
     isWin : Boolean,
 })
 
-const emit = defineEmits(['close','reset','next'])
+const emit = defineEmits(['close','try-agin','next'])
 const level = ref(1);
 
-// const isWin = ref(props.isResult)
 onBeforeRouteUpdate(()=>{
     level.value++
 })
 </script>
 
 <template>
-    <div v-if="isResult" class="result-root-div h-full text-center w-full absolute z-10">
+    <div v-if="isResult" class="result-root-div h-full text-center w-full  z-10">
         <div class="result-div flex justify-center items-center absolute">
             <div @click="isResult = false,$emit('close')" class="close-btn absolute"></div>
             <div :class="`${isWin ? 'aunjai-win':'aunjai-cry'} absolute`"></div>
             <div class="win-text-header absolute"> {{isWin ? 'ยินดีด้วย':'เสียใจด้วย'}}
                 <div class="win-text-body">{{ isWin ? 'คุณชนะ สามารถดักจับแมวได้':'คุณแพ้ ลองใหม่อีกครั้ง' }}</div>
             </div>
-            <div @click="isWin ? `${level !==3 ? $emit('next'):$emit('close')}`:$emit('reset')" class="btn absolute flex justify-center items-center">{{isWin ? `${level !==3 ? 'เล่นด่านต่อไป':'หน้าแรก'}`:'เล่นใหม่'}}</div>
+            <div @click="isWin ? `${level !==3 ? $emit('next'):$emit('close')}`:$emit('try-agin')" class="btn absolute flex justify-center items-center">{{isWin ? `${level !==3 ? 'เล่นด่านต่อไป':'หน้าแรก'}`:'เล่นใหม่'}}</div>
         </div>
     </div>
 </template>

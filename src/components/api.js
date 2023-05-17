@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { walk } from "vue/compiler-sfc";
 
 class API {
   constructor() {}
@@ -38,110 +39,167 @@ class API {
   }
 
   async Setup(level) {
-    LoadingAlert();
-    const res = await fetch("http://192.168.1.232:8080/api/setup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.getToken}`,
-      },
-      body: JSON.stringify({
-        level: level,
-      }),
-    });
-    if (res.status === 200) {
-      CloseAlert();
-      const getRes = await res.json();
-      let dataSetup = {};
-      dataSetup.board = getRes.board;
-      dataSetup.token = getRes.token;
-      dataSetup.turn = getRes.turn;
-      dataSetup.canPlay = getRes.canPlay;
-      localStorage.setItem("board", dataSetup.token);
-      return dataSetup;
-    }
-    else{
+    try {
+      LoadingAlert();
+      const res = await fetch("http://192.168.1.232:8080/api/setup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getToken}`,
+        },
+        body: JSON.stringify({
+          level: level,
+        }),
+      });
+      if (res.status === 200) {
+        const getRes = await res.json();
+        let dataSetup = {};
+        dataSetup.board = getRes.board;
+        dataSetup.time = getRes.timeOut;
+        dataSetup.token = getRes.token;
+        dataSetup.turn = getRes.turn;
+        dataSetup.canPlay = getRes.canPlay;
+        localStorage.setItem("board", dataSetup.token);
+        CloseAlert();
+        return dataSetup;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+        return;
+      }
+    } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong!",
       });
-      return
     }
   }
 
   async Play(req) {
-    const token = localStorage.getItem("board");
-    const res = await fetch("http://192.168.1.232:8080/api/play", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.getToken}`,
-      },
-      body: JSON.stringify({
-        turn: req.turn + 1,
-        x: req.x,
-        y: req.y,
-        block: req.block,
-        token: token,
-        level: req.level,
-      }),
-    });
-    if (res.status === 200) {
-      const getRes = await res.json();
-      let dataPlay = {};
-      dataPlay.board = getRes.board;
-      dataPlay.token = getRes.token;
-      dataPlay.turn = getRes.turn;
-      dataPlay.canPlay = getRes.canPlay;
-      localStorage.setItem("board", dataPlay.token);
-      return dataPlay;
-    }
-    else {
+    try {
+      const token = localStorage.getItem("board");
+      const res = await fetch("http://192.168.1.232:8080/api/play", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getToken}`,
+        },
+        body: JSON.stringify({
+          turn: req.turn + 1,
+          x: req.x,
+          y: req.y,
+          block: req.block,
+          token: token,
+          level: req.level,
+        }),
+      });
+      if (res.status === 200) {
+        const getRes = await res.json();
+        let dataPlay = {};
+        dataPlay.board = getRes.board;
+        dataPlay.time = getRes.timeOut;
+        dataPlay.token = getRes.token;
+        dataPlay.turn = getRes.turn;
+        dataPlay.canPlay = getRes.canPlay;
+        localStorage.setItem("board", dataPlay.token);
+        CloseAlert();
+        return dataPlay;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+        return;
+      }
+    } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong!",
       });
-      return 
     }
   }
 
   async Reset(level) {
-    LoadingAlert();
-    const res = await fetch("http://192.168.1.232:8080/api/reset", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.getToken}`,
-      },
-      body: JSON.stringify({
-        level: level,
-      }),
-    });
-    if (res.status === 200) {
-      CloseAlert();
-      const getRes = await res.json();
-      let dataSetup = {};
-      dataSetup.board = getRes.board;
-      dataSetup.token = getRes.token;
-      dataSetup.turn = getRes.turn;
-      localStorage.setItem("board", dataSetup.token);
-      return dataSetup;
+    try {
+      LoadingAlert();
+      const res = await fetch("http://192.168.1.232:8080/api/reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getToken}`,
+        },
+        body: JSON.stringify({
+          level: level,
+        }),
+      });
+      if (res.status === 200) {
+        const getRes = await res.json();
+        let dataSetup = {};
+        dataSetup.board = getRes.board;
+        dataSetup.time = getRes.timeOut;
+        dataSetup.token = getRes.token;
+        dataSetup.turn = getRes.turn;
+        localStorage.setItem("board", dataSetup.token);
+        CloseAlert();
+        return dataSetup;
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
     }
   }
 
-  async Lose() {
-    const res = await fetch("http://192.168.1.232:8080/api/reset", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.getToken}`,
-      },
-      body: JSON.stringify({
-        level: level,
-      }),
-    });
+  async TimeOut(req) {
+    try {
+      const token = localStorage.getItem("board");
+      const res = await fetch("http://192.168.1.232:8080/api/time", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.getToken}`,
+        },
+        body: JSON.stringify({
+          time: req.time,
+          turn: req.turn + 1,
+          token: token,
+          level: req.level,
+        }),
+      });
+      if (res.status === 200) {
+        const getRes = await res.json();
+        let dataPlay = {};
+        dataPlay.board = getRes.board;
+        dataPlay.time = getRes.timeOut;
+        dataPlay.token = getRes.token;
+        dataPlay.turn = getRes.turn;
+        dataPlay.canPlay = getRes.canPlay;
+        localStorage.setItem("board", dataPlay.token);
+        CloseAlert();
+        return dataPlay;
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+        return;
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
+    }
   }
 }
 export default API;

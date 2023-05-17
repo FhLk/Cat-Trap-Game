@@ -17,7 +17,7 @@ onBeforeRouteUpdate(()=>{
 </script>
 
 <template>
-    <div v-if="isResult" class="result-root-div h-full text-center w-full  z-10">
+    <div v-if="isResult" class="result-root-div h-full text-center fixed w-full  z-10">
         <div class="result-div flex justify-center items-center absolute">
             <div @click="isResult = false,$emit('close')" class="close-btn absolute"></div>
             <div :class="`${isWin ? 'aunjai-win':'aunjai-cry'} absolute`"></div>

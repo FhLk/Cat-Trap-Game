@@ -24,15 +24,9 @@ onBeforeMount(() => {
   }
 });
 
-const reset = (r) => {
-  isReset.value = true;
-  result.value = false;
-};
-
 const api = new API()
 const Router = useRouter();
 const goToMenu = async () => {
-  // await api.RewardInfo()
   result.value = false;
   Router.push({ name: "Home" });
   emit("toMenu");
@@ -58,7 +52,7 @@ function loseGame() {
 
 async function tryAgain(){
   result.value = false;
-  // Router.push({ name: "Game", params: { level: level.value } });
+  isReset.value = true;
 }
 </script>
 

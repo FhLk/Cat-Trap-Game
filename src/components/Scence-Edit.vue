@@ -28,51 +28,69 @@ const selectHexagon = async (row, index) => {
       !gameBoard.value[row][index].cat &&
       !isAnimate.value
     ) {
+      resetTime();
       let block = hexagon_disable[Math.floor(Math.random() * hexagon_disable.length)];
       gameBoard.value[row][index].hexagon = block
       gameBoard.value[row][index].block = true
       let req = {
         turn: turn.value,
+        timeOut: false,
         x: row,
         y: index,
         block: block,
         level: level.value
       }
-      let newData = await api.Play(req)
-      let nextMove = gameBoard.value[5][5];
-      let newBoard = newData.board
-      localStorage.setItem("board", newData.token)
-      turn.value = newData.turn
-      newBoard.forEach((row) => {
-        row.forEach((n) => {
-          if (n.cat) {
-            nextMove = n
-          }
-        })
-      })
-      let token = newData.token.slice(11)
-      if (Number(token) < turn.value && newData.canPlay) {
-        emit("winGame");
-        return
-      }
-      checkAnimation(nextMove, cat.value);
-      const waitAnimation =  setInterval( async () => {
-        nextMove.cat = true;
-        cat.value = nextMove;
-        gameBoard.value = newBoard
-        if (!newData.canPlay) {
-          dataSetup.value = await api.Reset(level.value)
-          gameSetup(dataSetup.value);
-          emit("loseGame");
-        }
-        clearInterval(waitAnimation);
-      }, 700);
+      catMove(req)
     }
     return;
   } catch (error) {
     return;
   }
 };
+
+const catMove = async (req) => {
+  resetTime();
+  let newData;
+  if (req.timeOut) {
+    console.log("wow1");
+    newData = await api.TimeOut(req)
+  }
+  else {
+    console.log("wow2");
+    newData = await api.Play(req)
+  }
+  console.log(newData);
+  let nextMove = gameBoard.value[5][5];
+  let newBoard = newData.board
+  localStorage.setItem("board", newData.token)
+  turn.value = newData.turn
+  newBoard.forEach((row) => {
+    row.forEach((n) => {
+      if (n.cat) {
+        nextMove = n
+      }
+    })
+  })
+  let token = newData.token.slice(11)
+  if (Number(token) < turn.value && newData.canPlay) {
+    clearInterval(setTimer.value)
+    emit("winGame");
+    return
+  }
+  checkAnimation(nextMove, cat.value);
+  const waitAnimation = setInterval(async () => {
+    nextMove.cat = true;
+    cat.value = nextMove;
+    gameBoard.value = newBoard
+    if (!newData.canPlay) {
+      clearInterval(setTimer.value)
+      dataSetup.value = await api.Reset(level.value)
+      gameSetup(dataSetup.value);
+      emit("loseGame");
+    }
+    clearInterval(waitAnimation);
+  }, 700);
+}
 
 const checkAnimation = (next, currPos) => {
   const isEvenX = currPos.x % 2 === 0;
@@ -138,31 +156,49 @@ onBeforeRouteUpdate(async () => {
 const api = new API()
 const dataSetup = ref(null)
 onBeforeMount(async () => {
+  startTime();
   dataSetup.value = await api.Setup(level.value)
   if (dataSetup.value.canPlay) {
     gameSetup(dataSetup.value);
   }
 });
 
+onBeforeUpdate(()=>{
+  let isReset = props.reset
+  if (isReset){
+    clearInterval(setTimer.value)
+    resetTime()
+    startTime()
+    emit("reset", false);
+  }
+})
+
 window.onload = async () => {
+  clearInterval(setTimer.value)
+  resetTime()
+  startTime()
   dataSetup.value = await api.Reset(level.value)
   gameSetup(dataSetup.value);
 }
 
 const setTimer = ref(null);
-const startTime = () => {
-  setTimer.value = setInterval(() => {
+const startTime = async () => {
+  setTimer.value = setInterval(async () => {
     if (time.value === 0) {
-      catMove();
+      let req = {
+        timeOut: true,
+        turn: turn.value,
+        level: level.value
+      }
+      catMove(req);
       resetTime();
     }
-    // time.value--;
+    time.value--;
   }, 1000);
 };
-startTime();
 
 const resetTime = () => {
-  time.value = 11;
+  time.value = 10;
 };
 
 const isRight = ref(false);

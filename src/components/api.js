@@ -3,12 +3,14 @@ import { walk } from "vue/compiler-sfc";
 
 class API {
   constructor() {}
+  BASE_API = `http://192.168.1.232:8080/api`
   getToken = localStorage.getItem("token");
   token =
     "eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGVObyI6Im1wUTBSMTJHTzAzNmY4ckVCbmZqVTg4OWwyczNnZGlGQUVzcCtNRWUrNzQ9IiwidGltZXN0YW1wIjoiMjAyMi0wMS0xNFQxMzowMDowNSswNzowMCJ9.gUvmq2MI9DAa5-AgWAX8DE7tL2elCD7VW8g-2gtYz9g";
   async Authen() {
     try {
-      const res = await fetch("http://192.168.1.232:8080/api/authen", {
+      // console.log();
+      const res = await fetch(`${this.BASE_API}/authen`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,6 +32,7 @@ class API {
         return false;
       }
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -41,7 +44,7 @@ class API {
   async Setup(level) {
     try {
       LoadingAlert();
-      const res = await fetch("http://192.168.1.232:8080/api/setup", {
+      const res = await fetch(`${this.BASE_API}/setup`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +85,7 @@ class API {
   async Play(req) {
     try {
       const token = localStorage.getItem("board");
-      const res = await fetch("http://192.168.1.232:8080/api/play", {
+      const res = await fetch(`${this.BASE_API}/play`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,7 +131,7 @@ class API {
   async Reset(level) {
     try {
       LoadingAlert();
-      const res = await fetch("http://192.168.1.232:8080/api/reset", {
+      const res = await fetch(`${this.BASE_API}/reset`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +164,7 @@ class API {
   async TimeOut(req) {
     try {
       const token = localStorage.getItem("board");
-      const res = await fetch("http://192.168.1.232:8080/api/time", {
+      const res = await fetch(`${this.BASE_API}/time`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -163,9 +163,9 @@ onBeforeMount(async () => {
   }
 });
 
-onBeforeUpdate(()=>{
+onBeforeUpdate(() => {
   let isReset = props.reset
-  if (isReset){
+  if (isReset) {
     clearInterval(setTimer.value)
     resetTime()
     startTime()
@@ -193,7 +193,7 @@ const startTime = async () => {
       catMove(req);
       resetTime();
     }
-    time.value--;
+    // time.value--;
   }, 1000);
 };
 
@@ -508,43 +508,58 @@ const moveRightBottom = () => {
 
 @media (min-width: 320px) {
   .game-board {
-    transform: translate(0%, 35%);
+    transform: translate(0%, 50%);
   }
 
   .board-row {
-    margin-bottom: -14px;
+    margin-bottom: -16px;
   }
 
   .hexagon-body {
-    margin-right: -5px;
-    margin-left: -3px;
-    width: 35px;
+    margin-left:  -4px;
+    margin-right: -4px;
+    width:  35px;
     height: 35px;
   }
 
+  .hexagon-block {
+    width:  30px;
+    height: 30px;
+    margin-left:  0px;
+    margin-right: -3px;
+  }
+
   .translate-x {
-    transform: translate(14px, 0%)
+    transform: translate(13.5px, 0%)
   }
 }
 
 @media (min-width: 360px) {
   .game-board {
-    transform: translate(0%, 40%);
+    transform: translate(0%, 45%);
   }
 
   .board-row {
-    margin-bottom: -15px;
+    margin-bottom: -18px;
   }
 
   .hexagon-body {
     margin-right: -6px;
     margin-left: -3px;
-    width: 41px;
-    height: 41px;
+    width: 39px;
+    height: 39px;
+  }
+
+  .hexagon-block {
+    width:  33px;
+    height: 33px;
+    margin-left:  0px;
+    margin-right: -3px;
+    transform: translate(5%, 5%);
   }
 
   .translate-x {
-    transform: translate(16px, 0%)
+    transform: translate(15px, 0%)
   }
 }
 
@@ -555,35 +570,50 @@ const moveRightBottom = () => {
   }
 
   .board-row {
-    margin-bottom: -16px;
+    margin-bottom: -18px;
   }
 
   .hexagon-body {
-    margin-right: -6px;
-    margin-left: -4px;
-    width: 45px;
-    height: 45px;
+    margin-left:  -5px;
+    margin-right: -5px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .hexagon-block {
+    width:  42px;
+    height: 42px;
+    margin-left:  0px;
+    margin-right: -10px;
+    transform: translate(0%, 3%);
   }
 
   .translate-x {
-    transform: translate(18px, 0%)
+    transform: translate(16px, 0%)
   }
 }
 
-@media (min-width: 390px) {
+@media (min-width: 390px) {  
   .game-board {
     transform: translate(0%, 45%);
   }
 
   .board-row {
-    margin-bottom: -16px;
+    margin-bottom: -19px;
   }
 
   .hexagon-body {
-    margin-right: -6px;
-    margin-left: -4px;
+    margin-right: -5px;
     width: 43px;
     height: 43px;
+  }
+
+  .hexagon-block {
+    width:  43px;
+    height: 43px;
+    margin-left:  -2px;
+    margin-right: -8px;
+    transform: translate(5%, 3%);
   }
 
   .translate-x {
@@ -622,18 +652,22 @@ const moveRightBottom = () => {
 
 @media (min-width: 425px) {
   .game-board {
-    transform: translate(0%, 20%);
+    transform: translate(0%, 40%);
   }
 
   .board-row {
-    margin-bottom: -17px;
+    margin-bottom: -19px;
   }
 
   .hexagon-body {
-    margin-right: -7px;
-    margin-left: -4px;
-    width: 47px;
-    height: 47px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .hexagon-block {
+    width: 46px;
+    height: 46px;
+    transform: translate(14%, 5%);
   }
 
   .translate-x {

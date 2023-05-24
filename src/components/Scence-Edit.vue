@@ -38,7 +38,7 @@ const selectHexagon = async (row, index) => {
         x: row,
         y: index,
         block: block,
-        level: level.value
+        level: level.value,
       }
       catMove(req)
     }
@@ -52,14 +52,11 @@ const catMove = async (req) => {
   resetTime();
   let newData;
   if (req.timeOut) {
-    console.log("wow1");
     newData = await api.TimeOut(req)
   }
   else {
-    console.log("wow2");
     newData = await api.Play(req)
   }
-  console.log(newData);
   let nextMove = gameBoard.value[5][5];
   let newBoard = newData.board
   localStorage.setItem("board", newData.token)
@@ -138,6 +135,7 @@ const gameSetup = (setup) => {
     gameBoard.value = setup.board
     cat.value = gameBoard.value[5][5]
   } catch (error) {
+    console.log(error);
     Swal.fire({
       icon: "error",
       title: "Oops...",

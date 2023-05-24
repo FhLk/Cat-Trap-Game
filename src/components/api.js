@@ -1,3 +1,4 @@
+import { data } from "autoprefixer";
 import Swal from "sweetalert2";
 import { walk } from "vue/compiler-sfc";
 
@@ -57,12 +58,14 @@ class API {
       if (res.status === 200) {
         const getRes = await res.json();
         let dataSetup = {};
-        dataSetup.board = getRes.board;
+        dataSetup.board = getRes.board
+        dataSetup.session = getRes.sessionID
         dataSetup.time = getRes.timeOut;
         dataSetup.token = getRes.token;
         dataSetup.turn = getRes.turn;
         dataSetup.canPlay = getRes.canPlay;
         localStorage.setItem("board", dataSetup.token);
+        sessionStorage.setItem("sessionID",dataSetup.session)
         CloseAlert();
         return dataSetup;
       } else {
@@ -74,6 +77,7 @@ class API {
         return;
       }
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -85,6 +89,7 @@ class API {
   async Play(req) {
     try {
       const token = localStorage.getItem("board");
+      const session = sessionStorage.getItem("sessionID");
       const res = await fetch(`${this.BASE_API}/play`,{
         method: "POST",
         headers: {
@@ -92,6 +97,7 @@ class API {
           Authorization: `Bearer ${this.getToken}`,
         },
         body: JSON.stringify({
+          sessionID: session,
           turn: req.turn + 1,
           x: req.x,
           y: req.y,
@@ -120,6 +126,7 @@ class API {
         return;
       }
     } catch (error) {
+      console.log(error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -130,6 +137,8 @@ class API {
 
   async Reset(level) {
     try {
+      localStorage.clear()
+      sessionStorage.clear()
       LoadingAlert();
       const res = await fetch(`${this.BASE_API}/reset`,{
         method: "POST",

@@ -137,8 +137,7 @@ class API {
 
   async Reset(level) {
     try {
-      localStorage.clear()
-      sessionStorage.clear()
+      const session = sessionStorage.getItem("sessionID");
       LoadingAlert();
       const res = await fetch(`${this.BASE_API}/reset`,{
         method: "POST",
@@ -147,6 +146,7 @@ class API {
           Authorization: `Bearer ${this.getToken}`,
         },
         body: JSON.stringify({
+          sessionID:session,
           level: level,
         }),
       });
@@ -154,10 +154,12 @@ class API {
         const getRes = await res.json();
         let dataSetup = {};
         dataSetup.board = getRes.board;
+        dataSetup.session = getRes.sessionID
         dataSetup.time = getRes.timeOut;
         dataSetup.token = getRes.token;
         dataSetup.turn = getRes.turn;
         localStorage.setItem("board", dataSetup.token);
+        sessionStorage.setItem("sessionID",dataSetup.session)
         CloseAlert();
         return dataSetup;
       }

@@ -191,7 +191,7 @@ const startTime = async () => {
       catMove(req);
       resetTime();
     }
-    // time.value--;
+    time.value--;
   }, 1000);
 };
 

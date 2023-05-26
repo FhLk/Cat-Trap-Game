@@ -1,11 +1,7 @@
 <script setup>
 import Loading from "./components/Loading.vue";
-import Music from "./components/Music.vue";
-
 import { ref, onBeforeMount, computed } from "vue";
-import LgButton from "./components/Lg-Button.vue";
 import API from "./components/api.js"
-import Swal from "sweetalert2";
 
 
 const progress = ref(0);
@@ -41,10 +37,6 @@ const page = ref(0)
 <template>
   <Loading v-if="getProgress !== 100 && progress !== 120" />
   <RouterView v-else @toGame="page = 1" @toMenu="page = 0"> </RouterView>
-  <div class="flex justify-between">
-    <!-- <Music :language="getLG" class="music" /> -->
-    <!-- <LgButton v-show="page === 0" class="language" @change="changeLanguage" /> -->
-  </div>
 </template>
 
 <style scoped>

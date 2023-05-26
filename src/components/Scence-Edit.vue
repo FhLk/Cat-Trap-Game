@@ -136,6 +136,7 @@ const gameSetup = (setup) => {
     cat.value = gameBoard.value[5][5]
   } catch (error) {
     console.log(error);
+    clearInterval(setTimer.value)
     Swal.fire({
       icon: "error",
       title: "Oops...",
@@ -191,7 +192,7 @@ const startTime = async () => {
       catMove(req);
       resetTime();
     }
-    // time.value--;
+    time.value--;
   }, 1000);
 };
 

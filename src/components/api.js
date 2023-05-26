@@ -10,7 +10,6 @@ class API {
     "eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGVObyI6Im1wUTBSMTJHTzAzNmY4ckVCbmZqVTg4OWwyczNnZGlGQUVzcCtNRWUrNzQ9IiwidGltZXN0YW1wIjoiMjAyMi0wMS0xNFQxMzowMDowNSswNzowMCJ9.gUvmq2MI9DAa5-AgWAX8DE7tL2elCD7VW8g-2gtYz9g";
   async Authen() {
     try {
-      // console.log();
       const res = await fetch(`${this.BASE_API}/authen`, {
         method: "POST",
         headers: {
@@ -175,6 +174,7 @@ class API {
   async TimeOut(req) {
     try {
       const token = localStorage.getItem("board");
+      const session = sessionStorage.getItem("sessionID");
       const res = await fetch(`${this.BASE_API}/time`,{
         method: "POST",
         headers: {
@@ -182,6 +182,7 @@ class API {
           Authorization: `Bearer ${this.getToken}`,
         },
         body: JSON.stringify({
+          sessionID:session,
           time: req.time,
           turn: req.turn + 1,
           token: token,

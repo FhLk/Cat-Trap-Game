@@ -1,22 +1,22 @@
 <script setup>
-import Scence from "../components/Scence.vue";
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import { onBeforeMount, ref } from "vue";
-import Swal from "sweetalert2";
 import API from "../components/api";
 import ScenceEdit from "../components/Scence-Edit.vue";
 import ResultPopup from "../components/ResultPopup.vue";
+import { Howl } from 'howler';
 let { params } = useRoute();
 
 const props = defineProps({
   language: String,
+
 });
 
 const emit = defineEmits(["toMenu"]);
 
 const level = ref(Number(params.level));
 const isReset = ref(false);
-const isSound = ref(false)
+const isPlaying = ref(true)
 
 onBeforeMount(() => {
   if (level.value > 3 || level.value < 1) {
@@ -50,21 +50,46 @@ function loseGame() {
   isWin.value = false
 }
 
-async function tryAgain(){
+async function tryAgain() {
   result.value = false;
   isReset.value = true;
 }
+
+const music = ref(null)
+music.value = new Howl({
+    src: ['./bg-music.mp3'],
+    volume: 0.2,
+    loop: true,
+  })
+onBeforeMount(() => {
+  if (!music.value.playing()) {
+    music.value.play()
+  }
+})
+
+onBeforeRouteLeave(()=>{
+  music.value.stop()
+})
+
+const toggleMusic = () => {
+  if (isPlaying.value) {
+    music.value.pause();
+  } else {
+    music.value.play();
+  }
+  isPlaying.value = !isPlaying.value;
+}
+
 </script>
 
 <template>
   <div class="bg-body">
-    <!-- <Scence :language="language" :level="level" @winGame="winGame()" @loseGame="loseGame()" :reset="isReset"
-        @reset="isReset = false" /> -->
-    <ResultPopup :level="level" :isResult="result" :is-win="isWin" @close="goToMenu()" @next="nextLevel"  @try-agin="tryAgain()" />
-    <ScenceEdit :reset="isReset" :level="level" @reset="isReset = false" @winGame="winGame()"  @loseGame="loseGame()" />
+    <ResultPopup :level="level" :isResult="result" :is-win="isWin" @close="goToMenu()" @next="nextLevel"
+      @try-agin="tryAgain()" />
+    <ScenceEdit :reset="isReset" :level="level" @reset="isReset = false" @winGame="winGame()" @loseGame="loseGame()" />
     <div class="control-btn space-y-6">
-      <div @click="isSound = !isSound" class="flex justify-center">
-        <div v-if="isSound" class="speaker-on-btn"></div>
+      <div @click="toggleMusic()" class="flex justify-center">
+        <div v-if="isPlaying" class="speaker-on-btn"></div>
         <div v-else class="speaker-off-btn"></div>
       </div>
     </div>
@@ -130,4 +155,5 @@ async function tryAgain(){
   .control {
     font-size: 20px;
   }
-}</style>
+}
+</style>

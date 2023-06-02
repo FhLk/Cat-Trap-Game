@@ -1,8 +1,5 @@
 <script>
 export default {
-  props:{
-    language : String
-  },
   data() {
     return {
       musicSrc: "./bg-music.mp3",
@@ -37,9 +34,6 @@ export default {
         class="bg-blue-600 p-3 flex space-x-2 leading-tight rounded-full hover:bg-blue-700"
       >
         <div :class="isPlaying ? 'speaker-icon-on' : 'speaker-icon-off'"></div>
-        <div class="text-white font-medium text-sm">
-          {{ isPlaying ? `${language === "TH" || language === null ? 'เปิด':'On'}` : `${language === "TH" || language === null ? 'ปิด':'Off'}` }}
-        </div>
       </button>
     </div>
     <div class="flex justify-center">

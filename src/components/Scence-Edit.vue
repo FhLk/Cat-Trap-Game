@@ -1,6 +1,6 @@
 <script setup>
-import { onBeforeMount, ref, onBeforeUpdate } from "vue";
-import { onBeforeRouteUpdate } from "vue-router";
+import { onBeforeMount, ref, onBeforeUpdate, watch } from "vue";
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from "vue-router";
 import API from "../components/api";
 import Swal from "sweetalert2";
 
@@ -13,34 +13,36 @@ const props = defineProps({
   reset: Boolean,
 });
 
-
-
 const level = ref(props.level);
-
-const emit = defineEmits(["loseGame", "winGame", "reset", 'menu']);
+const emit = defineEmits(["loseGame", "winGame", "reset", "menu"]);
 
 const time = ref(10);
-const hexagon_disable = ['./candy1.svg', './candy2.svg', './candy3.svg', './candy4.svg', './candy5.svg', './candy6.svg', './candy7.svg',];
+const hexagon_disable = [
+  "./candy1.svg",
+  "./candy2.svg",
+  "./candy3.svg",
+  "./candy4.svg",
+  "./candy5.svg",
+  "./candy6.svg",
+  "./candy7.svg",
+];
+
 const selectHexagon = async (row, index) => {
   try {
-    if (
-      !gameBoard.value[row][index].block &&
-      !gameBoard.value[row][index].cat &&
-      !isAnimate.value
-    ) {
+    if (!isAnimate.value && !gameBoard.value[row][index].block && !gameBoard.value[row][index].cat) {
       resetTime();
-      let block = hexagon_disable[Math.floor(Math.random() * hexagon_disable.length)];
-      gameBoard.value[row][index].hexagon = block
-      gameBoard.value[row][index].block = true
-      let req = {
+      const block = hexagon_disable[Math.floor(Math.random() * hexagon_disable.length)];
+      gameBoard.value[row][index].hexagon = block;
+      gameBoard.value[row][index].block = true;
+      const req = {
         turn: turn.value,
         timeOut: false,
         x: row,
         y: index,
         block: block,
         level: level.value,
-      }
-      catMove(req)
+      };
+      catMove(req);
     }
     return;
   } catch (error) {
@@ -49,65 +51,59 @@ const selectHexagon = async (row, index) => {
 };
 
 const catMove = async (req) => {
-  resetTime();
-  let newData;
-  if (req.timeOut) {
-    newData = await api.TimeOut(req)
-  }
-  else {
-    newData = await api.Play(req)
-  }
-  let nextMove = gameBoard.value[5][5];
-  let newBoard = newData.board
-  localStorage.setItem("board", newData.token)
-  turn.value = newData.turn
-  newBoard.forEach((row) => {
-    row.forEach((n) => {
-      if (n.cat) {
-        nextMove = n
+  try {
+    resetTime();
+    let newData;
+    if (req.timeOut) {
+      newData = await api.TimeOut(req);
+    } else {
+      newData = await api.Play(req);
+    }
+    let nextMove = gameBoard.value[5][5];
+    let newBoard = newData.board;
+    localStorage.setItem("board", newData.token);
+    turn.value = newData.turn;
+    newBoard.forEach((row) => {
+      row.forEach((n) => {
+        if (n.cat) {
+          nextMove = n;
+        }
+      });
+    });
+    let token = newData.token.slice(11);
+    if (Number(token) < turn.value && newData.canPlay) {
+      clearInterval(setTimer.value);
+      emit("winGame");
+      return;
+    }
+    checkAnimation(nextMove, cat.value);
+    const waitAnimation = setInterval(async () => {
+      nextMove.cat = true;
+      cat.value = nextMove;
+      gameBoard.value = newBoard;
+      if (!newData.canPlay) {
+        clearInterval(setTimer.value);
+        dataSetup.value = await api.Reset(level.value);
+        gameSetup(dataSetup.value);
+        emit("loseGame");
       }
-    })
-  })
-  let token = newData.token.slice(11)
-  if (Number(token) < turn.value && newData.canPlay) {
+      clearInterval(waitAnimation);
+    }, 700);
+  } catch (error) {
     clearInterval(setTimer.value)
-    emit("winGame");
+    resetTime()
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
     return
   }
-  checkAnimation(nextMove, cat.value);
-  const waitAnimation = setInterval(async () => {
-    nextMove.cat = true;
-    cat.value = nextMove;
-    gameBoard.value = newBoard
-    if (!newData.canPlay) {
-      clearInterval(setTimer.value)
-      dataSetup.value = await api.Reset(level.value)
-      gameSetup(dataSetup.value);
-      emit("loseGame");
-    }
-    clearInterval(waitAnimation);
-  }, 700);
-}
+};
 
 const checkAnimation = (next, currPos) => {
   const isEvenX = currPos.x % 2 === 0;
-  if (!isEvenX) {
-    if (currPos.y === next.y) {
-      if (currPos.x > next.x) {
-        moveLeftTop();
-      } else {
-        moveLeftBottom();
-      }
-    } else if (currPos.y < next.y && currPos.x > next.x) {
-      moveRightTop();
-    } else if (currPos.y < next.y && currPos.x < next.x) {
-      moveRightBottom();
-    } else if (currPos.y < next.y) {
-      moveRight();
-    } else if (currPos.y > next.y) {
-      moveLeft();
-    }
-  } else {
+  if (isEvenX) {
     if (currPos.y === next.y) {
       if (currPos.x > next.x) {
         moveRightTop();
@@ -123,20 +119,36 @@ const checkAnimation = (next, currPos) => {
     } else if (currPos.y > next.y) {
       moveLeft();
     }
+  } else {
+    if (currPos.y === next.y) {
+      if (currPos.x > next.x) {
+        moveLeftTop();
+      } else {
+        moveLeftBottom();
+      }
+    } else if (currPos.y < next.y && currPos.x > next.x) {
+      moveRightTop();
+    } else if (currPos.y < next.y && currPos.x < next.x) {
+      moveRightBottom();
+    } else if (currPos.y < next.y) {
+      moveRight();
+    } else if (currPos.y > next.y) {
+      moveLeft();
+    }
   }
 };
 
 const gameBoard = ref(null);
 const cat = ref(null);
-const turn = ref(0)
+const turn = ref(0);
 const gameSetup = (setup) => {
   try {
-    turn.value = setup.turn
-    gameBoard.value = setup.board
-    cat.value = gameBoard.value[5][5]
+    turn.value = setup.turn;
+    gameBoard.value = setup.board;
+    cat.value = gameBoard.value[5][5];
   } catch (error) {
     console.log(error);
-    clearInterval(setTimer.value)
+    clearInterval(setTimer.value);
     Swal.fire({
       icon: "error",
       title: "Oops...",
@@ -146,39 +158,38 @@ const gameSetup = (setup) => {
 };
 
 onBeforeRouteUpdate(async () => {
+  clearInterval(setTimer.value);
+  resetTime();
+  startTime();
   level.value = level.value + 1;
-  dataSetup.value = await api.Reset(level.value)
+  dataSetup.value = await api.Reset(level.value);
   gameSetup(dataSetup.value);
 });
 
-//Game set-up
-const api = new API()
-const dataSetup = ref(null)
+onBeforeRouteLeave(() => {
+  clearInterval(setTimer.value);
+  resetTime();
+})
+
+// Game set-up
+const api = new API();
+const dataSetup = ref(null);
 onBeforeMount(async () => {
   startTime();
-  dataSetup.value = await api.Setup(level.value)
+  dataSetup.value = await api.Setup(level.value);
   if (dataSetup.value.canPlay) {
     gameSetup(dataSetup.value);
   }
 });
 
-onBeforeUpdate(() => {
-  let isReset = props.reset
-  if (isReset) {
-    clearInterval(setTimer.value)
-    resetTime()
-    startTime()
+watch(() => props.reset, (value) => {
+  if (value) {
+    clearInterval(setTimer.value);
+    resetTime();
+    startTime();
     emit("reset", false);
   }
-})
-
-window.onload = async () => {
-  clearInterval(setTimer.value)
-  resetTime()
-  startTime()
-  dataSetup.value = await api.Reset(level.value)
-  gameSetup(dataSetup.value);
-}
+});
 
 const setTimer = ref(null);
 const startTime = async () => {
@@ -187,8 +198,8 @@ const startTime = async () => {
       let req = {
         timeOut: true,
         turn: turn.value,
-        level: level.value
-      }
+        level: level.value,
+      };
       catMove(req);
       resetTime();
     }
@@ -207,12 +218,12 @@ const isLeft = ref(false);
 const isLeft_Top = ref(false);
 const isLeft_Bottom = ref(false);
 const isAnimate = ref(false);
-const isFlip = ref(false)
+const isFlip = ref(false);
 
 const moveLeft = () => {
   isLeft.value = true;
   isAnimate.value = true;
-  isFlip.value = true
+  isFlip.value = true;
   const isPlay = setInterval(() => {
     isLeft.value = false;
     isAnimate.value = false;
@@ -223,7 +234,7 @@ const moveLeft = () => {
 const moveLeftTop = () => {
   isLeft_Top.value = true;
   isAnimate.value = true;
-  isFlip.value = true
+  isFlip.value = true;
   const isPlay = setInterval(() => {
     isLeft_Top.value = false;
     isAnimate.value = false;
@@ -234,7 +245,7 @@ const moveLeftTop = () => {
 const moveLeftBottom = () => {
   isLeft_Bottom.value = true;
   isAnimate.value = true;
-  isFlip.value = true
+  isFlip.value = true;
   const isPlay = setInterval(() => {
     isLeft_Bottom.value = false;
     isAnimate.value = false;
@@ -245,7 +256,7 @@ const moveLeftBottom = () => {
 const moveRight = () => {
   isRight.value = true;
   isAnimate.value = true;
-  isFlip.value = false
+  isFlip.value = false;
   const isPlay = setInterval(() => {
     isRight.value = false;
     isAnimate.value = false;
@@ -256,7 +267,7 @@ const moveRight = () => {
 const moveRightTop = () => {
   isRight_Top.value = true;
   isAnimate.value = true;
-  isFlip.value = false
+  isFlip.value = false;
   const isPlay = setInterval(() => {
     isRight_Top.value = false;
     isAnimate.value = false;
@@ -267,7 +278,7 @@ const moveRightTop = () => {
 const moveRightBottom = () => {
   isRight_Bottom.value = true;
   isAnimate.value = true;
-  isFlip.value = false
+  isFlip.value = false;
   const isPlay = setInterval(() => {
     isRight_Bottom.value = false;
     isAnimate.value = false;
@@ -275,6 +286,7 @@ const moveRightBottom = () => {
   }, 700);
 };
 </script>
+
 
 <template>
   <div>
@@ -515,16 +527,16 @@ const moveRightBottom = () => {
   }
 
   .hexagon-body {
-    margin-left:  -4px;
+    margin-left: -4px;
     margin-right: -4px;
-    width:  35px;
+    width: 35px;
     height: 35px;
   }
 
   .hexagon-block {
-    width:  30px;
+    width: 30px;
     height: 30px;
-    margin-left:  0px;
+    margin-left: 0px;
     margin-right: -3px;
   }
 
@@ -550,9 +562,9 @@ const moveRightBottom = () => {
   }
 
   .hexagon-block {
-    width:  33px;
+    width: 33px;
     height: 33px;
-    margin-left:  0px;
+    margin-left: 0px;
     margin-right: -3px;
     transform: translate(5%, 5%);
   }
@@ -573,16 +585,16 @@ const moveRightBottom = () => {
   }
 
   .hexagon-body {
-    margin-left:  -5px;
+    margin-left: -5px;
     margin-right: -5px;
     width: 42px;
     height: 42px;
   }
 
   .hexagon-block {
-    width:  42px;
+    width: 42px;
     height: 42px;
-    margin-left:  0px;
+    margin-left: 0px;
     margin-right: -10px;
     transform: translate(0%, 3%);
   }
@@ -592,7 +604,7 @@ const moveRightBottom = () => {
   }
 }
 
-@media (min-width: 390px) {  
+@media (min-width: 390px) {
   .game-board {
     transform: translate(0%, 45%);
   }
@@ -608,9 +620,9 @@ const moveRightBottom = () => {
   }
 
   .hexagon-block {
-    width:  43px;
+    width: 43px;
     height: 43px;
-    margin-left:  -2px;
+    margin-left: -2px;
     margin-right: -8px;
     transform: translate(5%, 3%);
   }

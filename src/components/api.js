@@ -1,15 +1,38 @@
-import { data } from "autoprefixer";
 import Swal from "sweetalert2";
-import { walk } from "vue/compiler-sfc";
 
 class API {
-  constructor() {}
-  BASE_API = `https://catthetrap-apistg.wisdomcloud.net/api`
-  getToken = localStorage.getItem("token");
+  // BASE_API = "https://catthetrap-apistg.wisdomcloud.net/api";
+  BASE_API = "http://192.168.1.235:8080/api";
+  getToken = localStorage.getItem("o");
   token =
     "eyJhbGciOiJIUzI1NiJ9.eyJtb2JpbGVObyI6Im1wUTBSMTJHTzAzNmY4ckVCbmZqVTg4OWwyczNnZGlGQUVzcCtNRWUrNzQ9IiwidGltZXN0YW1wIjoiMjAyMi0wMS0xNFQxMzowMDowNSswNzowMCJ9.gUvmq2MI9DAa5-AgWAX8DE7tL2elCD7VW8g-2gtYz9g";
+
+  static LoadingAlert() {
+    Swal.fire({
+      title: "Please Wait",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  static CloseAlert() {
+    Swal.close();
+  }
+
+  static PopupAlert(){
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: "Something went wrong!",
+    });
+  }
+
   async Authen() {
     try {
+      API.LoadingAlert();
       const res = await fetch(`${this.BASE_API}/authen`, {
         method: "POST",
         headers: {
@@ -19,32 +42,26 @@ class API {
           token: this.token,
         }),
       });
+
       if (res.status === 201) {
+        API.CloseAlert()
         const getRes = await res.json();
-        localStorage.setItem("token", getRes.token);
+        localStorage.setItem("token", getRes.o);
         return true;
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-        return false;
+        API.PopupAlert()
+        throw new Error("Something went wrong during authentication.");
       }
     } catch (error) {
-      console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
+      API.PopupAlert()
+      throw new Error("Something went wrong during authentication.");
     }
   }
 
   async Setup(level) {
     try {
-      LoadingAlert();
-      const res = await fetch(`${this.BASE_API}/setup`,{
+      API.LoadingAlert();
+      const res = await fetch(`${this.BASE_API}/setup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,34 +71,29 @@ class API {
           level: level,
         }),
       });
+
       if (res.status === 200) {
         const getRes = await res.json();
-        let dataSetup = {};
-        dataSetup.board = getRes.board
-        dataSetup.session = getRes.sessionID
-        dataSetup.time = getRes.timeOut;
-        dataSetup.token = getRes.token;
-        dataSetup.turn = getRes.turn;
-        dataSetup.canPlay = getRes.canPlay;
+        const dataSetup = {
+          board: getRes.board,
+          session: getRes.sessionID,
+          time: getRes.timeOut,
+          token: getRes.token,
+          turn: getRes.turn,
+          canPlay: getRes.canPlay,
+        };
         localStorage.setItem("board", dataSetup.token);
-        sessionStorage.setItem("sessionID",dataSetup.session)
-        CloseAlert();
+        sessionStorage.setItem("sessionID", dataSetup.session);
+        API.CloseAlert();
         return dataSetup;
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-        return;
+        API.PopupAlert()
+        throw new Error("Something went wrong during setup.");
       }
     } catch (error) {
+      API.PopupAlert()
       console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
+      throw new Error("Something went wrong during setup.");
     }
   }
 
@@ -89,7 +101,7 @@ class API {
     try {
       const token = localStorage.getItem("board");
       const session = sessionStorage.getItem("sessionID");
-      const res = await fetch(`${this.BASE_API}/play`,{
+      const res = await fetch(`${this.BASE_API}/play`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,69 +117,67 @@ class API {
           level: req.level,
         }),
       });
+
       if (res.status === 200) {
         const getRes = await res.json();
-        let dataPlay = {};
-        dataPlay.board = getRes.board;
-        dataPlay.time = getRes.timeOut;
-        dataPlay.token = getRes.token;
-        dataPlay.turn = getRes.turn;
-        dataPlay.canPlay = getRes.canPlay;
+        const dataPlay = {
+          board: getRes.board,
+          time: getRes.timeOut,
+          token: getRes.token,
+          turn: getRes.turn,
+          canPlay: getRes.canPlay,
+        };
         localStorage.setItem("board", dataPlay.token);
-        CloseAlert();
+        API.CloseAlert();
         return dataPlay;
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-        return;
+        API.PopupAlert()
+        throw new Error("Something went wrong during play.");
       }
     } catch (error) {
+      API.PopupAlert()
       console.log(error);
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
+      throw new Error("Something went wrong during play.");
     }
   }
 
   async Reset(level) {
     try {
       const session = sessionStorage.getItem("sessionID");
-      LoadingAlert();
-      const res = await fetch(`${this.BASE_API}/reset`,{
+      API.LoadingAlert();
+      const res = await fetch(`${this.BASE_API}/reset`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.getToken}`,
         },
         body: JSON.stringify({
-          sessionID:session,
+          sessionID: session,
           level: level,
         }),
       });
+
       if (res.status === 200) {
         const getRes = await res.json();
-        let dataSetup = {};
-        dataSetup.board = getRes.board;
-        dataSetup.session = getRes.sessionID
-        dataSetup.time = getRes.timeOut;
-        dataSetup.token = getRes.token;
-        dataSetup.turn = getRes.turn;
+        const dataSetup = {
+          board: getRes.board,
+          session: getRes.sessionID,
+          time: getRes.timeOut,
+          token: getRes.token,
+          turn: getRes.turn,
+        };
         localStorage.setItem("board", dataSetup.token);
-        sessionStorage.setItem("sessionID",dataSetup.session)
-        CloseAlert();
+        sessionStorage.setItem("sessionID", dataSetup.session);
+        API.CloseAlert();
         return dataSetup;
+      } else {
+        API.PopupAlert()
+        throw new Error("Something went wrong during reset.");
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
+      API.PopupAlert()
+      console.log(error);
+      throw new Error("Something went wrong during reset.");
     }
   }
 
@@ -175,61 +185,43 @@ class API {
     try {
       const token = localStorage.getItem("board");
       const session = sessionStorage.getItem("sessionID");
-      const res = await fetch(`${this.BASE_API}/time`,{
+      const res = await fetch(`${this.BASE_API}/time`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.getToken}`,
         },
         body: JSON.stringify({
-          sessionID:session,
+          sessionID: session,
           time: req.time,
           turn: req.turn + 1,
           token: token,
           level: req.level,
         }),
       });
+
       if (res.status === 200) {
         const getRes = await res.json();
-        let dataPlay = {};
-        dataPlay.board = getRes.board;
-        dataPlay.time = getRes.timeOut;
-        dataPlay.token = getRes.token;
-        dataPlay.turn = getRes.turn;
-        dataPlay.canPlay = getRes.canPlay;
+        const dataPlay = {
+          board: getRes.board,
+          time: getRes.timeOut,
+          token: getRes.token,
+          turn: getRes.turn,
+          canPlay: getRes.canPlay,
+        };
         localStorage.setItem("board", dataPlay.token);
-        CloseAlert();
+        API.CloseAlert();
         return dataPlay;
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-        return;
+        API.PopupAlert()
+        throw new Error("Something went wrong during timeout.");
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      });
+      API.PopupAlert()
+      console.log(error);
+      throw new Error("Something went wrong during timeout.");
     }
   }
 }
+
 export default API;
-
-const LoadingAlert = () => {
-  Swal.fire({
-    title: "Please Wait",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-};
-
-const CloseAlert = () => {
-  Swal.close();
-};

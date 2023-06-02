@@ -3,7 +3,6 @@ import Loading from "./components/Loading.vue";
 import { ref, onBeforeMount, computed } from "vue";
 import API from "./components/api.js"
 
-
 const progress = ref(0);
 const api = new API();
 const resAPI = ref({
